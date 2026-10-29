@@ -33,7 +33,7 @@ export default function App() {
   // page-level text that lives outside the screens
   useEffect(() => {
     document.documentElement.lang = s.lang;
-    document.title = L.title;
+    document.title = 'Assignment_AreeyaponC'; // the tab keeps the assignment name in both languages; L.title still heads the saved card
     document.querySelector<HTMLMetaElement>('meta[name="description"]')?.setAttribute('content', L.desc);
     try { localStorage.setItem('ooca-lang', s.lang); } catch { /* private mode: the choice just isn't remembered */ }
   }, [s.lang, L]);

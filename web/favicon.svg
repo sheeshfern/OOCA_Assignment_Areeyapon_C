@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Mooca's face on CI Turquoise 1 -->
+  <rect width="64" height="64" rx="14" fill="#00C4B3"/>
+  <g fill="#FFFFFF">
+    <circle cx="21" cy="36" r="11"/>
+    <circle cx="32" cy="28" r="13.5"/>
+    <circle cx="43.5" cy="35" r="11"/>
+    <rect x="16" y="34" width="33" height="14" rx="7"/>
+  </g>
+  <g fill="#2359A8">
+    <circle cx="26.5" cy="36.5" r="2.6"/>
+    <circle cx="38.5" cy="36.5" r="2.6"/>
+  </g>
+  <path d="M28.6 41.2q3.9 3.4 7.8 0" fill="none" stroke="#2359A8" stroke-width="2.2" stroke-linecap="round"/>
+</svg>
