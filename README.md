@@ -4,6 +4,8 @@ The 2-Minute Mental Health Experience (ooca UX/UI Product Designer assignment) b
 
 ตอบ 4 ข้อ ใช้เวลาไม่เกิน 2 นาที แล้วได้การ์ดที่บอกว่าตอนนี้คุณอาจกำลังรู้สึกอะไร มาจากอะไร และทำอะไรต่อได้ทันที รองรับภาษาไทยและอังกฤษ
 
+**เว็บจริง:** https://ooca-assignment-areeyapon-c.vercel.app (เวอร์ชัน React ใน `app/`)
+
 ## ในนี้มีอะไร
 
 | โฟลเดอร์ | อะไร |

@@ -14,6 +14,16 @@ npm run lint       # oxlint
 
 `dist/` ใช้ path แบบ relative (`base: './'`) อัปโหลดไว้ใต้ path ไหนของเว็บก็เปิดได้ (ต้องเปิดผ่าน server ไม่ใช่ดับเบิลคลิกไฟล์)
 
+## Deploy
+
+เว็บจริงอยู่ที่ https://ooca-assignment-areeyapon-c.vercel.app (Vercel project `ooca-assignment-areeyapon-c`) ตั้งค่า build ไว้ใน `vercel.json` แล้ว (Vite, `npm run build`, `dist`)
+
+ขึ้นเวอร์ชันใหม่: รันในโฟลเดอร์นี้
+
+```bash
+npx vercel deploy --prod
+```
+
 ## โครงสร้าง
 
 | ไฟล์ | หน้าที่ |
