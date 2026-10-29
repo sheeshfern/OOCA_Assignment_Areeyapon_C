@@ -219,7 +219,8 @@ h1,p,.crow span{text-wrap:pretty}
 .soft-btn{min-height:50px;border:none;border-radius:14px;background:var(--white);color:var(--text);font-size:16px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
 
 /* S6 safety */
-.safety{background:#FFF4EC}
+/* calm CI turquoise (Turquoise 50 fading lighter), not a warm alarm colour */
+.safety{background:linear-gradient(180deg,#E0F8F6 0%,#F4FCFB 100%)}
 .safety .hug{display:flex;justify-content:center;position:relative;margin-top:8px}
 .safety .hug::before{content:"";position:absolute;top:10px;width:220px;height:220px;border-radius:50%;background:var(--white);opacity:.7}
 .safety .hug img{position:relative;width:240px;height:200px;object-fit:contain}

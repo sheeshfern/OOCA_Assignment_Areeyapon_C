@@ -134,6 +134,6 @@ export function zoneVars(s: State): Record<string, string> {
     '--zone-line': t ? t.line : '#C7DDF7', '--bg': t ? t.bg : '#E4EFFB',
   };
   if (s.screen === 'home') vars['--bg'] = '#F6F6F6';
-  if (s.screen === 'safety') vars['--bg'] = '#FFF4EC';
+  if (s.screen === 'safety') vars['--bg'] = '#E0F8F6';
   return vars;
 }
