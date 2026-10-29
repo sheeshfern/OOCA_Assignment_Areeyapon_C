@@ -235,10 +235,11 @@ h1,p,.crow span{text-wrap:pretty}
 .safety .hug img{position:relative;width:240px;height:200px;object-fit:contain}
 .safety h1{margin:0;font-size:26px;font-weight:600;text-align:center}
 .safety .msg{margin:0;font-size:17px;line-height:1.6;text-align:center;color:var(--text-2)}
-.call{min-height:72px;border-radius:20px;background:var(--action-pressed);color:var(--white);text-decoration:none;display:flex;align-items:center;gap:14px;padding:12px 18px;box-shadow:var(--e3)}
-.call .ic{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* hotline button: CI turquoise fading to white so it sits softly on the page; the solid icon circle keeps it the first thing you see */
+.call{min-height:72px;border-radius:20px;background:linear-gradient(115deg,#B3EDE8 0%,#E0F8F6 55%,#FFFFFF 100%);border:1px solid #B3EDE8;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:14px;padding:12px 18px;box-shadow:var(--e3)}
+.call .ic{width:44px;height:44px;border-radius:50%;background:var(--action-pressed);color:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .call b{display:block;font-size:19px;font-weight:600}
-.call small{display:block;font-size:14px;opacity:.9}
+.call small{display:block;font-size:14px;color:var(--text-2)}
 
 .toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--white);padding:12px 18px;border-radius:14px;font-size:15px;box-shadow:var(--e3);z-index:9;width:max-content;max-width:calc(100% - 32px);text-align:center;opacity:0;transform:translate(-50%,12px);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
