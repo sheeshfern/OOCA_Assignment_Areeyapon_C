@@ -73,7 +73,7 @@ export function NoteDialog({ open, prompt, onClose }: { open: boolean; prompt: s
                 <circle className="prog" cx="32" cy="36" r="22" strokeWidth="5" strokeLinecap="round" pathLength={100} strokeDasharray="100"
                   style={{ strokeDashoffset: timeUp ? 100 : 100 - left / 300 }} transform="rotate(-90 32 36)" />
               </svg>
-              <b className="sec" style={timeUp ? { fontSize: 13 } : undefined}>{timeUp ? L.timeUp : Math.ceil(left / 1000)}</b>
+              <b className="sec" style={timeUp ? { fontSize: 12 } : undefined}>{timeUp ? L.timeUp : Math.ceil(left / 1000)}</b>
             </div>
           </div>
           <textarea id="note-text" ref={text} className="note-text" aria-labelledby="note-q" aria-describedby="note-count" rows={5}

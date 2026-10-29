@@ -88,7 +88,7 @@ export function Result() {
         <button className="soft-btn" data-act="save" onClick={e => saveCard(e.currentTarget)}>{ico.save}{L.save}</button>
         <button className="soft-btn" data-act="restart" onClick={() => dispatch({ type: 'restart' })}>{ico.refresh}{L.restart}</button>
       </div>
-      <p className="fine" style={{ color: 'var(--text-2)', fontSize: 13 }}><Ph text={L.resFine} /></p>
+      <p className="fine" style={{ color: 'var(--text-2)', fontSize: 12 }}><Ph text={L.resFine} /></p>
     </Screen>
   );
 }

@@ -5,7 +5,7 @@ import type { Tone, Option, Duration, Word } from './types';
 
 // level: 0 = feel-good, 1 = light, 2 = medium, 3 = professional first. risk → safety screen
 export const TONES: Tone[] = [
-  { id: "yellow", label: "สดใส มีแรง", eg: "เช่น ตื่นเต้น ภูมิใจ มีหวัง", zone: "#F9A000", solid: "#A35F00", bg: "#F8E4B3", ink: "#9A5B00", line: "#F3D58E", img: IMG.happy, reply: "ดีใจด้วยนะ ไปต่อกัน",
+  { id: "yellow", label: "สดใส มีแรง", eg: "เช่น ตื่นเต้น ภูมิใจ มีหวัง", zone: "#F9A000", solid: "#A35F00", bg: "#F8E4B3", ink: "#9A5B00", line: "#F4D280", img: IMG.happy, reply: "ดีใจด้วยนะ ไปต่อกัน",
     en: { label: "Bright and lively", eg: "like excited, proud, hopeful", reply: "So glad! Let’s go on" },
     words: [
       { w: "ตื่นเต้น", m: "ใจเต้นแรง เพราะรอสิ่งที่อยากให้เกิด", c: "มีเรื่องใหม่ที่คุณตั้งตารอ", a: "เขียนถึงสิ่งที่รออยู่ ว่าอยากให้ออกมาแบบไหน", lv: 0,
@@ -27,7 +27,7 @@ export const TONES: Tone[] = [
       { w: "กระตือรือร้น", m: "อยากลงมือทำทันที", c: "คุณมีเป้าหมายที่ชัด", a: "เขียนสิ่งแรกที่จะลงมือทำ ตอนที่ไฟยังแรง", lv: 0,
         en: { w: "Eager", m: "wanting to get started right away", c: "You have a clear goal.", a: "Write your first step while you’re fired up" } }
     ] },
-  { id: "green", label: "สงบ สบายใจ", eg: "เช่น ผ่อนคลาย พอใจ อุ่นใจ", zone: "#5DB437", solid: "#2F7A12", bg: "#DCF3D1", ink: "#2F6B16", line: "#BFE6AD", img: IMG.hug, reply: "ดีจังเลย ไปต่อกัน",
+  { id: "green", label: "สงบ สบายใจ", eg: "เช่น ผ่อนคลาย พอใจ อุ่นใจ", zone: "#6DC849", solid: "#2F7A12", bg: "#DCF3D1", ink: "#2F6B16", line: "#C5ECB3", img: IMG.hug, reply: "ดีจังเลย ไปต่อกัน",
     en: { label: "Calm and at ease", eg: "like relaxed, content, comforted", reply: "Lovely. Let’s go on" },
     words: [
       { w: "ผ่อนคลาย", m: "ร่างกายและใจ ไม่ต้องรีบ", c: "คุณได้พักอย่างที่ต้องการ", a: "เขียนว่าตอนนี้ ร่างกายสบายตรงไหนบ้าง", lv: 0,
@@ -49,7 +49,7 @@ export const TONES: Tone[] = [
       { w: "มีสมาธิ", m: "จดจ่อกับสิ่งตรงหน้าได้ดี", c: "คุณอยู่ในจังหวะที่ใช่", a: "เขียนว่าอะไรช่วยให้มีสมาธิ จะได้ใช้อีก", lv: 0,
         en: { w: "Focused", m: "able to stay with what’s in front of you", c: "You’ve found the right rhythm.", a: "Write what helps you focus, so you can use it again" } }
     ] },
-  { id: "orange", label: "ร้อนรน ไม่สบายใจ", eg: "เช่น กังวล หงุดหงิด กดดัน", zone: "#E8702A", solid: "#B9500F", bg: "#FFDDC9", ink: "#A04A12", line: "#FFC7A6", img: IMG.anxious, reply: "เข้าใจเลย ค่อยๆ ไปนะ",
+  { id: "orange", label: "ร้อนรน ไม่สบายใจ", eg: "เช่น กังวล หงุดหงิด กดดัน", zone: "#FF7233", solid: "#B9500F", bg: "#FFDDC9", ink: "#A04A12", line: "#FFC7A5", img: IMG.anxious, reply: "เข้าใจเลย ค่อยๆ ไปนะ",
     en: { label: "Tense and uneasy", eg: "like worried, irritated, pressured", reply: "I hear you. No rush" },
     words: [
       { w: "กังวล", m: "ใจวิ่งไปคิดล่วงหน้า ถึงเรื่องที่ยังไม่เกิด", c: "มีเรื่องที่ยังไม่รู้ผล", a: "เขียนเรื่องที่กังวล แล้วดูว่าข้อไหนพอทำอะไรได้", lv: 1,

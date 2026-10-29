@@ -21,13 +21,13 @@
   --text:#355956; --text-2:#3F6866;
   --blue:#1F77DF; --blue-dark:#1764D7; --blue-ink:#0A47CA; --blue-bg:#E4EFFB; --blue-line:#C7DDF7;
   --yellow:#F9A000; --yellow-bg:#F8E4B3; --orange:#FF8F4B; --orange-bg:#FFDDC9; --green:#8AD866; --green-bg:#DCF3D1;
-  --white:#FFFFFF; --line:#E6EEF0;
-  --e1:0 2px 8px rgba(0,196,179,.08); --e2:0 8px 16px rgba(0,196,179,.12); --e3:0 12px 24px rgba(0,196,179,.16);
-  --r-sm:12px; --r-md:18px; --r-lg:26px;
+  --white:#FFFFFF; --line:#DBF0EE;
+  --e1:0 2px 8px rgba(0,196,179,.08); --e2:0 8px 16px rgba(0,196,179,.12); --e3:0 16px 24px rgba(0,196,179,.16);
+  --r-sm:8px; --r-md:24px; --r-lg:24px;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{font-family:'Gotham Rounded Latin','Prompt',system-ui,sans-serif;color:var(--text);background:#F3F7F7;-webkit-font-smoothing:antialiased}
+body{font-family:'Gotham Rounded Latin','Prompt',system-ui,sans-serif;color:var(--text);background:#F6F6F6;-webkit-font-smoothing:antialiased}
 button,a{font-family:inherit;-webkit-tap-highlight-color:transparent}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
@@ -39,8 +39,8 @@ button{cursor:pointer}
   /* a fixed-size phone frame: the page itself never scrolls (so the backdrop has no seam and the card never moves);
      a step taller than the frame scrolls inside the card, with the action bar stuck to the card's bottom */
   body{display:flex;align-items:center;justify-content:center;height:100dvh;overflow:hidden;padding:24px;
-    background:radial-gradient(circle at 12% 18%,#DBF0EE,transparent 38%),radial-gradient(circle at 88% 85%,#E4EFFB,transparent 42%),radial-gradient(circle at 85% 12%,#FFF1CC,transparent 28%),#F3F7F7;background-attachment:fixed}
-  .app{width:100%;max-width:560px;--pad:32px;height:min(900px,calc(100dvh - 48px));min-height:0;border-radius:36px;box-shadow:0 24px 64px rgba(53,89,86,.16);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+    background:radial-gradient(circle at 12% 18%,#DBF0EE,transparent 38%),radial-gradient(circle at 88% 85%,#E4EFFB,transparent 42%),radial-gradient(circle at 85% 12%,#FCF4E0,transparent 28%),#F6F6F6;background-attachment:fixed}
+  .app{width:100%;max-width:560px;--pad:32px;height:min(900px,calc(100dvh - 48px));min-height:0;border-radius:24px;box-shadow:0 24px 40px rgba(0,196,179,.16),0 8px 24px -4px rgba(0,196,179,.12);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 }
 /* no visible scrollbars: one appearing on a longer step would narrow the content and make everything jump sideways */
 html,.app{scrollbar-width:none}
@@ -60,7 +60,7 @@ h1,p,.crow span{text-wrap:pretty}
 .top{display:flex;align-items:center;gap:12px;min-height:44px}
 .icon-btn{width:44px;height:44px;border:none;border-radius:var(--r-sm);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text)}
 .progress{flex:1;display:flex;gap:6px}
-.progress span{position:relative;overflow:hidden;flex:1;height:6px;border-radius:3px;background:var(--white)}
+.progress span{position:relative;overflow:hidden;flex:1;height:6px;border-radius:999px;background:var(--white)}
 .progress span.on::after{content:"";position:absolute;inset:0;background:var(--action);transform-origin:left}
 .step-count{font-size:14px;color:var(--text-2)}
 
@@ -70,11 +70,11 @@ h1,p,.crow span{text-wrap:pretty}
 .mooca img{display:block}
 .guide img{width:clamp(92px,30vw,150px);height:auto;aspect-ratio:150/118;object-fit:contain}
 @media (max-height:700px){.guide img{width:clamp(84px,24vw,120px)}.tone .art{height:72px}}
-.bubble{position:relative;flex:1;min-width:0;background:var(--white);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 8px rgba(31,119,223,.08)}
+.bubble{position:relative;flex:1;min-width:0;background:var(--white);border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--e1)}
 .bubble::before{content:"";position:absolute;left:-7px;top:calc(50% - 7px);width:14px;height:14px;background:var(--white);transform:rotate(45deg)}
 .bubble>*{position:relative}
-.bubble h1{margin:0;font-size:clamp(18px,5.4vw,20px);line-height:1.35;font-weight:600}
-.bubble p{margin:0;font-size:15px;line-height:1.4;color:var(--text-2)}
+.bubble h1{margin:0;font-size:20px;line-height:1.35;font-weight:600}
+.bubble p{margin:0;font-size:14px;line-height:1.4;color:var(--text-2)}
 /* every question screen shares one guide height and each bubble line stays on one line,
    so the choices start at the same spot on every step and never move when Mooca replies */
 .screen .guide{min-height:var(--guide-h,118px);align-items:stretch}
@@ -88,26 +88,26 @@ h1,p,.crow span{text-wrap:pretty}
 .tags{flex-wrap:nowrap;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}
 .tag{flex-shrink:0}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
-.tag{font-size:13px;font-weight:600;padding:3px 12px;border-radius:999px;background:var(--blue-dark);color:var(--white)}
+.tag{font-size:12px;font-weight:600;padding:3px 12px;border-radius:999px;background:var(--blue-dark);color:var(--white)}
 .tag.soft{background:var(--blue-bg);color:var(--blue-ink);font-weight:500}
 
 /* buttons */
 .primary{min-height:58px;border:none;border-radius:var(--r-md);background:var(--action);color:var(--white);font-size:20px;font-weight:600;box-shadow:var(--e2);width:100%}
 .primary:active{background:var(--action-pressed)}
-.primary:disabled{background:#A9C7C3;box-shadow:none;cursor:not-allowed}
+.primary:disabled{background:#79ADA9;box-shadow:none;cursor:not-allowed}
 .text-btn{min-height:44px;border:none;background:transparent;color:var(--text-2);font-size:16px;text-decoration:underline;padding:0 4px}
 .text-btn.teal{color:var(--action-pressed);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:6px}
 
 /* S1 tone cards */
 .tones{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.tone{border:2px solid transparent;border-radius:20px;background:var(--white);text-align:center;padding:8px 8px 12px;display:flex;flex-direction:column;align-items:center;color:var(--text);transition:border-color .15s, box-shadow .15s}
-.tone .art{position:relative;width:100%;background:radial-gradient(ellipse 75% 60% at 50% 100%,color-mix(in srgb,var(--tz) 24%,var(--tbg)),transparent 75%),linear-gradient(160deg,color-mix(in srgb,var(--tbg) 35%,#fff),var(--tbg) 70%);height:clamp(76px,24vw,104px);border-radius:14px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;margin-bottom:8px}
+.tone{border:2px solid transparent;border-radius:24px;background:var(--white);text-align:center;padding:8px 8px 12px;display:flex;flex-direction:column;align-items:center;color:var(--text);transition:border-color .15s, box-shadow .15s}
+.tone .art{position:relative;width:100%;background:radial-gradient(ellipse 75% 60% at 50% 100%,color-mix(in srgb,var(--tz) 24%,var(--tbg)),transparent 75%),linear-gradient(160deg,color-mix(in srgb,var(--tbg) 35%,#fff),var(--tbg) 70%);height:clamp(76px,24vw,104px);border-radius:8px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;margin-bottom:8px}
 .tone .art img{height:90%;max-width:94%;object-fit:contain;transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
 .tone .ck{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:var(--zone-solid,var(--zone));display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.4);transition:opacity .15s,transform .25s cubic-bezier(.3,1.4,.5,1)}
 .tone .ck svg{width:18px;height:18px}
-.tone b{display:block;font-size:17px;font-weight:600;line-height:1.35}
+.tone b{display:block;font-size:16px;font-weight:600;line-height:1.35}
 .tone small{display:block;font-size:14px;color:var(--text-2);margin-top:2px;line-height:1.4}
-.tone[aria-pressed="true"]{border-color:var(--zone);box-shadow:0 8px 16px rgba(31,119,223,.16)}
+.tone[aria-pressed="true"]{border-color:var(--zone);box-shadow:var(--e2)}
 .tone[aria-pressed="true"] .ck{opacity:1;transform:none}
 .tone[aria-pressed="true"] .art img{transform:translateY(-3px) scale(1.06)}
 .tone[aria-pressed="true"] b{color:var(--zone-ink)}
@@ -120,43 +120,43 @@ h1,p,.crow span{text-wrap:pretty}
 .word:disabled{opacity:.45;cursor:not-allowed}
 .group-label{font-size:14px;font-weight:600;color:var(--text-2);margin:6px 0 -4px}
 /* sized for one meaning (empty and one pick look the same); the second pick adds a row */
-.meaning{background:var(--white);border-radius:16px;padding:12px 16px;font-size:15px;line-height:1.55;min-height:calc(1.55em + 24px);display:flex;flex-direction:column;justify-content:center}
+.meaning{background:var(--white);border-radius:8px;padding:12px 16px;font-size:14px;line-height:1.55;min-height:calc(1.55em + 24px);display:flex;flex-direction:column;justify-content:center}
 .meaning.empty{color:var(--text-2);justify-content:center;text-align:center}
 .meaning p{margin:0}
-.meaning p+p{margin-top:8px;padding-top:8px;border-top:1px solid var(--zone-line,#E8EEF0)}
+.meaning p+p{margin-top:8px;padding-top:8px;border-top:1px solid var(--zone-line,#DBF0EE)}
 .row-between{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 
 /* S3/S4 options */
 .opts{display:flex;flex-direction:column;gap:10px}
 .opt{min-height:58px;border-radius:var(--r-md);border:2px solid #B3EDE8;background:var(--white);color:var(--text);font-size:18px;font-weight:500;display:flex;align-items:center;justify-content:space-between;padding:0 18px;text-align:left}
 /* picked row in the CI turquoise: Turquoise 1 edge, Turquoise 50 fill, turquoise lift, and a filled check */
-.opt[aria-pressed="true"]{border-color:#00C4B3;background:#E0F8F6;font-weight:600;box-shadow:0 6px 14px -6px rgba(0,196,179,.55)}
+.opt[aria-pressed="true"]{border-color:#00C4B3;background:#E0F8F6;font-weight:600;box-shadow:0 8px 16px -4px rgba(0,196,179,.28)}
 /* every row shows an empty ring, so it reads as "pick one"; the picked row fills it with a check */
 .opt .ck{flex-shrink:0;box-sizing:content-box;padding:4px;border-radius:50%;box-shadow:inset 0 0 0 2px #B3EDE8;color:transparent;transition:background-color .15s,box-shadow .15s,color .15s}
 .opt[aria-pressed="true"] .ck{background:#009688;box-shadow:none;color:var(--white)}
 /* the icon tile sits the same distance from the top, bottom and left edge at every row height, with a concentric corner */
 .opt.with-ic{--in:6px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:var(--in) 18px var(--in) var(--in)}
 .opt .ol{flex:1}
-.opt .oi{align-self:stretch;aspect-ratio:1;flex-shrink:0;border-radius:calc(var(--r-md) - 2px - var(--in));display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--zone,#1F77DF) 10%,#fff);transition:background .2s,transform .25s cubic-bezier(.3,1.4,.5,1)}
+.opt .oi{align-self:stretch;aspect-ratio:1;flex-shrink:0;border-radius:8px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--zone,#1F77DF) 10%,#fff);transition:background .2s,transform .25s cubic-bezier(.3,1.4,.5,1)}
 .opt[aria-pressed="true"] .oi{background:var(--white)}
 .opt[aria-pressed="true"] .oi svg{transform:scale(1.1)}
 .opt .oi svg{width:72%;height:auto;transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
 
 /* S0 */
 /* tint at the top fading to soft grey; --bg is the grey so the sticky action bar blends with the bottom */
-.home{background:linear-gradient(180deg,#DBF0EE 30%,#EFF4F6 50%,#F6F6F6 60%)}
+.home{background:linear-gradient(180deg,#DBF0EE 30%,#F6F6F6 60%)}
 .brand{display:block;height:24px;width:auto}
 /* "no sign-up" sits right above the headline as a small promise */
-.badge{align-self:center;display:inline-flex;align-items:center;gap:6px;margin:0 0 8px;padding:5px 12px 5px 6px;border-radius:999px;background:var(--white);box-shadow:var(--e1);font-size:13px;font-weight:500;line-height:1.3;color:var(--action-pressed);white-space:nowrap}
+.badge{align-self:center;display:inline-flex;align-items:center;gap:6px;margin:0 0 8px;padding:5px 12px 5px 6px;border-radius:999px;background:var(--white);box-shadow:var(--e1);font-size:12px;font-weight:500;line-height:1.3;color:var(--action-pressed);white-space:nowrap}
 .badge svg{flex-shrink:0}
 /* language switch: both flags show and a white thumb slides to the active one */
 .lang-sw{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:999px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(0,150,136,.18)}
-.lang-sw .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.08),var(--e1);transition:transform .32s cubic-bezier(.3,1.3,.5,1)}
+.lang-sw .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:var(--white);box-shadow:var(--e1);transition:transform .32s cubic-bezier(.3,1.3,.5,1)}
 .lang-sw[data-on="en"] .thumb{transform:translateX(100%)}
-.lang-sw button{position:relative;display:flex;align-items:center;justify-content:center;gap:5px;min-height:32px;padding:0 10px 0 6px;border:0;border-radius:999px;background:none;font:inherit;font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;transition:color .2s}
+.lang-sw button{position:relative;display:flex;align-items:center;justify-content:center;gap:5px;min-height:32px;padding:0 10px 0 6px;border:0;border-radius:999px;background:none;font:inherit;font-size:12px;font-weight:500;color:var(--text-2);cursor:pointer;transition:color .2s}
 .lang-sw button[aria-pressed="true"]{color:var(--text);font-weight:600}
 .lang-sw button:focus-visible{outline:2px solid var(--action-pressed);outline-offset:1px}
-.flag{width:18px;height:18px;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 1px rgba(0,0,0,.08);transition:filter .2s}
+.flag{width:18px;height:18px;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 1px #E6E6E6;transition:filter .2s}
 .flag svg{display:block;width:100%;height:100%}
 .lang-sw button[aria-pressed="false"] .flag{filter:saturate(.35) opacity(.75)}
 .lang-sw button.just .flag{animation:flagWave .55s cubic-bezier(.3,1.3,.5,1)}
@@ -164,13 +164,15 @@ h1,p,.crow span{text-wrap:pretty}
 .screen.relang :is(h1,.sub,.badge,.say span,.fine,.primary){animation:talkIn .3s ease-out both}
 .hero{position:relative;height:clamp(210px,38dvh,330px);flex-shrink:0;display:flex;align-items:flex-end;justify-content:center}
 .hero .halo{position:absolute;left:50%;top:40px;height:calc(100% - 70px);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:var(--white);opacity:.6}
-.hero .say{position:absolute;right:0;top:6px;z-index:1;background:var(--white);border-radius:18px 18px 18px 4px;padding:10px 16px;font-size:17px;font-weight:500;box-shadow:var(--e1)}
+.hero .say{position:absolute;right:0;top:6px;z-index:1;background:var(--white);border-radius:24px 24px 24px 8px;padding:10px 16px;font-size:16px;font-weight:500;box-shadow:var(--e1)}
 .hero .mooca{position:relative;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center}
 .hero img{width:300px;max-width:90%;max-height:calc(100% - 40px);height:auto;object-fit:contain}
-.home h1{margin:0;font-size:clamp(24px,7.2vw,28px);line-height:1.35;font-weight:600;text-align:center}
-.home h1 .hl{display:inline-block;margin-top:6px;padding:0 14px 2px;border-radius:14px;background:#FFD45C;transform:rotate(-1.5deg)}
+.home h1{margin:0;font-size:24px;line-height:1.35;font-weight:600;text-align:center}
+.home h1 .hl{display:inline-block;margin-top:6px;padding:0 14px 2px;border-radius:8px;background:#F4D280;transform:rotate(-1.5deg)}
 /* one line on every phone: shrinks with the screen, never under 13px */
-.home .sub{margin:0;font-size:clamp(13px,4.1vw,15px);line-height:1.5;color:var(--text-2);text-align:center;white-space:nowrap}
+.home .sub{margin:0;font-size:14px;line-height:1.5;color:var(--text-2);text-align:center;white-space:nowrap}
+/* under 360px the one-line subtitle steps down to the CI's 12px so it still fits */
+@media (max-width:359px){.home .sub{font-size:12px}}
 /* start button invites a tap: the arrow nudges forward */
 .start{display:flex;align-items:center;justify-content:center;gap:8px}
 .start svg{animation:nudge 1.6s ease-in-out infinite}
@@ -184,80 +186,80 @@ h1,p,.crow span{text-wrap:pretty}
 .actions .fine{margin-top:6px}
 
 /* S5 result */
-.card{background:var(--white);border-radius:var(--r-lg);padding:6px 20px 4px;box-shadow:0 8px 16px rgba(31,119,223,.10)}
+.card{background:var(--white);border-radius:var(--r-lg);padding:6px 20px 4px;box-shadow:var(--e2)}
 /* the name leads, Mooca stands in the middle, and its explanation comes out as a speech bubble pointing back at it */
 .card-head{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 0 18px}
 .card-head .who{width:100%}
 /* date and time the card was made, so a saved or screenshotted card says which day it was */
-.stamp{margin:0 0 12px;max-width:100%;display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:999px;background:#DBF0EE;color:var(--text);font-size:13px;font-weight:500;line-height:1.4}
+.stamp{margin:0 0 12px;max-width:100%;display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:999px;background:#DBF0EE;color:var(--text);font-size:12px;font-weight:500;line-height:1.4}
 .stamp svg{flex-shrink:0;color:#009688}
 .card-head .mooca{position:relative;margin-top:8px}
 .card-head img{width:136px;height:106px;object-fit:contain}
-.say-card{position:relative;align-self:stretch;margin-top:14px;padding:12px 16px 14px;border-radius:18px;background:color-mix(in srgb,var(--bg) 70%,#fff);text-align:left;display:flex;flex-direction:column;gap:4px;font-size:16px;line-height:1.55}
+.say-card{position:relative;align-self:stretch;margin-top:14px;padding:12px 16px 14px;border-radius:24px;background:color-mix(in srgb,var(--bg) 70%,#fff);text-align:left;display:flex;flex-direction:column;gap:4px;font-size:16px;line-height:1.55}
 .say-card::before{content:"";position:absolute;left:calc(50% - 10px);top:-9px;width:20px;height:20px;border-radius:4px 0 0 0;background:inherit;transform:rotate(45deg)}
 .say-card>*{position:relative}
 .say-card p{margin:0}
-.say-card .since{font-size:15px;color:var(--text-2)}
-.lb{font-size:13px;font-weight:600;color:var(--zone-ink,var(--blue-dark));letter-spacing:.2px}
-.name{margin:2px 0 0;font-size:clamp(30px,9.6vw,38px);line-height:1.2;font-weight:600;color:var(--zone-ink,var(--blue-dark))}
-.name.two{font-size:clamp(26px,8vw,30px)}
+.say-card .since{font-size:14px;color:var(--text-2)}
+.lb{font-size:12px;font-weight:600;color:var(--zone-ink,var(--blue-dark));letter-spacing:.2px}
+.name{margin:2px 0 0;font-size:36px;line-height:1.2;font-weight:600;color:var(--zone-ink,var(--blue-dark))}
+.name.two{font-size:24px}
 /* English words can't break mid-word like Thai can, so on phones they get a little more room */
 @media (max-width:599px){
   html[lang="en"] .word{font-size:16px;padding:6px}
 }
 .crow{display:flex;flex-direction:column;gap:6px;padding:14px 0;border-top:1px solid var(--line);font-size:16px;line-height:1.55}
-.crow .since{font-size:15px;color:var(--text-2)}
-.timer{align-self:flex-start;min-height:44px;border:2px solid var(--action);border-radius:14px;background:var(--white);color:var(--action-pressed);font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:0 14px;margin-top:4px}
+.crow .since{font-size:14px;color:var(--text-2)}
+.timer{align-self:flex-start;min-height:44px;border:2px solid var(--action);border-radius:24px;background:var(--white);color:var(--action-pressed);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:0 14px;margin-top:4px}
 .timer.done{background:var(--tint);border-color:var(--tint)}
 /* talk card in ooca's own CI turquoise: Turquoise Gradient 02, Turquoise 2 edge, turquoise-tinted elevation 03 */
-.talk{background:linear-gradient(160deg,#E0FEFB,#D7FFFC);border-radius:22px;padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px;border:1.5px solid #B3EDE8;box-shadow:0 8px 16px rgba(0,196,179,.12)}
+.talk{background:linear-gradient(160deg,#E0FEFB,#D7FFFC);border-radius:24px;padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px;border:1.5px solid #B3EDE8;box-shadow:0 8px 16px rgba(0,196,179,.12)}
 .talk.quiet{background:var(--white);border-color:#DBF0EE;box-shadow:none}
 .talk p{margin:0;font-size:16px;line-height:1.5}
 /* the button to ooca: CI "Turquoise text" #009688 with large bold white type (3.7:1, AA for large text),
    a turquoise glow (elevation 07) and the arrow in a white circle, the CI shape for high-prominence controls */
-.cta{position:relative;min-height:60px;border:none;border-radius:999px;background:linear-gradient(180deg,#009F91,#008D80);color:var(--white);text-decoration:none;padding:8px 8px 8px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:19px;font-weight:700;line-height:1.3;box-shadow:0 14px 26px -8px rgba(0,196,179,.6),0 4px 10px -4px rgba(0,150,136,.45)}
+.cta{position:relative;min-height:60px;border:none;border-radius:999px;background:linear-gradient(180deg,#009F91,#008D80);color:var(--white);text-decoration:none;padding:8px 8px 8px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:20px;font-weight:700;line-height:1.3;box-shadow:0 16px 24px rgba(0,196,179,.24),0 4px 8px -4px rgba(0,196,179,.4)}
 .cta>svg{flex-shrink:0;box-sizing:content-box;padding:10px;border-radius:50%;background:var(--white);color:#009688;transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
 .cta::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
 @media (hover:hover){
-  .cta:hover{transform:translateY(-2px);box-shadow:0 18px 30px -8px rgba(0,196,179,.7),0 6px 12px -4px rgba(0,150,136,.5)}
+  .cta:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(0,196,179,.28),0 4px 12px -4px rgba(0,196,179,.45)}
   .cta:hover>svg{transform:translateX(3px)}
 }
 .cta:focus-visible{outline:3px solid #00C4B3;outline-offset:3px}
-.cta.ghost{background:var(--white);color:var(--text);border:2px solid #00C4B3;box-shadow:0 2px 8px rgba(0,196,179,.08);font-weight:600;font-size:17px}
+.cta.ghost{background:var(--white);color:var(--text);border:2px solid #00C4B3;box-shadow:0 2px 8px rgba(0,196,179,.08);font-weight:600;font-size:16px}
 .cta.ghost>svg{background:#DBF0EE;color:#00796B}
 /* the wordmark sits on the text baseline, its round letters a touch taller than the x-height */
 .ooca-logo{display:inline-block;height:.74em;width:auto;aspect-ratio:2486/769;vertical-align:baseline}
 .duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.soft-btn{min-height:50px;border:none;border-radius:14px;background:var(--white);color:var(--text);font-size:16px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
+.soft-btn{min-height:50px;border:none;border-radius:24px;background:var(--white);color:var(--text);font-size:16px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
 
 /* S6 safety */
 /* calm CI turquoise (Turquoise 50 fading lighter), not a warm alarm colour */
-.safety{background:linear-gradient(180deg,#E0F8F6 0%,#F4FCFB 100%)}
+.safety{background:linear-gradient(180deg,#E0F8F6 0%,#FFFFFF 100%)}
 .safety .hug{display:flex;justify-content:center;position:relative;margin-top:8px}
 .safety .hug::before{content:"";position:absolute;top:10px;width:220px;height:220px;border-radius:50%;background:var(--white);opacity:.7}
 .safety .hug img{position:relative;width:240px;height:200px;object-fit:contain}
-.safety h1{margin:0;font-size:26px;font-weight:600;text-align:center}
-.safety .msg{margin:0;font-size:17px;line-height:1.6;text-align:center;color:var(--text-2)}
+.safety h1{margin:0;font-size:24px;font-weight:600;text-align:center}
+.safety .msg{margin:0;font-size:16px;line-height:1.6;text-align:center;color:var(--text-2)}
 /* hotline button: CI turquoise fading to white so it sits softly on the page; the solid icon circle keeps it the first thing you see */
-.call{min-height:72px;border-radius:20px;background:linear-gradient(115deg,#B3EDE8 0%,#E0F8F6 55%,#FFFFFF 100%);border:1px solid #B3EDE8;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:14px;padding:12px 18px;box-shadow:var(--e3)}
+.call{min-height:72px;border-radius:24px;background:linear-gradient(115deg,#B3EDE8 0%,#E0F8F6 55%,#FFFFFF 100%);border:1px solid #B3EDE8;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:14px;padding:12px 18px;box-shadow:var(--e3)}
 .call .ic{width:44px;height:44px;border-radius:50%;background:var(--action-pressed);color:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.call b{display:block;font-size:19px;font-weight:600}
+.call b{display:block;font-size:20px;font-weight:600}
 .call small{display:block;font-size:14px;color:var(--text-2)}
 
-.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--white);padding:12px 18px;border-radius:14px;font-size:15px;box-shadow:var(--e3);z-index:9;width:max-content;max-width:calc(100% - 32px);text-align:center;opacity:0;transform:translate(-50%,12px);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--white);padding:12px 18px;border-radius:24px;font-size:14px;box-shadow:var(--e3);z-index:9;width:max-content;max-width:calc(100% - 32px);text-align:center;opacity:0;transform:translate(-50%,12px);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 /* phones held sideways: keep the headline and CTA in view */
 @media (max-height:500px){
   .hero{height:170px}
-  .hero .say{font-size:15px;padding:8px 14px}
+  .hero .say{font-size:14px;padding:8px 14px}
   .guide img{width:84px}
 }
 /* tablet and desktop: a roomier card, so everything steps up a size */
 @media (min-width:600px) and (min-height:600px){
   .guide img{width:150px}
   .bubble{padding:18px 22px;border-radius:24px}
-  .bubble h1{font-size:23px}
+  .bubble h1{font-size:24px}
   .screen .guide{--guide-h:132px}
   .bubble p{font-size:16px}
   .tone{padding:10px 10px 16px}
@@ -265,27 +267,27 @@ h1,p,.crow span{text-wrap:pretty}
   .tone b{font-size:20px}
   .tone small{font-size:16px}
   .words{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .word,.opt{min-height:58px;font-size:19px}
-  .meaning,.talk p,.crow{font-size:17px}
+  .word,.opt{min-height:58px;font-size:20px}
+  .meaning,.talk p,.crow{font-size:16px}
   .hero{height:clamp(260px,40dvh,400px)}
   .hero img{width:360px}
   .hero .say{font-size:18px}
-  .home h1{font-size:34px;padding-block:4px} /* room for the tilted highlight */
+  .home h1{font-size:36px;padding-block:4px} /* room for the tilted highlight */
   .home .sub{font-size:16px}
   .primary{min-height:62px}
   .card{padding:10px 28px 6px}
   .card-head img{width:150px;height:117px}
-  .say-card{font-size:17px;padding:14px 20px 16px}
-  .name{font-size:40px}
-  .name.two{font-size:30px}
+  .say-card{font-size:16px;padding:14px 20px 16px}
+  .name{font-size:36px}
+  .name.two{font-size:36px}
   .safety .hug img{width:280px;height:230px}
-  .safety h1{font-size:30px}
+  .safety h1{font-size:24px}
 }
 /* short laptops: the size-up block above would overflow a ~650px frame, so keep the steps compact enough to fit */
 @media (min-width:600px) and (min-height:600px) and (max-height:899px){
   .screen{gap:12px;padding-top:12px}
   .screen .guide{--guide-h:118px}
-  .bubble h1{font-size:21px}
+  .bubble h1{font-size:20px}
   .guide img{width:118px}
   .tone .art{height:clamp(68px,calc(100dvh - 640px),118px)}
   .tone{padding:8px 8px 12px}
@@ -372,9 +374,9 @@ h1,p,.crow span{text-wrap:pretty}
 /* once the talk card has risen in, the ooca button sends out two soft rings, then rests */
 .screen:not(.stay) .talk .cta:not(.ghost)::after{animation:ctaRing 1.1s 2.1s ease-out 2}
 .spark{position:absolute;font-style:normal;color:var(--zone);opacity:0;animation:twinkle 2.4s ease-in-out infinite;pointer-events:none}
-.spark:nth-of-type(1){top:2px;left:4px;font-size:15px}
-.spark:nth-of-type(2){top:10px;right:-2px;font-size:11px;animation-delay:.8s}
-.spark:nth-of-type(3){bottom:8px;left:-2px;font-size:10px;animation-delay:1.6s}
+.spark:nth-of-type(1){top:2px;left:4px;font-size:16px}
+.spark:nth-of-type(2){top:10px;right:-2px;font-size:12px;animation-delay:.8s}
+.spark:nth-of-type(3){bottom:8px;left:-2px;font-size:8px;animation-delay:1.6s}
 .card.breathing .card-head img{animation:breathe 5s ease-in-out infinite}
 .timer{position:relative;overflow:hidden;isolation:isolate}
 .timer::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--tint);transform:scaleX(0);transform-origin:left;transition:transform 30s linear}
@@ -412,41 +414,41 @@ h1,p,.crow span{text-wrap:pretty}
 .paper.timeup{box-shadow:0 0 0 2px #00C4B3,0 16px 32px rgba(0,196,179,.18)}
 .note-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;padding-bottom:12px;border-bottom:1px solid #DBF0EE}
 .note-head>div:first-child{flex:1;min-width:0}
-.note-lb{display:inline-block;font-size:13px;font-weight:600;color:var(--text);background:#DBF0EE;border-radius:999px;padding:2px 10px}
+.note-lb{display:inline-block;font-size:12px;font-weight:600;color:var(--text);background:#DBF0EE;border-radius:999px;padding:2px 10px}
 .note-q{margin:8px 0 0;font-size:18px;font-weight:500;line-height:1.45;color:var(--text)}
 .clock{position:relative;width:64px;height:64px;flex-shrink:0;margin:-6px -4px 0 0}
 .clock svg{display:block;width:100%;height:100%;overflow:visible}
 .clock .track{stroke:#DBF0EE}
 .clock .prog{stroke:#00C4B3;transition:stroke-dashoffset .25s linear}
-.clock .sec{position:absolute;left:0;right:0;top:36px;transform:translateY(-50%);text-align:center;font-size:17px;font-weight:600;line-height:1;color:var(--text);font-variant-numeric:tabular-nums}
+.clock .sec{position:absolute;left:0;right:0;top:36px;transform:translateY(-50%);text-align:center;font-size:16px;font-weight:600;line-height:1;color:var(--text);font-variant-numeric:tabular-nums}
 .clock.ringing{animation:ring .5s ease-in-out 1}
 .clock.ringing .bell{animation:bell .25s ease-in-out 2}
 @keyframes ring{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(6deg)}}
 @keyframes bell{50%{transform:translateY(-2px)}}
-.note-text{display:block;width:100%;min-height:calc(var(--lh) * 5);border:none;outline:none;resize:none;padding:0 2px;margin:0;font:inherit;font-size:17px;line-height:var(--lh);color:var(--text);caret-color:#009688;
+.note-text{display:block;width:100%;min-height:calc(var(--lh) * 5);border:none;outline:none;resize:none;padding:0 2px;margin:0;font:inherit;font-size:16px;line-height:var(--lh);color:var(--text);caret-color:#009688;
   background:repeating-linear-gradient(to bottom,transparent 0 calc(var(--lh) - 1px),#DBF0EE calc(var(--lh) - 1px) var(--lh));background-attachment:local}
 .note-text::placeholder{color:#65726F}
 .note-status{margin:8px 0 0;min-height:1.5em;font-size:14px;color:var(--text-2)}
 /* status line on the left, word count on the right */
 .note-foot{display:flex;align-items:baseline;gap:8px;margin-top:8px}
 .note-foot .note-status{margin:0;flex:1;min-width:0}
-.note-count{font-size:13px;color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.note-count{font-size:12px;color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .note-count.full{color:var(--text);font-weight:600}
 .paper.timeup .note-status{color:var(--text);font-weight:600}
 .paper.editing .clock{display:none}
 .paper.editing .note-q{padding-right:0}
-.note-private{margin:0 auto;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--text-2);text-align:center;background:rgba(255,255,255,.92);border-radius:999px;padding:5px 12px}
+.note-private{margin:0 auto;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--text-2);text-align:center;background:rgba(255,255,255,.92);border-radius:999px;padding:5px 12px}
 .note-dlg .icon-btn{background:rgba(255,255,255,.92)}
 .note-dlg[open] .note-wrap{animation:noteIn .35s cubic-bezier(.2,.8,.2,1) both}
 @keyframes noteIn{from{opacity:0;transform:translateY(24px) scale(.96)}}
 /* the note snippet that stays on the result card */
 /* the note on the card: up to 6 lines, then "อ่านทั้งหมด" opens the rest in place.
    Top/bottom spacing is a border, not padding: a clamped box clips at its padding edge, so padding let the next line peek through */
-.note-snip{margin:6px 0 0;padding:0 12px;border:8px solid #DBF0EE;border-inline-width:0;border-radius:12px;background:#DBF0EE;font-size:16px;line-height:1.5;color:var(--text);white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.note-snip{margin:6px 0 0;padding:0 12px;border:8px solid #DBF0EE;border-inline-width:0;border-radius:8px;background:#DBF0EE;font-size:16px;line-height:1.5;color:var(--text);white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
 .note-snip.open{display:block;-webkit-line-clamp:unset}
 .snip-more{align-self:flex-start;min-height:32px;margin-top:2px;padding:4px 2px;border:none;background:none;color:var(--action-pressed);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
 @media (max-height:620px){.paper{--lh:30px}.note-text{min-height:calc(var(--lh) * 3)}}
-@media (max-width:360px){.paper{padding:18px 16px 14px}.note-q{font-size:17px}}
+@media (max-width:360px){.paper{padding:18px 16px 14px}.note-q{font-size:16px}}
 /* sideways phones: a shorter note so the Done button stays on screen */
 @media (max-height:500px){
   .note-wrap{width:min(560px,100%);padding-top:10px;gap:8px}
@@ -456,13 +458,13 @@ h1,p,.crow span{text-wrap:pretty}
   .note-q{font-size:16px;padding-right:48px}
   .clock{width:48px;height:48px;margin:-6px 0 0}
   .clock .sec{top:27px;font-size:14px}
-  .note-text{min-height:calc(var(--lh) * 2);font-size:17px}
+  .note-text{min-height:calc(var(--lh) * 2);font-size:16px}
   .note-private{display:none}
 }
 
 /* ---- save sheet: the card image as it will be saved, then one clear button ---- */
 .save-wrap{gap:12px}
-.save-img{display:block;margin:0 auto;width:auto;max-width:100%;max-height:calc(100dvh - 220px - env(safe-area-inset-bottom));border-radius:20px;background:var(--white);
+.save-img{display:block;margin:0 auto;width:auto;max-width:100%;max-height:calc(100dvh - 220px - env(safe-area-inset-bottom));border-radius:24px;background:var(--white);
   box-shadow:0 16px 32px rgba(0,196,179,.18),0 4px 12px -4px rgba(0,196,179,.28);-webkit-touch-callout:default}
 .save-go{display:flex;align-items:center;justify-content:center;gap:10px}
 .save-go svg{width:22px;height:22px}
@@ -533,7 +535,7 @@ Object.values(IMG).forEach(src => { new Image().src = src; });
 /* ---------- content ---------- */
 // level: 0 = feel-good, 1 = light, 2 = medium, 3 = professional first. risk → safety screen
 const TONES = [
-  { id:'yellow', label:'สดใส มีแรง', eg:'เช่น ตื่นเต้น ภูมิใจ มีหวัง', zone:'#F9A000', solid:'#A35F00', bg:'#F8E4B3', ink:'#9A5B00', line:'#F3D58E', img:IMG.happy, reply:'ดีใจด้วยนะ ไปต่อกัน',
+  { id:'yellow', label:'สดใส มีแรง', eg:'เช่น ตื่นเต้น ภูมิใจ มีหวัง', zone:'#F9A000', solid:'#A35F00', bg:'#F8E4B3', ink:'#9A5B00', line:'#F4D280', img:IMG.happy, reply:'ดีใจด้วยนะ ไปต่อกัน',
     words:[
       {w:'ตื่นเต้น', m:'ใจเต้นแรง เพราะรอสิ่งที่อยากให้เกิด', c:'มีเรื่องใหม่ที่คุณตั้งตารอ', a:'เขียนถึงสิ่งที่รออยู่ ว่าอยากให้ออกมาแบบไหน', lv:0},
       {w:'ภูมิใจ', m:'รู้สึกดีกับสิ่งที่ตัวเองทำได้', c:'คุณเพิ่งทำบางอย่างได้ด้วยตัวเอง', a:'เขียนสิ่งที่ทำได้วันนี้ และทำได้เพราะอะไร', lv:0},
@@ -546,7 +548,7 @@ const TONES = [
       {w:'โล่งใจ', m:'เรื่องที่ค้างอยู่ คลี่คลายแล้ว', c:'เรื่องที่กังวลผ่านไปแล้ว', a:'เขียนว่าเรื่องไหนผ่านไปแล้ว และคุณผ่านมาได้ยังไง', lv:0},
       {w:'กระตือรือร้น', m:'อยากลงมือทำทันที', c:'คุณมีเป้าหมายที่ชัด', a:'เขียนสิ่งแรกที่จะลงมือทำ ตอนที่ไฟยังแรง', lv:0}
     ]},
-  { id:'green', label:'สงบ สบายใจ', eg:'เช่น ผ่อนคลาย พอใจ อุ่นใจ', zone:'#5DB437', solid:'#2F7A12', bg:'#DCF3D1', ink:'#2F6B16', line:'#BFE6AD', img:IMG.hug, reply:'ดีจังเลย ไปต่อกัน',
+  { id:'green', label:'สงบ สบายใจ', eg:'เช่น ผ่อนคลาย พอใจ อุ่นใจ', zone:'#6DC849', solid:'#2F7A12', bg:'#DCF3D1', ink:'#2F6B16', line:'#C5ECB3', img:IMG.hug, reply:'ดีจังเลย ไปต่อกัน',
     words:[
       {w:'ผ่อนคลาย', m:'ร่างกายและใจ ไม่ต้องรีบ', c:'คุณได้พักอย่างที่ต้องการ', a:'เขียนว่าตอนนี้ ร่างกายสบายตรงไหนบ้าง', lv:0},
       {w:'พอใจ', m:'สิ่งที่มีอยู่ ก็ดีพอแล้ว', c:'หลายอย่างเป็นไปตามที่หวัง', a:'เขียน 1 อย่างเล็กๆ ที่ทำให้วันนี้ดีพอ', lv:0},
@@ -559,7 +561,7 @@ const TONES = [
       {w:'เบาสบาย', m:'ใจโล่ง ไม่มีอะไรถ่วง', c:'คุณวางบางอย่างลงได้แล้ว', a:'เขียนว่าวางอะไรลงได้ ใจถึงเบาแบบนี้', lv:0},
       {w:'มีสมาธิ', m:'จดจ่อกับสิ่งตรงหน้าได้ดี', c:'คุณอยู่ในจังหวะที่ใช่', a:'เขียนว่าอะไรช่วยให้มีสมาธิ จะได้ใช้อีก', lv:0}
     ]},
-  { id:'orange', label:'ร้อนรน ไม่สบายใจ', eg:'เช่น กังวล หงุดหงิด กดดัน', zone:'#E8702A', solid:'#B9500F', bg:'#FFDDC9', ink:'#A04A12', line:'#FFC7A6', img:IMG.anxious, reply:'เข้าใจเลย ค่อยๆ ไปนะ',
+  { id:'orange', label:'ร้อนรน ไม่สบายใจ', eg:'เช่น กังวล หงุดหงิด กดดัน', zone:'#FF7233', solid:'#B9500F', bg:'#FFDDC9', ink:'#A04A12', line:'#FFC7A5', img:IMG.anxious, reply:'เข้าใจเลย ค่อยๆ ไปนะ',
     words:[
       {w:'กังวล', m:'ใจวิ่งไปคิดล่วงหน้า ถึงเรื่องที่ยังไม่เกิด', c:'มีเรื่องที่ยังไม่รู้ผล', a:'เขียนเรื่องที่กังวล แล้วดูว่าข้อไหนพอทำอะไรได้', lv:1},
       {w:'หงุดหงิด', m:'ใจขุ่นง่าย เรื่องเล็กๆ ก็กวนใจ', c:'มีบางอย่างขวางสิ่งที่คุณอยากทำ', a:'เขียนว่าอะไรกวนใจ และคุณต้องการอะไรตอนนี้', lv:1},
@@ -971,7 +973,7 @@ V.result = () => {
     <button class="soft-btn" data-act="save">${ico.save}${L('save')}</button>
     <button class="soft-btn" data-act="restart">${ico.refresh}${L('restart')}</button>
   </div>
-  <p class="fine" style="color:var(--text-2);font-size:13px">${ph(L('resFine'))}</p>
+  <p class="fine" style="color:var(--text-2);font-size:12px">${ph(L('resFine'))}</p>
 </section>`; };
 
 V.safety = () => { app.style.setProperty('--bg','#E0F8F6'); return `
@@ -1009,7 +1011,7 @@ function chime(){
 }
 function noteTimeUp(sound){
   S.noteUp = true; clearInterval(noteTimer); noteTimer = null;
-  noteSec.textContent = L('timeUp'); noteSec.style.fontSize = '13px'; noteProg.style.strokeDashoffset = 100;
+  noteSec.textContent = L('timeUp'); noteSec.style.fontSize = '12px'; noteProg.style.strokeDashoffset = 100;
   notePaper.classList.add('timeup');
   noteStatus.textContent = L('timeUpMsg');
   if (sound) { noteClock.classList.remove('ringing'); void noteClock.offsetWidth; noteClock.classList.add('ringing'); chime(); }
