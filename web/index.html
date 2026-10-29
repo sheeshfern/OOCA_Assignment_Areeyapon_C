@@ -80,6 +80,8 @@ h1,p,.crow span{text-wrap:pretty}
 .screen .guide{min-height:var(--guide-h,118px);align-items:stretch}
 .bubble>*{flex-shrink:0}
 .screen .guide .mooca{align-self:center}
+/* the bubble hugs its lines (no stretched padding on 2-line steps); the guide keeps the shared height */
+.screen .guide .bubble{align-self:center}
 .bubble h1,.bubble p[data-swap="sub"]{white-space:nowrap}
 .bubble.q-wrap h1{white-space:normal}
 .bubble{justify-content:center}
