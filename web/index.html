@@ -718,7 +718,7 @@ const UI = {
     call:'โทรสายด่วนสุขภาพจิต <span class="nw">1323</span>', callSmall:'ฟรี ตลอด 24 ชั่วโมง',
     safeFine:'ถ้าคุณหรือคนใกล้ตัวกำลังอยู่ในอันตราย <a href="tel:1669">โทร 1669</a> ทันที', rePick:'กลับไปเลือกคำใหม่',
     noteClose:'ปิดโน้ต', notePrivate:'โน้ตนี้อยู่ในเครื่องคุณเท่านั้น ไม่ถูกส่งไปไหน', done:'เสร็จแล้ว', placeholder:'เริ่มเขียนได้เลย ไม่ต้องสวย',
-    noteEditLb:'โน้ตของคุณ · แก้ได้ตลอด', noteCount:(n, max) => `${n}/${max} คำ`, noteFull:'ครบ 500 คำแล้ว', snipMore:'อ่านทั้งหมด', snipLess:'ย่อโน้ต', timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
+    noteEditLb:'โน้ตของคุณ · แก้ได้ตลอด', noteCount:(n, max) => `${n}/${max} ตัวอักษร`, noteFull:'เต็มแล้ว', snipMore:'อ่านทั้งหมด', snipLess:'ย่อโน้ต', timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
     saveTitle:'เก็บการ์ดไว้ในเครื่อง', saveShare:'บันทึกรูปลงเครื่อง', saveDownload:'ดาวน์โหลดรูปการ์ด', saveClose:'ปิด',
     saveHint:'หรือกดค้างที่รูป แล้วเลือกบันทึกรูปภาพ', savePrivate:'รูปนี้สร้างในเครื่องคุณ ไม่ถูกส่งไปไหน', cardAlt:'การ์ดความรู้สึกของคุณ'
   },
@@ -745,7 +745,7 @@ const UI = {
     call:'Call the mental health hotline <span class="nw">1323</span>', callSmall:'Free, 24 hours a day',
     safeFine:'If you or someone near you is in danger, <a href="tel:1669">call 1669</a> now', rePick:'Choose a different word',
     noteClose:'Close note', notePrivate:'This note stays on your device and isn’t sent anywhere', done:'Done', placeholder:'Just start. Messy is fine.',
-    noteEditLb:'Your note · edit any time', noteCount:(n, max) => `${n}/${max} words`, noteFull:'Limit reached', snipMore:'Read all', snipLess:'Show less', timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.',
+    noteEditLb:'Your note · edit any time', noteCount:(n, max) => `${n}/${max} characters`, noteFull:'Limit reached', snipMore:'Read all', snipLess:'Show less', timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.',
     saveTitle:'Save your card', saveShare:'Save image', saveDownload:'Download card image', saveClose:'Close',
     saveHint:'Or press and hold the image to save it', savePrivate:'Made on your device. Nothing is sent anywhere.', cardAlt:'Your feeling card'
   }
@@ -1019,7 +1019,7 @@ function openNote(prompt){
   noteDlg.querySelector('.note-q').innerHTML = ph(prompt);
   noteText.placeholder = L('placeholder');
   noteText.value = S.note;
-  noteCount(limitWords(S.note, NOTE_MAX).n);
+  noteCount(S.note.length);
   notePaper.classList.remove('timeup'); noteClock.classList.remove('ringing'); noteStatus.textContent = ''; noteSec.style.fontSize = '';
   // once a note has been written and closed, later opens are plain editing: no clock, no countdown
   notePaper.classList.toggle('editing', S.noteDone);
@@ -1049,29 +1049,18 @@ noteDlg.addEventListener('click', e => {
   if (b) closeNote(); else if (e.target === noteDlg) closeNote(); // a tap on the dimmed backdrop
 });
 noteDlg.addEventListener('cancel', e => { e.preventDefault(); closeNote(); });
-// the note stops at NOTE_MAX words; Thai has no spaces, so words are counted with Intl.Segmenter
+// the note stops at NOTE_MAX characters (the textarea's maxlength also covers pasting)
 const NOTE_MAX = 500;
-function limitWords(text, max){
-  let n = 0;
-  if (typeof Intl !== 'undefined' && Intl.Segmenter) {
-    for (const s of new Intl.Segmenter(S.lang, {granularity: 'word'}).segment(text)) {
-      if (!s.isWordLike) continue;
-      if (++n > max) return {text: text.slice(0, s.index).trimEnd(), n: max, cut: true};
-    }
-    return {text, n, cut: false};
-  }
-  for (const m of text.matchAll(/\S+/g)) if (++n > max) return {text: text.slice(0, m.index).trimEnd(), n: max, cut: true};
-  return {text, n, cut: false};
-}
+noteText.maxLength = NOTE_MAX;
 function noteCount(n){
   const c = document.getElementById('note-count');
   c.textContent = L('noteCount')(n, NOTE_MAX); c.classList.toggle('full', n >= NOTE_MAX);
 }
 noteText.addEventListener('input', () => {
-  const r = limitWords(noteText.value, NOTE_MAX);
-  if (r.cut) { noteText.value = r.text; noteStatus.textContent = L('noteFull'); }
+  const full = noteText.value.length >= NOTE_MAX;
+  if (full) noteStatus.textContent = L('noteFull');
   else if (noteStatus.textContent === L('noteFull')) noteStatus.textContent = notePaper.classList.contains('timeup') ? L('timeUpMsg') : '';
-  S.note = noteText.value; noteCount(r.n);
+  S.note = noteText.value; noteCount(noteText.value.length);
 });
 const calm = matchMedia('(prefers-reduced-motion: reduce)');
 const keyOf = el => el && el.dataset && el.dataset.act ? `[data-act="${el.dataset.act}"]` + (el.dataset.id ? `[data-id="${el.dataset.id}"]` : el.dataset.w ? `[data-w="${CSS.escape(el.dataset.w)}"]` : '') : null;

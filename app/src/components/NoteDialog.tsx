@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../AppContext';
 import { ico } from '../data/icons';
 import { chime, replay } from '../lib/motion';
-import { limitWords, NOTE_MAX, Ph } from '../lib/text';
+import { NOTE_MAX, Ph } from '../lib/text';
 
 // The 30-second note. The timer is a gentle guide: when it ends the clock rings once,
 // but the note stays open so nobody is cut off mid-sentence.
@@ -11,9 +11,9 @@ export function NoteDialog({ open, prompt, onClose }: { open: boolean; prompt: s
   const dlg = useRef<HTMLDialogElement>(null), text = useRef<HTMLTextAreaElement>(null), clock = useRef<HTMLDivElement>(null);
   const [left, setLeft] = useState(30000);
   const [timeUp, setTimeUp] = useState(false);
-  // the last edit ran past NOTE_MAX words and was cut back
+  // typing reached NOTE_MAX characters
   const [limitHit, setLimitHit] = useState(false);
-  const words = limitWords(s.note, NOTE_MAX, s.lang).n;
+  const chars = s.note.length;
 
   useEffect(() => {
     const d = dlg.current!;
@@ -77,11 +77,11 @@ export function NoteDialog({ open, prompt, onClose }: { open: boolean; prompt: s
             </div>
           </div>
           <textarea id="note-text" ref={text} className="note-text" aria-labelledby="note-q" aria-describedby="note-count" rows={5}
-            placeholder={L.placeholder} value={s.note}
-            onChange={e => { const r = limitWords(e.target.value, NOTE_MAX, s.lang); setLimitHit(r.cut); dispatch({ type: 'note', text: r.text }); }} />
+            placeholder={L.placeholder} value={s.note} maxLength={NOTE_MAX}
+            onChange={e => { setLimitHit(e.target.value.length >= NOTE_MAX); dispatch({ type: 'note', text: e.target.value }); }} />
           <div className="note-foot">
             <p className="note-status" role="status" aria-live="polite">{limitHit ? L.noteFull : timeUp && !s.noteDone ? L.timeUpMsg : ''}</p>
-            <span id="note-count" className={`note-count${words >= NOTE_MAX ? ' full' : ''}`}>{L.noteCount(words, NOTE_MAX)}</span>
+            <span id="note-count" className={`note-count${chars >= NOTE_MAX ? ' full' : ''}`}>{L.noteCount(chars, NOTE_MAX)}</span>
           </div>
         </div>
         <p className="note-private">{ico.lock}<span>{L.notePrivate}</span></p>
