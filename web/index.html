@@ -424,6 +424,8 @@ h1,p,.crow span{text-wrap:pretty}
 .note-text::placeholder{color:#65726F}
 .note-status{margin:8px 0 0;min-height:1.5em;font-size:14px;color:var(--text-2)}
 .paper.timeup .note-status{color:var(--text);font-weight:600}
+.paper.editing .clock{display:none}
+.paper.editing .note-q{padding-right:0}
 .note-private{margin:0 auto;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--text-2);text-align:center;background:rgba(255,255,255,.92);border-radius:999px;padding:5px 12px}
 .note-dlg .icon-btn{background:rgba(255,255,255,.92)}
 .note-dlg[open] .note-wrap{animation:noteIn .35s cubic-bezier(.2,.8,.2,1) both}
@@ -703,7 +705,7 @@ const UI = {
     call:'โทรสายด่วนสุขภาพจิต <span class="nw">1323</span>', callSmall:'ฟรี ตลอด 24 ชั่วโมง',
     safeFine:'ถ้าคุณหรือคนใกล้ตัวกำลังอยู่ในอันตราย <a href="tel:1669">โทร 1669</a> ทันที', rePick:'กลับไปเลือกคำใหม่',
     noteClose:'ปิดโน้ต', notePrivate:'โน้ตนี้อยู่ในเครื่องคุณเท่านั้น ไม่ถูกส่งไปไหน', done:'เสร็จแล้ว', placeholder:'เริ่มเขียนได้เลย ไม่ต้องสวย',
-    timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
+    noteEditLb:'โน้ตของคุณ · แก้ได้ตลอด', timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
     saveTitle:'เก็บการ์ดไว้ในเครื่อง', saveShare:'บันทึกรูปลงเครื่อง', saveDownload:'ดาวน์โหลดรูปการ์ด', saveClose:'ปิด',
     saveHint:'หรือกดค้างที่รูป แล้วเลือกบันทึกรูปภาพ', savePrivate:'รูปนี้สร้างในเครื่องคุณ ไม่ถูกส่งไปไหน', cardAlt:'การ์ดความรู้สึกของคุณ'
   },
@@ -730,7 +732,7 @@ const UI = {
     call:'Call the mental health hotline <span class="nw">1323</span>', callSmall:'Free, 24 hours a day',
     safeFine:'If you or someone near you is in danger, <a href="tel:1669">call 1669</a> now', rePick:'Choose a different word',
     noteClose:'Close note', notePrivate:'This note stays on your device and isn’t sent anywhere', done:'Done', placeholder:'Just start. Messy is fine.',
-    timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.',
+    noteEditLb:'Your note · edit any time', timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.',
     saveTitle:'Save your card', saveShare:'Save image', saveDownload:'Download card image', saveClose:'Close',
     saveHint:'Or press and hold the image to save it', savePrivate:'Made on your device. Nothing is sent anywhere.', cardAlt:'Your feeling card'
   }
@@ -741,13 +743,13 @@ const loc = x => S.lang === 'en' && x && x.en ? {...x, ...x.en} : x;
 const savedLang = () => { try { return localStorage.getItem('ooca-lang') === 'en' ? 'en' : 'th'; } catch(_) { return 'th'; } };
 
 /* ---------- state ---------- */
-const S = { screen:'home', tone:null, picks:[], showAll:false, ctx:null, dur:null, history:[], dir:'fwd', note:'', noteUp:false, lang:savedLang(), at:null };
+const S = { screen:'home', tone:null, picks:[], showAll:false, ctx:null, dur:null, history:[], dir:'fwd', note:'', noteUp:false, noteDone:false, lang:savedLang(), at:null };
 const app = document.getElementById('app');
 const allWords = () => TONES.flatMap(t => [...t.words, ...t.more].map(x => ({...x, tone:t})));
 
 function go(screen){ S.history.push(S.screen); S.screen = screen; S.dir = 'fwd'; render(); }
 function back(){ S.screen = S.history.pop() || 'home'; S.dir = 'back'; render(); }
-function restart(){ Object.assign(S,{screen:'home',tone:null,picks:[],showAll:false,ctx:null,dur:null,history:[],dir:'back',note:'',noteUp:false,at:null}); render(); }
+function restart(){ Object.assign(S,{screen:'home',tone:null,picks:[],showAll:false,ctx:null,dur:null,history:[],dir:'back',note:'',noteUp:false,noteDone:false,at:null}); render(); }
 
 /* ---------- helpers ---------- */
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1005,8 +1007,12 @@ function openNote(prompt){
   noteText.placeholder = L('placeholder');
   noteText.value = S.note;
   notePaper.classList.remove('timeup'); noteClock.classList.remove('ringing'); noteStatus.textContent = ''; noteSec.style.fontSize = '';
+  // once a note has been written and closed, later opens are plain editing: no clock, no countdown
+  notePaper.classList.toggle('editing', S.noteDone);
+  noteDlg.querySelector('.note-lb').textContent = L(S.noteDone ? 'noteEditLb' : 'writeLb');
   noteDlg.showModal();
   noteText.focus({preventScroll:true});
+  if (S.noteDone) return;
   if (S.noteUp) { noteTimeUp(false); return; }
   // only ever one countdown, and it stops itself the moment it rings, so the ding plays exactly once
   clearInterval(noteTimer);
@@ -1021,6 +1027,7 @@ function openNote(prompt){
 function closeNote(){
   clearInterval(noteTimer); noteTimer = null;
   S.note = noteText.value; if (noteDlg.open) noteDlg.close();
+  if (S.note.trim()) S.noteDone = true;
   if (S.screen === 'result') render();
 }
 noteDlg.addEventListener('click', e => {

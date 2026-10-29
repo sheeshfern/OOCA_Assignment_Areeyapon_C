@@ -18,6 +18,8 @@ export function NoteDialog({ open, prompt, onClose }: { open: boolean; prompt: s
     if (!d.open) d.showModal();
     text.current?.focus({ preventScroll: true });
     clock.current?.classList.remove('ringing');
+    // once a note has been written and closed, later opens are plain editing: no clock, no countdown
+    if (s.noteDone) return;
     // already rang on an earlier open: show the finished clock, no sound
     if (s.noteUp) { setTimeUp(true); setLeft(0); return; }
     setTimeUp(false);
@@ -49,10 +51,10 @@ export function NoteDialog({ open, prompt, onClose }: { open: boolean; prompt: s
         <div className="note-top">
           <button className="icon-btn" data-note="close" aria-label={L.noteClose} onClick={onClose}>{ico.close}</button>
         </div>
-        <div className={`paper${timeUp ? ' timeup' : ''}`}>
+        <div className={`paper${s.noteDone ? ' editing' : timeUp ? ' timeup' : ''}`}>
           <div className="note-head">
             <div>
-              <span className="note-lb">{L.writeLb}</span>
+              <span className="note-lb">{s.noteDone ? L.noteEditLb : L.writeLb}</span>
               <p id="note-q" className="note-q"><Ph text={prompt} /></p>
             </div>
             <div className="clock" aria-hidden="true" ref={clock}>
@@ -72,7 +74,7 @@ export function NoteDialog({ open, prompt, onClose }: { open: boolean; prompt: s
           </div>
           <textarea id="note-text" ref={text} className="note-text" aria-labelledby="note-q" rows={5}
             placeholder={L.placeholder} value={s.note} onChange={e => dispatch({ type: 'note', text: e.target.value })} />
-          <p className="note-status" role="status" aria-live="polite">{timeUp ? L.timeUpMsg : ''}</p>
+          <p className="note-status" role="status" aria-live="polite">{timeUp && !s.noteDone ? L.timeUpMsg : ''}</p>
         </div>
         <p className="note-private">{ico.lock}<span>{L.notePrivate}</span></p>
         <button className="primary" data-note="done" onClick={onClose}>{L.done}</button>

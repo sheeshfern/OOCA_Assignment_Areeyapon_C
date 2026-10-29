@@ -16,6 +16,8 @@ export interface State {
   dir: 'fwd' | 'back';
   note: string;
   noteUp: boolean;
+  /** a note was written and closed once: later opens are plain editing, no timer */
+  noteDone: boolean;
   lang: Lang;
   /** when the result card was made; fixed until restart */
   at: number | null;
@@ -39,6 +41,7 @@ export type Action =
   | { type: 'rePick' }
   | { type: 'note'; text: string }
   | { type: 'noteUp' }
+  | { type: 'noteDone' }
   | { type: 'lang'; lang: Lang };
 
 export const savedLang = (): Lang => {
@@ -47,7 +50,7 @@ export const savedLang = (): Lang => {
 
 export const initialState = (): State => ({
   screen: 'home', tone: null, picks: [], showAll: false, ctx: null, dur: null, history: [], dir: 'fwd',
-  note: '', noteUp: false, lang: savedLang(), at: null, relang: 0,
+  note: '', noteUp: false, noteDone: false, lang: savedLang(), at: null, relang: 0,
 });
 
 export const allWords = (): PickedWord[] => TONES.flatMap(t => [...t.words, ...t.more].map(x => ({ ...x, tone: t })));
@@ -64,7 +67,7 @@ export function reducer(s: State, a: Action): State {
       return { ...s, picks: s.screen === 'safety' ? [] : s.picks, screen: s.history[s.history.length - 1] ?? 'home', history, dir: 'back' };
     }
     case 'restart':
-      return { ...s, screen: 'home', tone: null, picks: [], showAll: false, ctx: null, dur: null, history: [], dir: 'back', note: '', noteUp: false, at: null };
+      return { ...s, screen: 'home', tone: null, picks: [], showAll: false, ctx: null, dur: null, history: [], dir: 'back', note: '', noteUp: false, noteDone: false, at: null };
     case 'tone': return { ...s, tone: TONES.find(t => t.id === a.id) ?? null, showAll: false, picks: [] };
     case 'all': return go({ ...s, showAll: true, picks: [] }, 'words');
     case 'toWords': return go({ ...s, showAll: false }, 'words');
@@ -84,6 +87,7 @@ export function reducer(s: State, a: Action): State {
     case 'rePick': return { ...s, picks: [], screen: 'words', history: ['home', 'tone'], dir: 'back', tone: s.tone ?? TONES[3] };
     case 'note': return { ...s, note: a.text };
     case 'noteUp': return { ...s, noteUp: true };
+    case 'noteDone': return { ...s, noteDone: true };
     case 'lang': return { ...s, lang: a.lang, relang: s.relang + 1 };
   }
 }

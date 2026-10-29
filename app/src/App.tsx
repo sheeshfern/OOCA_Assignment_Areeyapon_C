@@ -40,6 +40,10 @@ export default function App() {
 
   const go = useCallback((screen: Screen) => dispatch({ type: 'go', screen, now: Date.now() }), []);
   const openNote = useCallback(() => setNoteOpen(true), []);
+  const closeNote = () => {
+    setNoteOpen(false);
+    if (s.note.trim()) dispatch({ type: 'noteDone' });
+  };
 
   const saveCard = useCallback((btn: HTMLButtonElement) => {
     replay(btn.querySelector('svg'), 'drop');
@@ -74,7 +78,7 @@ export default function App() {
         <Current key={s.screen} />
       </main>
       <Toast toast={toast} />
-      <NoteDialog open={noteOpen} prompt={loc(resultData(s).main, s.lang).a ?? ''} onClose={() => setNoteOpen(false)} />
+      <NoteDialog open={noteOpen} prompt={loc(resultData(s).main, s.lang).a ?? ''} onClose={closeNote} />
       <SaveSheet card={card} onClose={() => setCard(null)} onSaved={() => show(L.saved)} />
     </AppContext.Provider>
   );

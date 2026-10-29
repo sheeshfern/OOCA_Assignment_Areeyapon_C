@@ -414,6 +414,8 @@ h1,p,.crow span{text-wrap:pretty}
 .note-text::placeholder{color:#65726F}
 .note-status{margin:8px 0 0;min-height:1.5em;font-size:14px;color:var(--text-2)}
 .paper.timeup .note-status{color:var(--text);font-weight:600}
+.paper.editing .clock{display:none}
+.paper.editing .note-q{padding-right:0}
 .note-private{margin:0 auto;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--text-2);text-align:center;background:rgba(255,255,255,.92);border-radius:999px;padding:5px 12px}
 .note-dlg .icon-btn{background:rgba(255,255,255,.92)}
 .note-dlg[open] .note-wrap{animation:noteIn .35s cubic-bezier(.2,.8,.2,1) both}
