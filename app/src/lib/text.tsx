@@ -39,3 +39,18 @@ export function stampOf(t: number, lang: Lang): [string, string] {
         .join(' ');
   return [day, d.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' }) + (en ? '' : ' น.')];
 }
+
+/** The note stops at NOTE_MAX words. Thai has no spaces, so words are counted with Intl.Segmenter. */
+export const NOTE_MAX = 500;
+export function limitWords(text: string, max: number, lang: Lang): { text: string; n: number; cut: boolean } {
+  let n = 0;
+  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
+    for (const s of new Intl.Segmenter(lang, { granularity: 'word' }).segment(text)) {
+      if (!s.isWordLike) continue;
+      if (++n > max) return { text: text.slice(0, s.index).trimEnd(), n: max, cut: true };
+    }
+    return { text, n, cut: false };
+  }
+  for (const m of text.matchAll(/\S+/g)) if (++n > max) return { text: text.slice(0, m.index).trimEnd(), n: max, cut: true };
+  return { text, n, cut: false };
+}

@@ -427,6 +427,11 @@ h1,p,.crow span{text-wrap:pretty}
   background:repeating-linear-gradient(to bottom,transparent 0 calc(var(--lh) - 1px),#DBF0EE calc(var(--lh) - 1px) var(--lh));background-attachment:local}
 .note-text::placeholder{color:#65726F}
 .note-status{margin:8px 0 0;min-height:1.5em;font-size:14px;color:var(--text-2)}
+/* status line on the left, word count on the right */
+.note-foot{display:flex;align-items:baseline;gap:8px;margin-top:8px}
+.note-foot .note-status{margin:0;flex:1;min-width:0}
+.note-count{font-size:13px;color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.note-count.full{color:var(--text);font-weight:600}
 .paper.timeup .note-status{color:var(--text);font-weight:600}
 .paper.editing .clock{display:none}
 .paper.editing .note-q{padding-right:0}
@@ -484,8 +489,8 @@ h1,p,.crow span{text-wrap:pretty}
           <b class="sec">30</b>
         </div>
       </div>
-      <textarea id="note-text" class="note-text" aria-labelledby="note-q" rows="5"></textarea>
-      <p class="note-status" role="status" aria-live="polite"></p>
+      <textarea id="note-text" class="note-text" aria-labelledby="note-q" aria-describedby="note-count" rows="5"></textarea>
+      <div class="note-foot"><p class="note-status" role="status" aria-live="polite"></p><span id="note-count" class="note-count"></span></div>
     </div>
     <p class="note-private"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span data-i18n="notePrivate">โน้ตนี้อยู่ในเครื่องคุณเท่านั้น ไม่ถูกส่งไปไหน</span></p>
     <button class="primary" data-note="done" data-i18n="done">เสร็จแล้ว</button>
@@ -709,7 +714,7 @@ const UI = {
     call:'โทรสายด่วนสุขภาพจิต <span class="nw">1323</span>', callSmall:'ฟรี ตลอด 24 ชั่วโมง',
     safeFine:'ถ้าคุณหรือคนใกล้ตัวกำลังอยู่ในอันตราย <a href="tel:1669">โทร 1669</a> ทันที', rePick:'กลับไปเลือกคำใหม่',
     noteClose:'ปิดโน้ต', notePrivate:'โน้ตนี้อยู่ในเครื่องคุณเท่านั้น ไม่ถูกส่งไปไหน', done:'เสร็จแล้ว', placeholder:'เริ่มเขียนได้เลย ไม่ต้องสวย',
-    noteEditLb:'โน้ตของคุณ · แก้ได้ตลอด', timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
+    noteEditLb:'โน้ตของคุณ · แก้ได้ตลอด', noteCount:(n, max) => `${n}/${max} คำ`, noteFull:'ครบ 500 คำแล้ว', timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
     saveTitle:'เก็บการ์ดไว้ในเครื่อง', saveShare:'บันทึกรูปลงเครื่อง', saveDownload:'ดาวน์โหลดรูปการ์ด', saveClose:'ปิด',
     saveHint:'หรือกดค้างที่รูป แล้วเลือกบันทึกรูปภาพ', savePrivate:'รูปนี้สร้างในเครื่องคุณ ไม่ถูกส่งไปไหน', cardAlt:'การ์ดความรู้สึกของคุณ'
   },
@@ -736,7 +741,7 @@ const UI = {
     call:'Call the mental health hotline <span class="nw">1323</span>', callSmall:'Free, 24 hours a day',
     safeFine:'If you or someone near you is in danger, <a href="tel:1669">call 1669</a> now', rePick:'Choose a different word',
     noteClose:'Close note', notePrivate:'This note stays on your device and isn’t sent anywhere', done:'Done', placeholder:'Just start. Messy is fine.',
-    noteEditLb:'Your note · edit any time', timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.',
+    noteEditLb:'Your note · edit any time', noteCount:(n, max) => `${n}/${max} words`, noteFull:'Limit reached', timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.',
     saveTitle:'Save your card', saveShare:'Save image', saveDownload:'Download card image', saveClose:'Close',
     saveHint:'Or press and hold the image to save it', savePrivate:'Made on your device. Nothing is sent anywhere.', cardAlt:'Your feeling card'
   }
@@ -1010,6 +1015,7 @@ function openNote(prompt){
   noteDlg.querySelector('.note-q').innerHTML = ph(prompt);
   noteText.placeholder = L('placeholder');
   noteText.value = S.note;
+  noteCount(limitWords(S.note, NOTE_MAX).n);
   notePaper.classList.remove('timeup'); noteClock.classList.remove('ringing'); noteStatus.textContent = ''; noteSec.style.fontSize = '';
   // once a note has been written and closed, later opens are plain editing: no clock, no countdown
   notePaper.classList.toggle('editing', S.noteDone);
@@ -1039,7 +1045,30 @@ noteDlg.addEventListener('click', e => {
   if (b) closeNote(); else if (e.target === noteDlg) closeNote(); // a tap on the dimmed backdrop
 });
 noteDlg.addEventListener('cancel', e => { e.preventDefault(); closeNote(); });
-noteText.addEventListener('input', () => { S.note = noteText.value; });
+// the note stops at NOTE_MAX words; Thai has no spaces, so words are counted with Intl.Segmenter
+const NOTE_MAX = 500;
+function limitWords(text, max){
+  let n = 0;
+  if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+    for (const s of new Intl.Segmenter(S.lang, {granularity: 'word'}).segment(text)) {
+      if (!s.isWordLike) continue;
+      if (++n > max) return {text: text.slice(0, s.index).trimEnd(), n: max, cut: true};
+    }
+    return {text, n, cut: false};
+  }
+  for (const m of text.matchAll(/\S+/g)) if (++n > max) return {text: text.slice(0, m.index).trimEnd(), n: max, cut: true};
+  return {text, n, cut: false};
+}
+function noteCount(n){
+  const c = document.getElementById('note-count');
+  c.textContent = L('noteCount')(n, NOTE_MAX); c.classList.toggle('full', n >= NOTE_MAX);
+}
+noteText.addEventListener('input', () => {
+  const r = limitWords(noteText.value, NOTE_MAX);
+  if (r.cut) { noteText.value = r.text; noteStatus.textContent = L('noteFull'); }
+  else if (noteStatus.textContent === L('noteFull')) noteStatus.textContent = notePaper.classList.contains('timeup') ? L('timeUpMsg') : '';
+  S.note = noteText.value; noteCount(r.n);
+});
 const calm = matchMedia('(prefers-reduced-motion: reduce)');
 const keyOf = el => el && el.dataset && el.dataset.act ? `[data-act="${el.dataset.act}"]` + (el.dataset.id ? `[data-id="${el.dataset.id}"]` : el.dataset.w ? `[data-w="${CSS.escape(el.dataset.w)}"]` : '') : null;
 // idle loops follow the clock, so an image moved into a re-rendered screen doesn't jump back to frame 0

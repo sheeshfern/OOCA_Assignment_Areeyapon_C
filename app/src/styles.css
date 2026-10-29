@@ -417,6 +417,11 @@ h1,p,.crow span{text-wrap:pretty}
   background:repeating-linear-gradient(to bottom,transparent 0 calc(var(--lh) - 1px),#DBF0EE calc(var(--lh) - 1px) var(--lh));background-attachment:local}
 .note-text::placeholder{color:#65726F}
 .note-status{margin:8px 0 0;min-height:1.5em;font-size:14px;color:var(--text-2)}
+/* status line on the left, word count on the right */
+.note-foot{display:flex;align-items:baseline;gap:8px;margin-top:8px}
+.note-foot .note-status{margin:0;flex:1;min-width:0}
+.note-count{font-size:13px;color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.note-count.full{color:var(--text);font-weight:600}
 .paper.timeup .note-status{color:var(--text);font-weight:600}
 .paper.editing .clock{display:none}
 .paper.editing .note-q{padding-right:0}
