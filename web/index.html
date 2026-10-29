@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ตั้งชื่อความรู้สึก · ooca</title>
+<meta name="description" content="ใช้ 2 นาที ตอบ 4 ข้อสั้นๆ ได้ชื่อความรู้สึกตอนนี้ และวิธีดูแลใจ">
+<meta name="theme-color" content="#DBF0EE">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Gotham Rounded (installed on this machine) draws Latin + digits; it has no Thai, so Thai stays on Prompt.
+   The range leaves out the space so Prompt still sets line metrics and nothing shifts. */
+@font-face{font-family:'Gotham Rounded Latin';src:local('Gotham Rounded Light'),local('GothamRounded-Light');font-weight:300;unicode-range:U+21-7E,U+A1-FF,U+2013-2014,U+2018-201E,U+2022,U+2026}
+@font-face{font-family:'Gotham Rounded Latin';src:local('Gotham Rounded Book'),local('GothamRounded-Book');font-weight:400;unicode-range:U+21-7E,U+A1-FF,U+2013-2014,U+2018-201E,U+2022,U+2026}
+@font-face{font-family:'Gotham Rounded Latin';src:local('Gotham Rounded Medium'),local('GothamRounded-Medium');font-weight:500;unicode-range:U+21-7E,U+A1-FF,U+2013-2014,U+2018-201E,U+2022,U+2026}
+@font-face{font-family:'Gotham Rounded Latin';src:local('Gotham Rounded Bold'),local('GothamRounded-Bold');font-weight:600 700;unicode-range:U+21-7E,U+A1-FF,U+2013-2014,U+2018-201E,U+2022,U+2026}
+:root{
+  --action:#009688; --action-pressed:#00796B; --brand:#00C4B3; --tint:#DBF0EE; --tint-2:#B3EDE8;
+  --text:#355956; --text-2:#3F6866;
+  --blue:#1F77DF; --blue-dark:#1764D7; --blue-ink:#0A47CA; --blue-bg:#E4EFFB; --blue-line:#C7DDF7;
+  --yellow:#F9A000; --yellow-bg:#F8E4B3; --orange:#FF8F4B; --orange-bg:#FFDDC9; --green:#8AD866; --green-bg:#DCF3D1;
+  --white:#FFFFFF; --line:#E6EEF0;
+  --e1:0 2px 8px rgba(0,196,179,.08); --e2:0 8px 16px rgba(0,196,179,.12); --e3:0 12px 24px rgba(0,196,179,.16);
+  --r-sm:12px; --r-md:18px; --r-lg:26px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:'Gotham Rounded Latin','Prompt',system-ui,sans-serif;color:var(--text);background:#F3F7F7;-webkit-font-smoothing:antialiased}
+button,a{font-family:inherit;-webkit-tap-highlight-color:transparent}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.app{--pad:clamp(16px,5vw,20px);max-width:430px;overflow-x:clip;min-height:100vh;min-height:100dvh;margin:0 auto;display:flex;flex-direction:column;background-color:var(--bg,var(--blue-bg));transition:background-color .3s;
+  /* soft light washed over the tone colour; the bottom stays pure --bg so the sticky action bar blends in */
+  background-image:radial-gradient(ellipse 110% 50% at 100% 0%,rgba(255,255,255,.75),transparent 65%),radial-gradient(ellipse 90% 40% at 0% 30%,rgba(255,255,255,.45),transparent 70%),radial-gradient(ellipse 70% 35% at 100% 55%,color-mix(in srgb,var(--zone,#1F77DF) 10%,transparent),transparent 70%)}
+/* phone-card frame only when the window is big enough to show it; short laptops get a card that fits the height */
+@media (min-width:600px) and (min-height:600px){
+  /* a fixed-size phone frame: the page itself never scrolls (so the backdrop has no seam and the card never moves);
+     a step taller than the frame scrolls inside the card, with the action bar stuck to the card's bottom */
+  body{display:flex;align-items:center;justify-content:center;height:100dvh;overflow:hidden;padding:24px;
+    background:radial-gradient(circle at 12% 18%,#DBF0EE,transparent 38%),radial-gradient(circle at 88% 85%,#E4EFFB,transparent 42%),radial-gradient(circle at 85% 12%,#FFF1CC,transparent 28%),#F3F7F7;background-attachment:fixed}
+  .app{width:100%;max-width:560px;--pad:32px;height:min(900px,calc(100dvh - 48px));min-height:0;border-radius:36px;box-shadow:0 24px 64px rgba(53,89,86,.16);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+}
+/* no visible scrollbars: one appearing on a longer step would narrow the content and make everything jump sideways */
+html,.app{scrollbar-width:none}
+html::-webkit-scrollbar,.app::-webkit-scrollbar{display:none}
+.screen{flex:1;display:flex;flex-direction:column;gap:14px;padding:16px var(--pad) calc(28px + env(safe-area-inset-bottom));animation:in .25s ease-out}
+h1,p,.crow span{text-wrap:pretty}
+/* Thai sentences: ph() wraps each phrase so lines break at spaces, not mid-word; a phrase longer than the line still wraps inside */
+.ph{display:inline-block}
+.nw{white-space:nowrap}
+/* main action stays reachable on short screens and long word lists */
+.actions{position:sticky;bottom:0;z-index:2;display:flex;flex-direction:column;gap:8px;margin:0 calc(-1 * var(--pad)) calc(-28px - env(safe-area-inset-bottom));padding:20px var(--pad) calc(16px + env(safe-area-inset-bottom));background:linear-gradient(to bottom,transparent,var(--bg,var(--blue-bg)) 20px)}
+.screen.stay{animation:none}
+.grow{flex-grow:1}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;min-height:44px}
+.icon-btn{width:44px;height:44px;border:none;border-radius:var(--r-sm);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text)}
+.progress{flex:1;display:flex;gap:6px}
+.progress span{position:relative;overflow:hidden;flex:1;height:6px;border-radius:3px;background:var(--white)}
+.progress span.on::after{content:"";position:absolute;inset:0;background:var(--action);transform-origin:left}
+.step-count{font-size:14px;color:var(--text-2)}
+
+/* mooca + bubble */
+.guide{display:flex;align-items:center;gap:4px;margin-left:-12px}
+.mooca{display:block;flex-shrink:0;transform-origin:50% 90%}
+.mooca img{display:block}
+.guide img{width:clamp(92px,30vw,150px);height:auto;aspect-ratio:150/118;object-fit:contain}
+@media (max-height:700px){.guide img{width:clamp(84px,24vw,120px)}.tone .art{height:72px}}
+.bubble{position:relative;flex:1;min-width:0;background:var(--white);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 8px rgba(31,119,223,.08)}
+.bubble::before{content:"";position:absolute;left:-7px;top:calc(50% - 7px);width:14px;height:14px;background:var(--white);transform:rotate(45deg)}
+.bubble>*{position:relative}
+.bubble h1{margin:0;font-size:clamp(18px,5.4vw,20px);line-height:1.35;font-weight:600}
+.bubble p{margin:0;font-size:15px;line-height:1.4;color:var(--text-2)}
+/* every question screen shares one guide height and each bubble line stays on one line,
+   so the choices start at the same spot on every step and never move when Mooca replies */
+.screen .guide{min-height:var(--guide-h,118px);align-items:stretch}
+.bubble>*{flex-shrink:0}
+.screen .guide .mooca{align-self:center}
+.bubble h1,.bubble p[data-swap="sub"]{white-space:nowrap}
+.bubble.q-wrap h1{white-space:normal}
+.bubble{justify-content:center}
+.tags{flex-wrap:nowrap;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}
+.tag{flex-shrink:0}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:13px;font-weight:600;padding:3px 12px;border-radius:999px;background:var(--blue-dark);color:var(--white)}
+.tag.soft{background:var(--blue-bg);color:var(--blue-ink);font-weight:500}
+
+/* buttons */
+.primary{min-height:58px;border:none;border-radius:var(--r-md);background:var(--action);color:var(--white);font-size:20px;font-weight:600;box-shadow:var(--e2);width:100%}
+.primary:active{background:var(--action-pressed)}
+.primary:disabled{background:#A9C7C3;box-shadow:none;cursor:not-allowed}
+.text-btn{min-height:44px;border:none;background:transparent;color:var(--text-2);font-size:16px;text-decoration:underline;padding:0 4px}
+.text-btn.teal{color:var(--action-pressed);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+
+/* S1 tone cards */
+.tones{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tone{border:2px solid transparent;border-radius:20px;background:var(--white);text-align:center;padding:8px 8px 12px;display:flex;flex-direction:column;align-items:center;color:var(--text);transition:border-color .15s, box-shadow .15s}
+.tone .art{position:relative;width:100%;background:radial-gradient(ellipse 75% 60% at 50% 100%,color-mix(in srgb,var(--tz) 24%,var(--tbg)),transparent 75%),linear-gradient(160deg,color-mix(in srgb,var(--tbg) 35%,#fff),var(--tbg) 70%);height:clamp(76px,24vw,104px);border-radius:14px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;margin-bottom:8px}
+.tone .art img{height:90%;max-width:94%;object-fit:contain;transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+.tone .ck{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:var(--zone-solid,var(--zone));display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.4);transition:opacity .15s,transform .25s cubic-bezier(.3,1.4,.5,1)}
+.tone .ck svg{width:18px;height:18px}
+.tone b{display:block;font-size:17px;font-weight:600;line-height:1.35}
+.tone small{display:block;font-size:14px;color:var(--text-2);margin-top:2px;line-height:1.4}
+.tone[aria-pressed="true"]{border-color:var(--zone);box-shadow:0 8px 16px rgba(31,119,223,.16)}
+.tone[aria-pressed="true"] .ck{opacity:1;transform:none}
+.tone[aria-pressed="true"] .art img{transform:translateY(-3px) scale(1.06)}
+.tone[aria-pressed="true"] b{color:var(--zone-ink)}
+
+/* S2 words */
+.words{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.word{min-height:58px;border-radius:var(--r-md);border:2px solid var(--zone-line);background:var(--white);color:var(--text);font-size:18px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 10px;text-align:center;line-height:1.3}
+/* filled picks use the deeper tone so white text stays readable on yellow/green/orange */
+.word[aria-pressed="true"]{background:var(--zone-solid,var(--zone));border-color:var(--zone-solid,var(--zone));color:var(--white);font-weight:600}
+.word:disabled{opacity:.45;cursor:not-allowed}
+.group-label{font-size:14px;font-weight:600;color:var(--text-2);margin:6px 0 -4px}
+/* sized for one meaning (empty and one pick look the same); the second pick adds a row */
+.meaning{background:var(--white);border-radius:16px;padding:12px 16px;font-size:15px;line-height:1.55;min-height:calc(1.55em + 24px);display:flex;flex-direction:column;justify-content:center}
+.meaning.empty{color:var(--text-2);justify-content:center;text-align:center}
+.meaning p{margin:0}
+.meaning p+p{margin-top:8px;padding-top:8px;border-top:1px solid var(--zone-line,#E8EEF0)}
+.row-between{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* S3/S4 options */
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{min-height:58px;border-radius:var(--r-md);border:2px solid #B3EDE8;background:var(--white);color:var(--text);font-size:18px;font-weight:500;display:flex;align-items:center;justify-content:space-between;padding:0 18px;text-align:left}
+/* picked row in the CI turquoise: Turquoise 1 edge, Turquoise 50 fill, turquoise lift, and a filled check */
+.opt[aria-pressed="true"]{border-color:#00C4B3;background:#E0F8F6;font-weight:600;box-shadow:0 6px 14px -6px rgba(0,196,179,.55)}
+/* every row shows an empty ring, so it reads as "pick one"; the picked row fills it with a check */
+.opt .ck{flex-shrink:0;box-sizing:content-box;padding:4px;border-radius:50%;box-shadow:inset 0 0 0 2px #B3EDE8;color:transparent;transition:background-color .15s,box-shadow .15s,color .15s}
+.opt[aria-pressed="true"] .ck{background:#009688;box-shadow:none;color:var(--white)}
+/* the icon tile sits the same distance from the top, bottom and left edge at every row height, with a concentric corner */
+.opt.with-ic{--in:6px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:var(--in) 18px var(--in) var(--in)}
+.opt .ol{flex:1}
+.opt .oi{align-self:stretch;aspect-ratio:1;flex-shrink:0;border-radius:calc(var(--r-md) - 2px - var(--in));display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--zone,#1F77DF) 10%,#fff);transition:background .2s,transform .25s cubic-bezier(.3,1.4,.5,1)}
+.opt[aria-pressed="true"] .oi{background:var(--white)}
+.opt[aria-pressed="true"] .oi svg{transform:scale(1.1)}
+.opt .oi svg{width:72%;height:auto;transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+
+/* S0 */
+/* tint at the top fading to soft grey; --bg is the grey so the sticky action bar blends with the bottom */
+.home{background:linear-gradient(180deg,#DBF0EE 30%,#EFF4F6 50%,#F6F6F6 60%)}
+.brand{display:block;height:24px;width:auto}
+/* "no sign-up" sits right above the headline as a small promise */
+.badge{align-self:center;display:inline-flex;align-items:center;gap:6px;margin:0 0 8px;padding:5px 12px 5px 6px;border-radius:999px;background:var(--white);box-shadow:var(--e1);font-size:13px;font-weight:500;line-height:1.3;color:var(--action-pressed);white-space:nowrap}
+.badge svg{flex-shrink:0}
+/* language switch: both flags show and a white thumb slides to the active one */
+.lang-sw{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:999px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(0,150,136,.18)}
+.lang-sw .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.08),var(--e1);transition:transform .32s cubic-bezier(.3,1.3,.5,1)}
+.lang-sw[data-on="en"] .thumb{transform:translateX(100%)}
+.lang-sw button{position:relative;display:flex;align-items:center;justify-content:center;gap:5px;min-height:32px;padding:0 10px 0 6px;border:0;border-radius:999px;background:none;font:inherit;font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;transition:color .2s}
+.lang-sw button[aria-pressed="true"]{color:var(--text);font-weight:600}
+.lang-sw button:focus-visible{outline:2px solid var(--action-pressed);outline-offset:1px}
+.flag{width:18px;height:18px;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 1px rgba(0,0,0,.08);transition:filter .2s}
+.flag svg{display:block;width:100%;height:100%}
+.lang-sw button[aria-pressed="false"] .flag{filter:saturate(.35) opacity(.75)}
+.lang-sw button.just .flag{animation:flagWave .55s cubic-bezier(.3,1.3,.5,1)}
+/* after a switch the new words ease in instead of snapping */
+.screen.relang :is(h1,.sub,.badge,.say span,.fine,.primary){animation:talkIn .3s ease-out both}
+.hero{position:relative;height:clamp(210px,38dvh,330px);flex-shrink:0;display:flex;align-items:flex-end;justify-content:center}
+.hero .halo{position:absolute;left:50%;top:40px;height:calc(100% - 70px);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:var(--white);opacity:.6}
+.hero .say{position:absolute;right:0;top:6px;z-index:1;background:var(--white);border-radius:18px 18px 18px 4px;padding:10px 16px;font-size:17px;font-weight:500;box-shadow:var(--e1)}
+.hero .mooca{position:relative;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.hero img{width:300px;max-width:90%;max-height:calc(100% - 40px);height:auto;object-fit:contain}
+.home h1{margin:0;font-size:clamp(24px,7.2vw,28px);line-height:1.35;font-weight:600;text-align:center}
+.home h1 .hl{display:inline-block;margin-top:6px;padding:0 14px 2px;border-radius:14px;background:#FFD45C;transform:rotate(-1.5deg)}
+/* one line on every phone: shrinks with the screen, never under 13px */
+.home .sub{margin:0;font-size:clamp(13px,4.1vw,15px);line-height:1.5;color:var(--text-2);text-align:center;white-space:nowrap}
+/* start button invites a tap: the arrow nudges forward */
+.start{display:flex;align-items:center;justify-content:center;gap:8px}
+.start svg{animation:nudge 1.6s ease-in-out infinite}
+.screen.home:not(.stay) .start{animation:ready 1.2s 1.2s ease-out 2}
+.burst-clip{position:fixed;z-index:20;overflow:hidden;pointer-events:none}
+.burst{position:absolute;border-radius:50%;background:var(--action);animation:burst .5s cubic-bezier(.5,0,.2,1) both}
+.burst-clip.out{opacity:0;transition:opacity .35s ease}
+.fine{margin:0;font-size:14px;line-height:1.5;text-align:center}
+.fine a{color:var(--action-pressed);font-weight:600;white-space:nowrap;display:inline-block;padding:12px 2px;margin:-12px 0}
+/* the link's 12px tap padding must not reach into the button above it */
+.actions .fine{margin-top:6px}
+
+/* S5 result */
+.card{background:var(--white);border-radius:var(--r-lg);padding:6px 20px 4px;box-shadow:0 8px 16px rgba(31,119,223,.10)}
+/* the name leads, Mooca stands in the middle, and its explanation comes out as a speech bubble pointing back at it */
+.card-head{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 0 18px}
+.card-head .who{width:100%}
+/* date and time the card was made, so a saved or screenshotted card says which day it was */
+.stamp{margin:0 0 12px;max-width:100%;display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:999px;background:#DBF0EE;color:var(--text);font-size:13px;font-weight:500;line-height:1.4}
+.stamp svg{flex-shrink:0;color:#009688}
+.card-head .mooca{position:relative;margin-top:8px}
+.card-head img{width:136px;height:106px;object-fit:contain}
+.say-card{position:relative;align-self:stretch;margin-top:14px;padding:12px 16px 14px;border-radius:18px;background:color-mix(in srgb,var(--bg) 70%,#fff);text-align:left;display:flex;flex-direction:column;gap:4px;font-size:16px;line-height:1.55}
+.say-card::before{content:"";position:absolute;left:calc(50% - 10px);top:-9px;width:20px;height:20px;border-radius:4px 0 0 0;background:inherit;transform:rotate(45deg)}
+.say-card>*{position:relative}
+.say-card p{margin:0}
+.say-card .since{font-size:15px;color:var(--text-2)}
+.lb{font-size:13px;font-weight:600;color:var(--zone-ink,var(--blue-dark));letter-spacing:.2px}
+.name{margin:2px 0 0;font-size:clamp(30px,9.6vw,38px);line-height:1.2;font-weight:600;color:var(--zone-ink,var(--blue-dark))}
+.name.two{font-size:clamp(26px,8vw,30px)}
+/* English words can't break mid-word like Thai can, so on phones they get a little more room */
+@media (max-width:599px){
+  html[lang="en"] .word{font-size:16px;padding:6px}
+}
+.crow{display:flex;flex-direction:column;gap:6px;padding:14px 0;border-top:1px solid var(--line);font-size:16px;line-height:1.55}
+.crow .since{font-size:15px;color:var(--text-2)}
+.timer{align-self:flex-start;min-height:44px;border:2px solid var(--action);border-radius:14px;background:var(--white);color:var(--action-pressed);font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:0 14px;margin-top:4px}
+.timer.done{background:var(--tint);border-color:var(--tint)}
+/* talk card in ooca's own CI turquoise: Turquoise Gradient 02, Turquoise 2 edge, turquoise-tinted elevation 03 */
+.talk{background:linear-gradient(160deg,#E0FEFB,#D7FFFC);border-radius:22px;padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px;border:1.5px solid #B3EDE8;box-shadow:0 8px 16px rgba(0,196,179,.12)}
+.talk.quiet{background:var(--white);border-color:#DBF0EE;box-shadow:none}
+.talk p{margin:0;font-size:16px;line-height:1.5}
+/* the button to ooca: CI "Turquoise text" #009688 with large bold white type (3.7:1, AA for large text),
+   a turquoise glow (elevation 07) and the arrow in a white circle, the CI shape for high-prominence controls */
+.cta{position:relative;min-height:60px;border:none;border-radius:999px;background:linear-gradient(180deg,#009F91,#008D80);color:var(--white);text-decoration:none;padding:8px 8px 8px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:19px;font-weight:700;line-height:1.3;box-shadow:0 14px 26px -8px rgba(0,196,179,.6),0 4px 10px -4px rgba(0,150,136,.45)}
+.cta>svg{flex-shrink:0;box-sizing:content-box;padding:10px;border-radius:50%;background:var(--white);color:#009688;transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
+.cta::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
+@media (hover:hover){
+  .cta:hover{transform:translateY(-2px);box-shadow:0 18px 30px -8px rgba(0,196,179,.7),0 6px 12px -4px rgba(0,150,136,.5)}
+  .cta:hover>svg{transform:translateX(3px)}
+}
+.cta:focus-visible{outline:3px solid #00C4B3;outline-offset:3px}
+.cta.ghost{background:var(--white);color:var(--text);border:2px solid #00C4B3;box-shadow:0 2px 8px rgba(0,196,179,.08);font-weight:600;font-size:17px}
+.cta.ghost>svg{background:#DBF0EE;color:#00796B}
+/* the wordmark sits on the text baseline, its round letters a touch taller than the x-height */
+.ooca-logo{display:inline-block;height:.74em;width:auto;aspect-ratio:2486/769;vertical-align:baseline}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.soft-btn{min-height:50px;border:none;border-radius:14px;background:var(--white);color:var(--text);font-size:16px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
+
+/* S6 safety */
+.safety{background:#FFF4EC}
+.safety .hug{display:flex;justify-content:center;position:relative;margin-top:8px}
+.safety .hug::before{content:"";position:absolute;top:10px;width:220px;height:220px;border-radius:50%;background:var(--white);opacity:.7}
+.safety .hug img{position:relative;width:240px;height:200px;object-fit:contain}
+.safety h1{margin:0;font-size:26px;font-weight:600;text-align:center}
+.safety .msg{margin:0;font-size:17px;line-height:1.6;text-align:center;color:var(--text-2)}
+.call{min-height:72px;border-radius:20px;background:var(--action-pressed);color:var(--white);text-decoration:none;display:flex;align-items:center;gap:14px;padding:12px 18px;box-shadow:var(--e3)}
+.call .ic{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.call b{display:block;font-size:19px;font-weight:600}
+.call small{display:block;font-size:14px;opacity:.9}
+
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--white);padding:12px 18px;border-radius:14px;font-size:15px;box-shadow:var(--e3);z-index:9;width:max-content;max-width:calc(100% - 32px);text-align:center;opacity:0;transform:translate(-50%,12px);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* phones held sideways: keep the headline and CTA in view */
+@media (max-height:500px){
+  .hero{height:170px}
+  .hero .say{font-size:15px;padding:8px 14px}
+  .guide img{width:84px}
+}
+/* tablet and desktop: a roomier card, so everything steps up a size */
+@media (min-width:600px) and (min-height:600px){
+  .guide img{width:150px}
+  .bubble{padding:18px 22px;border-radius:24px}
+  .bubble h1{font-size:23px}
+  .screen .guide{--guide-h:132px}
+  .bubble p{font-size:16px}
+  .tone{padding:10px 10px 16px}
+  .tone .art{height:128px}
+  .tone b{font-size:20px}
+  .tone small{font-size:16px}
+  .words{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .word,.opt{min-height:58px;font-size:19px}
+  .meaning,.talk p,.crow{font-size:17px}
+  .hero{height:clamp(260px,40dvh,400px)}
+  .hero img{width:360px}
+  .hero .say{font-size:18px}
+  .home h1{font-size:34px;padding-block:4px} /* room for the tilted highlight */
+  .home .sub{font-size:16px}
+  .primary{min-height:62px}
+  .card{padding:10px 28px 6px}
+  .card-head img{width:150px;height:117px}
+  .say-card{font-size:17px;padding:14px 20px 16px}
+  .name{font-size:40px}
+  .name.two{font-size:30px}
+  .safety .hug img{width:280px;height:230px}
+  .safety h1{font-size:30px}
+}
+/* short laptops: the size-up block above would overflow a ~650px frame, so keep the steps compact enough to fit */
+@media (min-width:600px) and (min-height:600px) and (max-height:899px){
+  .screen{gap:12px;padding-top:12px}
+  .screen .guide{--guide-h:118px}
+  .bubble h1{font-size:21px}
+  .guide img{width:118px}
+  .tone .art{height:clamp(68px,calc(100dvh - 640px),118px)}
+  .tone{padding:8px 8px 12px}
+  .word,.opt{min-height:52px}
+  .bubble{padding:14px 18px}
+  .hero{height:clamp(170px,min(40dvh,calc(100dvh - 470px)),400px)} /* Mooca gives way so the badge, title and subtitle all show above the start button */
+}
+
+/* ---------- motion ---------- */
+/* Mooca speaks first (typing dots, then words), then the choices rise in.
+   Entrance runs once per new screen; .stay (a pick on the same screen) skips it and only the changed parts react. */
+@keyframes in{from{opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+@keyframes popIn{0%{opacity:0;transform:scale(.6) translateY(12px)}60%{opacity:1;transform:scale(1.05)}100%{transform:none}}
+@keyframes bubbleIn{0%{opacity:0;transform:scale(.85)}70%{opacity:1;transform:scale(1.02)}100%{transform:none}}
+@keyframes talkIn{from{opacity:0;transform:translateY(4px)}}
+@keyframes dots{0%,80%{opacity:1}100%{opacity:0}}
+@keyframes dot{0%,60%,100%{transform:none;opacity:.35}30%{transform:translateY(-4px);opacity:1}}
+@keyframes float{0%,100%{transform:none}50%{transform:translateY(-6px) scale(1.015,.985)}}
+@keyframes sway{0%,100%{transform:none}30%{transform:translateY(-8px) rotate(-1.5deg)}60%{transform:translateY(-3px) rotate(1deg)}}
+@keyframes hop{0%,100%{transform:none}30%{transform:translateY(-12px) scale(.95,1.06)}60%{transform:scale(1.06,.94)}80%{transform:scale(.98,1.02)}}
+@keyframes breathe{0%,100%{transform:scale(1)}40%{transform:scale(1.08)}}
+@keyframes wave{0%{transform:scale(.92);opacity:.9}100%{transform:scale(1.4);opacity:0}}
+@keyframes nudge{0%,100%{transform:none}50%{transform:translateX(4px)}}
+@keyframes burst{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes hlIn{0%{opacity:0;transform:scale(.6) rotate(4deg)}60%{opacity:1;transform:scale(1.08) rotate(-3deg)}100%{transform:rotate(-1.5deg)}}
+@keyframes halo{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}
+@keyframes pick{0%{transform:scale(.96)}55%{transform:scale(1.03)}100%{transform:none}}
+@keyframes unpick{from{transform:scale(.97)}}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.25)}100%{transform:none}}
+@keyframes fill{from{transform:scaleX(0)}}
+@keyframes ready{0%{transform:none;box-shadow:0 0 0 0 rgba(0,150,136,.35),var(--e2)}40%{transform:scale(1.03)}100%{transform:none;box-shadow:0 0 0 14px rgba(0,150,136,0),var(--e2)}}
+@keyframes mark{from{background-size:0% .42em}}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes drop{40%{transform:translateY(4px)}}
+@keyframes ctaRing{0%{box-shadow:0 0 0 0 rgba(0,196,179,.55)}100%{box-shadow:0 0 0 14px rgba(0,196,179,0)}}
+@keyframes flagWave{0%{transform:scale(.6) rotate(-20deg)}50%{transform:scale(1.25) rotate(10deg)}75%{transform:rotate(-5deg)}100%{transform:none}}
+
+/* idle life: Mooca floats, the home halo breathes */
+.float{animation:float 4s ease-in-out infinite;transform-origin:50% 90%}
+.hero .float{animation-name:sway;animation-duration:6s}
+.safety .float{animation-duration:6s}
+.hero .halo{animation:halo 5s ease-in-out infinite}
+/* waves roll out from behind Mooca */
+.hero .halo::before,.hero .halo::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(0,196,179,.5);background:rgba(255,255,255,.55);animation:wave 4s cubic-bezier(.2,.6,.4,1) infinite}
+.hero .halo::after{animation-delay:-2s}
+.safety .hug::before{animation:breathe 6s ease-in-out infinite}
+
+/* typing dots before Mooca's words */
+.talks{position:relative}
+.talks>.dots{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:5px;opacity:0;pointer-events:none}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--text-2);animation:dot 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}
+.dots i:nth-child(3){animation-delay:.3s}
+.screen:not(.stay) .talks>.dots{animation:dots var(--talk,.6s) both}
+.screen:not(.stay) .talks>:not(.dots){animation:talkIn .3s var(--talk,.6s) ease-out both}
+
+/* screen entrance */
+.screen:not(.stay) .guide .mooca{animation:popIn .5s cubic-bezier(.2,.8,.2,1) both}
+.screen:not(.stay) .bubble{transform-origin:0 50%;animation:bubbleIn .35s .12s cubic-bezier(.2,.8,.2,1) both}
+.screen:not(.stay) .tag{animation:pop .4s .7s cubic-bezier(.3,1.4,.5,1) both}
+.screen:not(.stay) .tag+.tag{animation-delay:.8s}
+.screen:not(.stay) .tag+.tag+.tag{animation-delay:.9s}
+.screen:not(.stay) .rise{animation:rise .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--base,.45s) + var(--i,0) * 45ms)}
+.screen.fwd:not(.stay) .progress .now::after{animation:fill .5s .15s cubic-bezier(.2,.8,.2,1) both}
+.home{--base:.2s}
+.screen.home:not(.stay) .hl{animation:hlIn .55s .55s cubic-bezier(.3,1.4,.5,1) both}
+.home .say{--talk:1.1s;transform-origin:0 100%}
+.screen.home:not(.stay) .hero .mooca{animation:popIn .6s .05s cubic-bezier(.2,.8,.2,1) both}
+.screen.home:not(.stay) .say{animation:bubbleIn .4s .35s cubic-bezier(.2,.8,.2,1) both}
+.safety{--base:.1s}
+
+/* result: card opens, the name appears and gets highlighted, then Mooca types its explanation, then the rest */
+.result{--base:1.45s}
+.card-head .who{--talk:.6s}
+.card-head .say-card{--talk:1.15s}
+.screen:not(.stay) .card.main{transform-origin:50% 0;animation:bubbleIn .45s .05s cubic-bezier(.2,.8,.2,1) both}
+.screen:not(.stay) .card-head .mooca{animation:popIn .5s .25s cubic-bezier(.2,.8,.2,1) both}
+.mark{background:linear-gradient(var(--bg),var(--bg)) no-repeat 0 88%/100% .42em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.screen:not(.stay) .mark{animation:mark .6s .85s cubic-bezier(.6,0,.2,1) both}
+.screen:not(.stay) .say-card{transform-origin:50% 0;animation:bubbleIn .4s .7s cubic-bezier(.2,.8,.2,1) both}
+.screen:not(.stay) .card.main .crow{animation:rise .45s 1.35s cubic-bezier(.2,.8,.2,1) both}
+/* once the talk card has risen in, the ooca button sends out two soft rings, then rests */
+.screen:not(.stay) .talk .cta:not(.ghost)::after{animation:ctaRing 1.1s 2.1s ease-out 2}
+.spark{position:absolute;font-style:normal;color:var(--zone);opacity:0;animation:twinkle 2.4s ease-in-out infinite;pointer-events:none}
+.spark:nth-of-type(1){top:2px;left:4px;font-size:15px}
+.spark:nth-of-type(2){top:10px;right:-2px;font-size:11px;animation-delay:.8s}
+.spark:nth-of-type(3){bottom:8px;left:-2px;font-size:10px;animation-delay:1.6s}
+.card.breathing .card-head img{animation:breathe 5s ease-in-out infinite}
+.timer{position:relative;overflow:hidden;isolation:isolate}
+.timer::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--tint);transform:scaleX(0);transform-origin:left;transition:transform 30s linear}
+.timer.running::before{transform:scaleX(1)}
+.timer.done{animation:pick .4s cubic-bezier(.3,1.4,.5,1)}
+
+/* reacting to a pick */
+.tone,.word,.opt,.primary,.soft-btn,.cta,.call,.timer,.icon-btn{transition:transform .15s ease,border-color .15s,box-shadow .15s,background-color .15s}
+:is(.tone,.word,.opt,.primary,.soft-btn,.cta,.call,.timer,.icon-btn):active:not(:disabled){transform:scale(.97)}
+.just[aria-pressed="true"]{animation:pick .4s cubic-bezier(.3,1.4,.5,1)}
+.just[aria-pressed="false"]{animation:unpick .25s ease-out}
+.tone.just .ck svg,.opt.just .ck{animation:pop .35s .05s cubic-bezier(.3,1.4,.5,1) both}
+.text-btn.just svg{animation:spin .5s ease-in-out}
+.mooca.hop{animation:hop .55s ease-out}
+.primary.ready{animation:ready .7s ease-out}
+.swap{animation:talkIn .3s ease-out}
+.reflow>*{animation:rise .35s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 35ms)}
+.drop{animation:drop .5s ease-in-out}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .app{transition:none}
+  .timer::before{transition-duration:30s!important}
+}
+
+/* ---- 30-second note: a lined note card in the ooca CI (white rounded card, turquoise accents, Prompt) ---- */
+.note-dlg{border:none;padding:0;margin:0;background:transparent;width:100%;max-width:none;height:100%;max-height:none;inset:0;color:var(--text)}
+.note-dlg[open]{display:flex;align-items:center;justify-content:center;overflow-y:auto}
+.note-dlg::backdrop{background:rgba(29,52,50,.38);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.note-wrap{width:min(440px,100%);padding:20px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;margin:auto}
+.note-top{display:flex;justify-content:flex-end}
+/* white card, CI rounded rectangle (24px) and turquoise elevation 07 */
+.paper{--lh:34px;position:relative;background:var(--white);border-radius:24px;padding:20px 20px 16px;box-shadow:0 16px 32px rgba(0,196,179,.18),0 4px 12px -4px rgba(0,196,179,.28)}
+.paper:focus-within{outline:2px solid rgba(0,196,179,.5);outline-offset:4px}
+.paper.timeup{box-shadow:0 0 0 2px #00C4B3,0 16px 32px rgba(0,196,179,.18)}
+.note-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;padding-bottom:12px;border-bottom:1px solid #DBF0EE}
+.note-head>div:first-child{flex:1;min-width:0}
+.note-lb{display:inline-block;font-size:13px;font-weight:600;color:var(--text);background:#DBF0EE;border-radius:999px;padding:2px 10px}
+.note-q{margin:8px 0 0;font-size:18px;font-weight:500;line-height:1.45;color:var(--text)}
+.clock{position:relative;width:64px;height:64px;flex-shrink:0;margin:-6px -4px 0 0}
+.clock svg{display:block;width:100%;height:100%;overflow:visible}
+.clock .track{stroke:#DBF0EE}
+.clock .prog{stroke:#00C4B3;transition:stroke-dashoffset .25s linear}
+.clock .sec{position:absolute;left:0;right:0;top:36px;transform:translateY(-50%);text-align:center;font-size:17px;font-weight:600;line-height:1;color:var(--text);font-variant-numeric:tabular-nums}
+.clock.ringing{animation:ring .5s ease-in-out 1}
+.clock.ringing .bell{animation:bell .25s ease-in-out 2}
+@keyframes ring{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(6deg)}}
+@keyframes bell{50%{transform:translateY(-2px)}}
+.note-text{display:block;width:100%;min-height:calc(var(--lh) * 5);border:none;outline:none;resize:none;padding:0 2px;margin:0;font:inherit;font-size:17px;line-height:var(--lh);color:var(--text);caret-color:#009688;
+  background:repeating-linear-gradient(to bottom,transparent 0 calc(var(--lh) - 1px),#DBF0EE calc(var(--lh) - 1px) var(--lh));background-attachment:local}
+.note-text::placeholder{color:#65726F}
+.note-status{margin:8px 0 0;min-height:1.5em;font-size:14px;color:var(--text-2)}
+.paper.timeup .note-status{color:var(--text);font-weight:600}
+.note-private{margin:0 auto;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--text-2);text-align:center;background:rgba(255,255,255,.92);border-radius:999px;padding:5px 12px}
+.note-dlg .icon-btn{background:rgba(255,255,255,.92)}
+.note-dlg[open] .note-wrap{animation:noteIn .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes noteIn{from{opacity:0;transform:translateY(24px) scale(.96)}}
+/* the note snippet that stays on the result card */
+.note-snip{margin:6px 0 0;padding:8px 12px;border-radius:12px;background:#DBF0EE;font-size:16px;line-height:1.5;color:var(--text);white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+@media (max-height:620px){.paper{--lh:30px}.note-text{min-height:calc(var(--lh) * 3)}}
+@media (max-width:360px){.paper{padding:18px 16px 14px}.note-q{font-size:17px}}
+/* sideways phones: a shorter note so the Done button stays on screen */
+@media (max-height:500px){
+  .note-wrap{width:min(560px,100%);padding-top:10px;gap:8px}
+  .note-top .icon-btn{width:40px;height:40px}
+  .paper{--lh:28px;padding:14px 18px 10px}
+  .note-head{margin-bottom:2px;padding-bottom:8px}
+  .note-q{font-size:16px;padding-right:48px}
+  .clock{width:48px;height:48px;margin:-6px 0 0}
+  .clock .sec{top:27px;font-size:14px}
+  .note-text{min-height:calc(var(--lh) * 2);font-size:17px}
+  .note-private{display:none}
+}
+</style>
+</head>
+<body>
+<main class="app" id="app" aria-live="polite"></main>
+<div id="toast" class="toast" role="status" hidden></div>
+<dialog id="note" class="note-dlg" aria-labelledby="note-q">
+  <div class="note-wrap">
+    <div class="note-top"><button class="icon-btn" data-note="close" aria-label="ปิดโน้ต"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="paper">
+      <div class="note-head">
+        <div><span class="note-lb" data-i18n="writeLb">ลองเขียนดู · 30 วินาที</span><p id="note-q" class="note-q"></p></div>
+        <div class="clock" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none">
+            <g class="bell"><path d="M9 17a9 9 0 0 1 13-9" stroke="#009688" stroke-width="3.5" stroke-linecap="round"/><path d="M55 17a9 9 0 0 0-13-9" stroke="#009688" stroke-width="3.5" stroke-linecap="round"/></g>
+            <path d="M19 55l-4 5M45 55l4 5" stroke="#009688" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="32" cy="36" r="22" fill="#fff"/>
+            <circle class="track" cx="32" cy="36" r="22" stroke-width="5"/>
+            <circle class="prog" cx="32" cy="36" r="22" stroke-width="5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0" transform="rotate(-90 32 36)"/>
+          </svg>
+          <b class="sec">30</b>
+        </div>
+      </div>
+      <textarea id="note-text" class="note-text" aria-labelledby="note-q" rows="5"></textarea>
+      <p class="note-status" role="status" aria-live="polite"></p>
+    </div>
+    <p class="note-private"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span data-i18n="notePrivate">โน้ตนี้อยู่ในเครื่องคุณเท่านั้น ไม่ถูกส่งไปไหน</span></p>
+    <button class="primary" data-note="done" data-i18n="done">เสร็จแล้ว</button>
+  </div>
+</dialog>
+
+<script>
+/* ---------- assets ---------- */
+const IMG = {
+  phone: 'assets/mooca-phone-live.svg',
+  sad: 'assets/mooca-sad.svg',
+  calm: 'assets/mooca-calm.svg', // plain standing Mooca for when no feeling is picked yet
+  anxious: 'assets/mooca-anxious.svg',
+  thanks: 'assets/mooca-thanks.svg',
+  hug: 'assets/mooca-hug.svg',
+  happy: 'assets/mooca-rainbow.svg',
+  coins: 'assets/mooca-coins.svg',
+  coinsWorried: 'assets/mooca-coins-worried.svg',
+  logo: 'assets/mindfull-logo.svg'
+};
+// Mooca for the current answers: the money topic gets the coin poses
+const moocaFor = (fallback) => S.ctx === 'money' ? (S.tone && ['yellow','green'].includes(S.tone.id) ? IMG.coins : IMG.coinsWorried) : (S.tone ? S.tone.img : fallback);
+const OOCA_URL = 'https://www.ooca.co/';
+// ooca wordmark (from ooca-logo-white.svg), cropped to the letters and drawn in currentColor so it follows each button's text colour
+const OOCA_LOGO = '<svg class="ooca-logo" viewBox="28 125 2486 769" role="img" aria-label="ooca" fill="currentColor"><path d="M367,221.94c-186.8,0-338.23,150.38-338.23,335.88s151.43,335.89,338.23,335.89,338.24-150.38,338.24-335.89-151.43-335.88-338.24-335.88ZM367,704.66c-81.65,0-147.86-65.74-147.86-146.83s66.2-146.83,147.86-146.83,147.86,65.74,147.86,146.83-66.2,146.83-147.86,146.83Z"/><path d="M1063.81,221.94c-186.8,0-338.24,150.38-338.24,335.88s151.44,335.89,338.24,335.89,338.24-150.38,338.24-335.89-151.43-335.88-338.24-335.88ZM1063.81,704.66c-81.66,0-147.85-65.74-147.85-146.83s66.19-146.83,147.85-146.83,147.85,65.74,147.85,146.83-66.2,146.83-147.85,146.83Z"/><path d="M1786,604.93c-9.91,2.08-20.17,3.19-30.69,3.19-81.66,0-147.86-65.74-147.86-146.83s66.2-146.83,147.86-146.83c34.44,0,66.1,11.72,91.23,31.34,35.27-53.74,83.52-98.31,140.31-129.32-60.51-56.47-141.95-91.08-231.54-91.08-186.81,0-338.24,150.38-338.24,335.89s151.43,335.88,338.24,335.88c34.72,0,68.21-5.2,99.73-14.84-36.63-51.37-61.05-111.91-69.04-177.4Z"/><path d="M2175.14,221.94c-186.81,0-338.24,150.38-338.24,335.88s151.43,335.89,338.24,335.89c51.96,0,101.18-11.67,145.17-32.47v32.54h193.07v-335.96c0-185.5-151.43-335.88-338.24-335.88ZM2175.14,704.66c-81.66,0-147.86-65.74-147.86-146.83s66.2-146.83,147.86-146.83,147.85,65.74,147.85,146.83-66.2,146.83-147.85,146.83Z"/></svg>';
+Object.values(IMG).forEach(src => { new Image().src = src; });
+
+/* ---------- content ---------- */
+// level: 0 = feel-good, 1 = light, 2 = medium, 3 = professional first. risk → safety screen
+const TONES = [
+  { id:'yellow', label:'สดใส มีแรง', eg:'เช่น ตื่นเต้น ภูมิใจ มีหวัง', zone:'#F9A000', solid:'#A35F00', bg:'#F8E4B3', ink:'#9A5B00', line:'#F3D58E', img:IMG.happy, reply:'ดีใจด้วยนะ ไปต่อกัน',
+    words:[
+      {w:'ตื่นเต้น', m:'ใจเต้นแรง เพราะรอสิ่งที่อยากให้เกิด', c:'มีเรื่องใหม่ที่คุณตั้งตารอ', a:'เขียนถึงสิ่งที่รออยู่ ว่าอยากให้ออกมาแบบไหน', lv:0},
+      {w:'ภูมิใจ', m:'รู้สึกดีกับสิ่งที่ตัวเองทำได้', c:'คุณเพิ่งทำบางอย่างได้ด้วยตัวเอง', a:'เขียนสิ่งที่ทำได้วันนี้ และทำได้เพราะอะไร', lv:0},
+      {w:'มีหวัง', m:'เชื่อว่าสิ่งดีๆ กำลังจะมา', c:'คุณเริ่มเห็นทางไปต่อ', a:'เขียน 1 ก้าวเล็กๆ ที่จะทำต่อพรุ่งนี้', lv:0},
+      {w:'สนุก', m:'ได้อยู่กับสิ่งตรงหน้าเต็มที่ จนลืมเวลา', c:'คุณได้ทำสิ่งที่ชอบ', a:'เขียนว่าอะไรทำให้สนุก ไว้กลับมาอ่านวันที่เหนื่อย', lv:0},
+      {w:'อิ่มใจ', m:'รู้สึกเต็มอิ่ม กับสิ่งที่ได้รับ', c:'มีใครหรืออะไรบางอย่างดีกับคุณ', a:'เขียนขอบคุณคนที่ทำให้อิ่มใจ จะส่งหรือไม่ก็ได้', lv:0},
+      {w:'มั่นใจ', m:'เชื่อว่าตัวเองรับมือได้', c:'คุณเตรียมตัวมาดี', a:'เขียนว่าอะไรทำให้มั่นใจ ไว้อ่านวันที่ใจแผ่ว', lv:0}
+    ],
+    more:[
+      {w:'โล่งใจ', m:'เรื่องที่ค้างอยู่ คลี่คลายแล้ว', c:'เรื่องที่กังวลผ่านไปแล้ว', a:'เขียนว่าเรื่องไหนผ่านไปแล้ว และคุณผ่านมาได้ยังไง', lv:0},
+      {w:'กระตือรือร้น', m:'อยากลงมือทำทันที', c:'คุณมีเป้าหมายที่ชัด', a:'เขียนสิ่งแรกที่จะลงมือทำ ตอนที่ไฟยังแรง', lv:0}
+    ]},
+  { id:'green', label:'สงบ สบายใจ', eg:'เช่น ผ่อนคลาย พอใจ อุ่นใจ', zone:'#5DB437', solid:'#2F7A12', bg:'#DCF3D1', ink:'#2F6B16', line:'#BFE6AD', img:IMG.hug, reply:'ดีจังเลย ไปต่อกัน',
+    words:[
+      {w:'ผ่อนคลาย', m:'ร่างกายและใจ ไม่ต้องรีบ', c:'คุณได้พักอย่างที่ต้องการ', a:'เขียนว่าตอนนี้ ร่างกายสบายตรงไหนบ้าง', lv:0},
+      {w:'พอใจ', m:'สิ่งที่มีอยู่ ก็ดีพอแล้ว', c:'หลายอย่างเป็นไปตามที่หวัง', a:'เขียน 1 อย่างเล็กๆ ที่ทำให้วันนี้ดีพอ', lv:0},
+      {w:'อุ่นใจ', m:'รู้สึกว่ามีคนอยู่ข้างๆ', c:'มีคนที่คุณไว้ใจอยู่ใกล้', a:'เขียนถึงคนที่ทำให้อุ่นใจ อยากบอกอะไรเขา', lv:0},
+      {w:'สบายใจ', m:'ไม่มีอะไรค้างคาใจ', c:'เรื่องที่ห่วงคลี่คลายแล้ว', a:'เขียนไว้ว่าวันนี้ อะไรทำให้ใจสบาย', lv:0},
+      {w:'ปลอดภัย', m:'ไม่ต้องคอยระวังตัว', c:'คุณอยู่กับคนหรือที่ที่ไว้ใจได้', a:'เขียนว่าที่ไหนหรือใคร ทำให้รู้สึกปลอดภัย', lv:0},
+      {w:'ซาบซึ้ง', m:'ใจอ่อนลง เพราะความดีของใครบางคน', c:'มีคนทำสิ่งดีๆ ให้คุณ', a:'เขียนเล่าช่วงเวลานั้น ให้ละเอียดที่สุด', lv:0}
+    ],
+    more:[
+      {w:'เบาสบาย', m:'ใจโล่ง ไม่มีอะไรถ่วง', c:'คุณวางบางอย่างลงได้แล้ว', a:'เขียนว่าวางอะไรลงได้ ใจถึงเบาแบบนี้', lv:0},
+      {w:'มีสมาธิ', m:'จดจ่อกับสิ่งตรงหน้าได้ดี', c:'คุณอยู่ในจังหวะที่ใช่', a:'เขียนว่าอะไรช่วยให้มีสมาธิ จะได้ใช้อีก', lv:0}
+    ]},
+  { id:'orange', label:'ร้อนรน ไม่สบายใจ', eg:'เช่น กังวล หงุดหงิด กดดัน', zone:'#E8702A', solid:'#B9500F', bg:'#FFDDC9', ink:'#A04A12', line:'#FFC7A6', img:IMG.anxious, reply:'เข้าใจเลย ค่อยๆ ไปนะ',
+    words:[
+      {w:'กังวล', m:'ใจวิ่งไปคิดล่วงหน้า ถึงเรื่องที่ยังไม่เกิด', c:'มีเรื่องที่ยังไม่รู้ผล', a:'เขียนเรื่องที่กังวล แล้วดูว่าข้อไหนพอทำอะไรได้', lv:1},
+      {w:'หงุดหงิด', m:'ใจขุ่นง่าย เรื่องเล็กๆ ก็กวนใจ', c:'มีบางอย่างขวางสิ่งที่คุณอยากทำ', a:'เขียนว่าอะไรกวนใจ และคุณต้องการอะไรตอนนี้', lv:1},
+      {w:'กดดัน', m:'รู้สึกเหมือนต้องทำให้ได้ ห้ามพลาด', c:'ความคาดหวังมากกว่าเวลาหรือแรงที่มี', a:'เขียนเรื่องที่ค้างอยู่ แล้วเลือกมาเรื่องเดียวก่อน', lv:1},
+      {w:'เครียด', m:'ร่างกายตึง ใจไม่ได้พัก', c:'หลายเรื่องเข้ามาพร้อมกัน', a:'เขียนทุกเรื่องในหัวออกมา ไม่ต้องเรียง ไม่ต้องสวย', lv:2},
+      {w:'โกรธ', m:'รู้สึกว่าถูกทำไม่ยุติธรรม', c:'มีคนหรือบางอย่างล้ำเส้นของคุณ', a:'เขียนว่าเกิดอะไรขึ้น และคุณอยากให้เป็นแบบไหน', lv:1},
+      {w:'ตื่นตระหนก', m:'ใจเต้นแรง กลัวจนตั้งตัวไม่ทัน', c:'บางอย่างทำให้รู้สึกไม่ปลอดภัย', a:'ค่อยๆ เขียนสิ่งที่เห็นรอบตัว 5 อย่าง', lv:2}
+    ],
+    more:[
+      {w:'อิจฉา', m:'อยากมีบ้าง เวลาเห็นสิ่งดีๆ ของคนอื่น', c:'เผลอเอาตัวเองไปเทียบกับคนอื่น', a:'เขียนว่าอยากมีอะไรแบบเขา และก้าวแรกคืออะไร', lv:1},
+      {w:'ไม่มั่นใจตัวเอง', m:'ไม่แน่ใจว่าตัวเองดีพอ', c:'มีบางอย่างทำให้คุณสงสัยในตัวเอง', a:'เขียนถึงครั้งที่คุณผ่านเรื่องยากมาได้', lv:2},
+      {w:'อับอาย', m:'อยากหลบจากสายตาคนอื่น', c:'กลัวว่าคนอื่นจะมองเราไม่ดี', a:'เขียนถึงตัวเอง แบบที่จะปลอบเพื่อนสนิท', lv:2}
+    ]},
+  { id:'blue', label:'หนักใจ หมดแรง', eg:'เช่น เหนื่อย เศร้า เหงา', zone:'#1F77DF', solid:'#1A68C7', bg:'#E4EFFB', ink:'#0A47CA', line:'#C7DDF7', img:IMG.sad, reply:'ขอบคุณที่บอกนะ',
+    words:[
+      {w:'เหนื่อยล้า', m:'แรงกายแรงใจ เหลือน้อย', c:'คุณใช้แรงมาต่อเนื่อง ยังไม่ได้พักจริงๆ', a:'เขียนว่าวันนี้เหนื่อยกับอะไร แล้วพักก่อนนะ', lv:1},
+      {w:'หมดไฟ', m:'ไม่มีแรงใจ ทำสิ่งที่เคยทำ', c:'คุณให้แรงออกไป มากกว่าที่ได้เติมกลับ', a:'เขียน 1 อย่างที่ดูดพลัง กับ 1 อย่างที่เติมพลัง', lv:2},
+      {w:'เศร้า', m:'ใจหนัก เพราะเสียบางอย่างไป', c:'มีสิ่งสำคัญหายไป หรือไม่เป็นอย่างที่หวัง', a:'เศร้าได้นะ เขียนสิ่งที่อยู่ในใจ ไม่ต้องรีบหาย', lv:2},
+      {w:'เหงา', m:'อยากมีใครสักคนที่เข้าใจ', c:'คุณรู้สึกห่างจากคนรอบตัว', a:'เขียนข้อความถึงคนที่คิดถึง จะส่งหรือไม่ก็ได้', lv:1},
+      {w:'ท้อ', m:'อยากหยุด เพราะทำแล้วไม่เห็นผล', c:'คุณพยายามมานาน แต่ยังไม่ได้อย่างที่หวัง', a:'เขียนก้าวที่เล็กที่สุด ที่ทำได้วันนี้', lv:1},
+      {w:'เบื่อ', m:'ทุกอย่างดูจืด ไม่อยากทำอะไร', c:'สิ่งที่ทำซ้ำๆ ไม่ได้เติมใจแล้ว', a:'เขียน 1 อย่างเล็กๆ ที่อยากลองทำต่างไปวันนี้', lv:1}
+    ],
+    more:[
+      {w:'ผิดหวัง', m:'สิ่งที่เกิด ไม่เป็นอย่างที่หวัง', c:'สิ่งที่ตั้งใจไว้ ไม่เป็นไปตามคาด', a:'เขียนว่าหวังอะไรไว้ คุณพยายามเต็มที่แล้วนะ', lv:1},
+      {w:'ว่างเปล่า', m:'ข้างในเงียบ ไม่รู้สึกอะไร', c:'ใจอาจเหนื่อย จนพักการรู้สึกไว้ก่อน', a:'เขียนอะไรก็ได้ที่อยู่ในหัว แค่คำเดียวก็พอ', lv:2},
+      {w:'รู้สึกผิด', m:'ใจโทษตัวเอง ว่าทำให้บางอย่างแย่ลง', c:'คุณใส่ใจคนอื่น และสิ่งที่ทำมาก', a:'เขียนว่าเกิดอะไรขึ้น และอยากแก้ตรงไหน', lv:2},
+      {w:'สิ้นหวัง', m:'มองไม่เห็นทางที่จะดีขึ้น', risk:true},
+      {w:'เหนื่อยจนไม่อยากไปต่อ', m:'หมดแรงจนไม่อยากมีชีวิตอยู่ต่อ', risk:true}
+    ]}
+];
+const CONTEXTS = [
+  {id:'work', label:'งานหรือการเรียน', say:'เรื่องงานหรือการเรียน'},
+  {id:'people', label:'คนรอบตัว', say:'เรื่องคนรอบตัว'},
+  {id:'self', label:'ตัวเอง', say:'เรื่องของตัวเอง'},
+  {id:'body', label:'สุขภาพร่างกาย', say:'เรื่องสุขภาพร่างกาย'},
+  {id:'money', label:'การเงิน', say:'เรื่องการเงิน'},
+  {id:'unsure', label:'ไม่แน่ใจ', say:null}
+];
+const CTX_ICON = {
+  work:'<svg aria-hidden="true" width="34" height="34" viewBox="0 0 32 32" fill="none"><rect x="4.5" y="10" width="23" height="15.5" rx="4" fill="#FFD45C" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 10V8.2A2.2 2.2 0 0 1 14.2 6h3.6A2.2 2.2 0 0 1 20 8.2V10" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 16.5h23" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="13.5" y="14.5" width="5" height="4" rx="1.2" fill="#fff" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  people:'<svg aria-hidden="true" width="34" height="34" viewBox="0 0 32 32" fill="none"><path d="M3.5 26c.4-4.6 3.6-7.6 7.7-7.6s7.3 3 7.7 7.6z" fill="#9AD3F7" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11.2" cy="11.8" r="4.4" fill="#9AD3F7" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.8 26c.4-3.8 3-6.3 6.1-6.3s5.4 2.5 5.7 6.3z" fill="#FFC7A6" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22.9" cy="13.6" r="3.6" fill="#FFC7A6" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  self:'<svg aria-hidden="true" width="34" height="34" viewBox="0 0 32 32" fill="none"><circle cx="15" cy="17" r="10" fill="#FFE58A" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11.6" cy="16" r="1.2" fill="#2359A8"/><circle cx="18.4" cy="16" r="1.2" fill="#2359A8"/><path d="M12 20.2c1.7 1.6 4.3 1.6 6 0" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 4.8c-1-1.3-3-1-3.3.7-.3 1.6 1.5 3 3.3 4.2 1.8-1.2 3.6-2.6 3.3-4.2-.3-1.7-2.3-2-3.3-.7z" fill="#FF8A8A" stroke="#2359A8" stroke-width="1.4" stroke-linejoin="round"/></svg>',
+  body:'<svg aria-hidden="true" width="34" height="34" viewBox="0 0 32 32" fill="none"><path d="M16 27s-11-6.2-11-13.6C5 9.6 7.8 6.5 11.3 6.5c2 0 3.7 1 4.7 2.6 1-1.6 2.7-2.6 4.7-2.6 3.5 0 6.3 3.1 6.3 6.9C27 20.8 16 27 16 27z" fill="#FFB4B4" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 16h4.2l1.8-3.4 3 6.4 2-3h5.8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  money:'<svg aria-hidden="true" width="34" height="34" viewBox="0 0 32 32" fill="none"><ellipse cx="16" cy="23.5" rx="10.5" ry="3.5" fill="#E8A523" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 19.5v4M26.5 19.5v4" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="16" cy="19.5" rx="10.5" ry="3.5" fill="#FDC05C" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="11.5" r="7" fill="#FFD45C" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.6 8.3v6.4M14.6 8.3h2.3a1.6 1.6 0 0 1 0 3.2h-2.3h2.6a1.6 1.6 0 0 1 0 3.2h-2.6M16 7v1.3M16 14.7V16" stroke="#2359A8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  unsure:'<svg aria-hidden="true" width="34" height="34" viewBox="0 0 32 32" fill="none"><path d="M9 25.5a5.5 5.5 0 0 1-.6-11A7.5 7.5 0 0 1 22.6 12a6.8 6.8 0 0 1 .9 13.5z" fill="#EEF2FA" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.6 15.6a2.6 2.6 0 1 1 3.6 2.4c-.7.3-1.2.9-1.2 1.7v.4" stroke="#2359A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="23" r="1.1" fill="#2359A8"/></svg>',
+};
+const DURATIONS = [
+  {id:'today', label:'เพิ่งเป็นวันนี้', say:'เพิ่งเริ่มเป็นวันนี้', floor:0},
+  {id:'days', label:'2–3 วัน', say:'เป็นมา 2–3 วันแล้ว', floor:0},
+  {id:'week', label:'ราว 1–2 สัปดาห์', say:'เป็นมาราว 1–2 สัปดาห์แล้ว', floor:2},
+  {id:'long', label:'นานกว่า 2 สัปดาห์', say:'เป็นมานานกว่า 2 สัปดาห์แล้ว', floor:3},
+  {id:'unsure', label:'ไม่แน่ใจ', say:null, floor:0}
+];
+// when every picked word is a good feeling, ข้อ 4 asks how long the good feeling has stayed instead of screening a problem
+const DURATIONS_GOOD = [
+  {id:'today', label:'เพิ่งรู้สึกวันนี้', say:'เพิ่งรู้สึกดีแบบนี้วันนี้', floor:0},
+  {id:'days', label:'2–3 วันแล้ว', say:'รู้สึกดีแบบนี้มา 2–3 วันแล้ว', floor:0},
+  {id:'week', label:'ทั้งสัปดาห์เลย', say:'รู้สึกดีแบบนี้มาทั้งสัปดาห์', floor:0},
+  {id:'long', label:'มาสักพักแล้ว', say:'รู้สึกดีแบบนี้มาสักพักแล้ว', floor:0},
+  {id:'unsure', label:'ไม่แน่ใจ', say:null, floor:0}
+];
+const feelsGood = () => S.picks.length > 0 && S.picks.every(p => p.lv === 0);
+const durList = () => feelsGood() ? DURATIONS_GOOD : DURATIONS;
+const NEUTRAL = {w:'ยังบอกไม่ถูก', m:'บางความรู้สึกต้องใช้เวลา กว่าจะเรียกชื่อได้', c:'', a:'เขียนอะไรก็ได้ที่อยู่ในใจ ยังไม่ต้องตั้งชื่อ', lv:1};
+
+/* ---------- English ---------- */
+// same voice as the Thai: a friend talking, short lines, no blame. Keyed by the Thai word / option id and merged in as `en`
+const EN = {
+  tones: {
+    yellow:{label:'Bright and lively', eg:'like excited, proud, hopeful', reply:'So glad! Let’s go on'},
+    green:{label:'Calm and at ease', eg:'like relaxed, content, comforted', reply:'Lovely. Let’s go on'},
+    orange:{label:'Tense and uneasy', eg:'like worried, irritated, pressured', reply:'I hear you. No rush'},
+    blue:{label:'Heavy and drained', eg:'like tired, sad, lonely', reply:'Thanks for telling me'}
+  },
+  words: {
+    'ตื่นเต้น':{w:'Excited', m:'your heart races as you wait for something you want', c:'Something new is coming that you’re looking forward to.', a:'Write about what’s coming and how you hope it goes'},
+    'ภูมิใจ':{w:'Proud', m:'feeling good about something you managed to do', c:'You just pulled something off on your own.', a:'Write what you did today and what made it work'},
+    'มีหวัง':{w:'Hopeful', m:'believing good things are on the way', c:'You’re starting to see a way forward.', a:'Write 1 small step you’ll take tomorrow'},
+    'สนุก':{w:'Having fun', m:'so into the moment you lose track of time', c:'You got to do something you love.', a:'Write what made it fun, to reread on a tiring day'},
+    'อิ่มใจ':{w:'Fulfilled', m:'full and warm from what you’ve been given', c:'Someone or something has been good to you.', a:'Write a thank-you to them, and send it only if you want'},
+    'มั่นใจ':{w:'Confident', m:'trusting that you can handle it', c:'You came well prepared.', a:'Write what makes you confident, for shaky days'},
+    'โล่งใจ':{w:'Relieved', m:'something that was hanging over you is settled', c:'The thing you were worried about is behind you.', a:'Write what you got through and how you did it'},
+    'กระตือรือร้น':{w:'Eager', m:'wanting to get started right away', c:'You have a clear goal.', a:'Write your first step while you’re fired up'},
+    'ผ่อนคลาย':{w:'Relaxed', m:'your body and mind don’t need to rush', c:'You got the rest you needed.', a:'Write where your body feels at ease right now'},
+    'พอใจ':{w:'Content', m:'what you have feels like enough', c:'Things went the way you hoped.', a:'Write 1 small thing that made today good enough'},
+    'อุ่นใจ':{w:'Comforted', m:'feeling that someone is by your side', c:'Someone you trust is close by.', a:'Write to someone who comforts you'},
+    'สบายใจ':{w:'At ease', m:'nothing is weighing on your mind', c:'What you were worried about has worked out.', a:'Write what put your mind at ease today'},
+    'ปลอดภัย':{w:'Safe', m:'no need to stay on guard', c:'You’re with people or in a place you trust.', a:'Write where or who makes you feel safe'},
+    'ซาบซึ้ง':{w:'Touched', m:'your heart softens because of someone’s kindness', c:'Someone did something kind for you.', a:'Write about that moment in as much detail as you can'},
+    'เบาสบาย':{w:'Carefree', m:'your mind feels clear, with nothing holding you down', c:'You’ve set something down.', a:'Write what you let go of to feel this light'},
+    'มีสมาธิ':{w:'Focused', m:'able to stay with what’s in front of you', c:'You’ve found the right rhythm.', a:'Write what helps you focus, so you can use it again'},
+    'กังวล':{w:'Worried', m:'your mind races ahead to things that haven’t happened yet', c:'You’re waiting to see how something turns out.', a:'Write your worries. Which can you act on?'},
+    'หงุดหงิด':{w:'Irritated', m:'easily annoyed, even small things get to you', c:'Something is getting in the way of what you want to do.', a:'Write what’s bugging you and what you need'},
+    'กดดัน':{w:'Pressured', m:'feeling you have to get it right, with no room for mistakes', c:'Expectations are bigger than your time or energy.', a:'Write what’s piling up, then pick just one to start'},
+    'เครียด':{w:'Stressed', m:'your body is tense and your mind gets no rest', c:'A lot is hitting you at once.', a:'Write out everything on your mind, messy is fine'},
+    'โกรธ':{w:'Angry', m:'feeling you’ve been treated unfairly', c:'Someone or something crossed your line.', a:'Write what happened and what you need'},
+    'ตื่นตระหนก':{w:'Panicked', m:'your heart pounds and fear hits before you can steady yourself', c:'Something made you feel unsafe.', a:'Slowly write 5 things you can see around you'},
+    'อิจฉา':{w:'Envious', m:'wishing you had the good things you see others have', c:'You caught yourself comparing with someone else.', a:'Write what you wish you had, and a first step'},
+    'ไม่มั่นใจตัวเอง':{w:'Insecure', m:'not sure you’re good enough', c:'Something made you doubt yourself.', a:'Write about a time you got through something hard'},
+    'อับอาย':{w:'Ashamed', m:'wanting to hide from other people’s eyes', c:'You’re afraid others will think badly of you.', a:'Write to yourself like you’d comfort a friend'},
+    'เหนื่อยล้า':{w:'Worn out', m:'little energy left in your body or mind', c:'You’ve kept going without real rest.', a:'Write what wore you out today, then rest a little'},
+    'หมดไฟ':{w:'Burned out', m:'no drive left for things you used to do', c:'You’ve been giving more than you get back.', a:'Write 1 thing that drains you, 1 that fuels you'},
+    'เศร้า':{w:'Sad', m:'a heavy heart because you’ve lost something', c:'Something important is gone, or didn’t turn out as you hoped.', a:'It’s okay to be sad. Write what’s on your heart'},
+    'เหงา':{w:'Lonely', m:'wishing for someone who understands you', c:'You feel far from the people around you.', a:'Write to someone you miss, and send it only if you want'},
+    'ท้อ':{w:'Discouraged', m:'wanting to stop because you can’t see results', c:'You’ve tried for a long time and aren’t there yet.', a:'Write the smallest step you can take today'},
+    'เบื่อ':{w:'Bored', m:'everything feels flat and nothing appeals', c:'The same routine isn’t filling you up anymore.', a:'Write 1 small thing you’d like to do differently today'},
+    'ผิดหวัง':{w:'Let down', m:'things didn’t turn out how you hoped', c:'What you aimed for didn’t go as planned.', a:'Write what you hoped for. You did your best'},
+    'ว่างเปล่า':{w:'Empty', m:'quiet inside, like you don’t feel much', c:'Your heart may be tired and taking a break from feeling.', a:'Write anything in your head, even just one word'},
+    'รู้สึกผิด':{w:'Guilty', m:'blaming yourself for making something worse', c:'You care a lot about other people and what you do.', a:'Write what happened and what you can fix'},
+    'สิ้นหวัง':{w:'Hopeless', m:'can’t see any way things will get better'},
+    'เหนื่อยจนไม่อยากไปต่อ':{w:'Too tired to go on', m:'so worn out you don’t want to keep living'}
+  },
+  neutral:{w:'Hard to name yet', m:'Some feelings take time before you can name them.', a:'Write anything on your mind, no need to name it yet'},
+  ctx: {
+    work:{label:'Work or study', say:'Work or study.'}, people:{label:'People around me', say:'People around you.'},
+    self:{label:'Myself', say:'Something personal.'}, body:{label:'Physical health', say:'Your health.'},
+    money:{label:'Money', say:'Money.'}, unsure:{label:'Not sure'}
+  },
+  dur: {
+    today:{label:'Just today', say:'Started today'}, days:{label:'2–3 days', say:'It’s been 2–3 days'},
+    week:{label:'About 1–2 weeks', say:'About 1–2 weeks now'}, long:{label:'Over 2 weeks', say:'More than 2 weeks now'}, unsure:{label:'Not sure'}
+  },
+  durGood: {
+    today:{label:'Just today', say:'Feeling this good since today'}, days:{label:'2–3 days now', say:'Feeling this good for 2–3 days'},
+    week:{label:'All week', say:'Feeling this good all week'}, long:{label:'A while now', say:'Feeling this good for a while'}, unsure:{label:'Not sure'}
+  }
+};
+TONES.forEach(t => { t.en = EN.tones[t.id]; [...t.words, ...t.more].forEach(x => x.en = EN.words[x.w]); });
+CONTEXTS.forEach(c => c.en = EN.ctx[c.id]);
+DURATIONS.forEach(d => d.en = EN.dur[d.id]);
+DURATIONS_GOOD.forEach(d => d.en = EN.durGood[d.id]);
+NEUTRAL.en = EN.neutral;
+
+// interface lines; functions take the bit that changes
+const UI = {
+  th: {
+    title:'ตั้งชื่อความรู้สึก · ooca', desc:'ใช้ 2 นาที ตอบ 4 ข้อสั้นๆ ได้ชื่อความรู้สึกตอนนี้ และวิธีดูแลใจ',
+    noSignup:'ไม่ต้องสมัคร', hello:['สวัสดี วันนี้ใจเป็นยังไงบ้าง', 'ใช้แค่ 2 นาทีเอง', 'พร้อมเมื่อไหร่ กดเริ่มได้เลย'],
+    phoneAlt:'mooca ก้อนเมฆกำลังเล่นโทรศัพท์', homeTitle:'2 นาที ตั้งชื่อให้<br><span class="hl">ความรู้สึกตอนนี้</span>',
+    homeSub:'ตอบ 4 ข้อสั้นๆ ได้ชื่อความรู้สึก และวิธีดูแลใจ', start:'เริ่มเช็กใจ',
+    homeFine:'ถ้ารู้สึกไม่ไหว <a href="tel:1323">โทร 1323</a> ได้ตลอด 24 ชม.',
+    back:'ย้อนกลับ', step:n => `ข้อ ${n}/4`, next:'ถัดไป', skip:'ข้ามข้อนี้',
+    q1:'ตอนนี้ใจเป็นแบบไหน', q1sub:'เลือกที่ใกล้สุด ไม่ต้องเป๊ะ', tonesAria:'โทนความรู้สึก', seeAll:'เลือกไม่ถูก ขอดูทุกคำ',
+    q2:'คำไหนตรงกับใจที่สุด', q2sub:['เลือกได้ <span class="nw">1–2 คำ</span>', 'เลือกเพิ่มได้อีก <span class="nw">1 คำ</span>', 'ครบแล้ว กดถัดไปได้เลย'],
+    wordsAria:'คำความรู้สึก', meaning:(w, m) => `<b style="font-weight:600">${w}</b> คือ${m}`, meaningEmpty:'แตะคำเพื่อดูความหมาย', neutralBtn:'ยังบอกไม่ถูก',
+    q3:'มาจากเรื่องไหน', q3sub:'เลือกเรื่องหลักก็พอ', q3done:unsure => `${unsure?'ไม่เป็นไร':'เข้าใจแล้ว'} เหลืออีกข้อ`,
+    qGood:'<span class="nw">รู้สึกดีแบบนี้</span><wbr><span class="nw">มานานแค่ไหนแล้ว</span>', qHeavy:'เป็นมานานแค่ไหนแล้ว', durAria:'นานแค่ไหน',
+    durSub:'ตอบคร่าวๆ ก็พอ', durDoneGood:id => `${{week:'เยี่ยมเลย',long:'ดีใจด้วยนะ',unsure:'ไม่เป็นไร'}[id]||'ดีจัง'} ไปดูการ์ดกัน`,
+    durDoneHeavy:id => `${{long:'ขอบคุณนะ',unsure:'ไม่เป็นไร'}[id]||'ได้เลย'} ไปดูการ์ดกัน`, seeCard:'ดูการ์ดของฉัน',
+    resTitle:'ความรู้สึกของคุณวันนี้', closeRestart:'ปิดและเริ่มใหม่', feelLb:'ตอนนี้คุณอาจกำลังรู้สึก', nowLb:'ตอนนี้',
+    causeLb:'อาจมาจาก', okLb:'ไม่เป็นไรเลย', and:' และ ',
+    talk:{1:['', 'ถ้ารู้สึกแบบนี้บ่อยขึ้น คุยกับนักจิตวิทยาได้เสมอ'], 2:['คุยได้เลย ไม่ต้องรอให้หนัก', 'ได้เล่าให้คนที่เข้าใจฟัง ช่วยให้ใจเบาลงได้'], 3:['เป็นมาสักพักแล้ว ลองคุยกับนักจิตวิทยาดูนะ', 'คุณไม่ต้องรับมือเรื่องนี้คนเดียว']},
+    cta:`คุยกับนักจิตวิทยา<span class="nw">บน ${OOCA_LOGO}</span>`, writeLb:'ลองเขียนดู · 30 วินาที', openNote:'เปิดโน้ตของฉัน', keepWriting:'เขียนต่อ', writeBtn:'เริ่มเขียน 30 วินาที',
+    save:'เก็บการ์ดไว้', restart:'เริ่มใหม่', resFine:'ผลนี้ไม่ใช่การวินิจฉัยทางการแพทย์ · กลับมาเช็กใจได้ทุกเมื่อ',
+    hugAlt:'mooca ก้อนเมฆกอด Sunny ไว้', safeTitle:'ขอบคุณที่บอกให้รู้นะ', safeMsg:'ความรู้สึกนี้หนักมาก และคุณไม่ต้องแบกไว้คนเดียว ตอนนี้มีคนพร้อมฟังคุณอยู่',
+    call:'โทรสายด่วนสุขภาพจิต <span class="nw">1323</span>', callSmall:'ฟรี ตลอด 24 ชั่วโมง',
+    safeFine:'ถ้าคุณหรือคนใกล้ตัวกำลังอยู่ในอันตราย <a href="tel:1669">โทร 1669</a> ทันที', rePick:'กลับไปเลือกคำใหม่',
+    noteClose:'ปิดโน้ต', notePrivate:'โน้ตนี้อยู่ในเครื่องคุณเท่านั้น ไม่ถูกส่งไปไหน', done:'เสร็จแล้ว', placeholder:'เริ่มเขียนได้เลย ไม่ต้องสวย',
+    timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน'
+  },
+  en: {
+    title:'Name your feeling · ooca', desc:'Take 2 minutes and 4 quick questions to name how you feel and find a way to care for it.',
+    noSignup:'No sign-up', hello:['Hi! How’s your heart?', 'Only takes 2 minutes', 'Ready when you are'],
+    phoneAlt:'Mooca the cloud, playing on a phone', homeTitle:'2 minutes to name<br><span class="hl">how you feel now</span>',
+    homeSub:'4 quick questions to name it and care for it', start:'Start check-in',
+    homeFine:'If it’s too much, <a href="tel:1323">call 1323</a> day or night',
+    back:'Back', step:n => `${n} of 4`, next:'Next', skip:'Skip this one',
+    q1:'How do you feel?', q1sub:'No need to be exact', tonesAria:'Feeling tones', seeAll:'Not sure? See every word',
+    q2:'Which word fits?', q2sub:['Pick <span class="nw">1 or 2</span> words', 'You can add <span class="nw">1 more</span>', 'All set. Tap Next'],
+    wordsAria:'Feeling words', meaning:(w, m) => `<b style="font-weight:600">${w}</b>: ${m}`, meaningEmpty:'Tap a word to see what it means', neutralBtn:'I can’t name it yet',
+    q3:'What’s it about?', q3sub:'Just the main one', q3done:unsure => unsure ? 'Okay. One more left' : 'Got it. One more left',
+    qGood:'<span class="nw">How long has</span><wbr><span class="nw">it felt this good?</span>', qHeavy:'How long so far?', durAria:'How long',
+    durSub:'A rough guess is fine', durDoneGood:id => `${{week:'Great!',long:'So glad!',unsure:'Okay.'}[id]||'Nice!'} Card’s ready`,
+    durDoneHeavy:id => `${{long:'Thanks.',unsure:'Okay.'}[id]||'Got it.'} Card’s ready`, seeCard:'See my card',
+    resTitle:'Your feelings today', closeRestart:'Close and start over', feelLb:'You might be feeling', nowLb:'Right now',
+    causeLb:'It might come from', okLb:'That’s okay', and:' and ',
+    talk:{1:['', 'If this keeps coming back, you can always talk to a psychologist.'], 2:['You don’t have to wait until it’s heavy.', 'Talking to someone who understands can help you feel lighter.'], 3:['It’s been a while. Try talking to a psychologist.', 'You don’t have to handle this alone.']},
+    cta:`Talk to a psychologist <span class="nw">on ${OOCA_LOGO}</span>`, writeLb:'Try writing · 30 seconds', openNote:'Open my note', keepWriting:'Keep writing', writeBtn:'Write for 30 seconds',
+    save:'Save card', restart:'Start over', resFine:'This isn’t a medical diagnosis · Check in again any time',
+    hugAlt:'Mooca the cloud hugging Sunny', safeTitle:'Thank you for telling me', safeMsg:'This feeling is really heavy, and you don’t have to carry it alone. Someone is ready to listen right now.',
+    call:'Call the mental health hotline <span class="nw">1323</span>', callSmall:'Free, 24 hours a day',
+    safeFine:'If you or someone near you is in danger, <a href="tel:1669">call 1669</a> now', rePick:'Choose a different word',
+    noteClose:'Close note', notePrivate:'This note stays on your device and isn’t sent anywhere', done:'Done', placeholder:'Just start. Messy is fine.',
+    timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.'
+  }
+};
+const L = k => UI[S.lang][k];
+// the same item in the page's language (Thai is the base text)
+const loc = x => S.lang === 'en' && x && x.en ? {...x, ...x.en} : x;
+const savedLang = () => { try { return localStorage.getItem('ooca-lang') === 'en' ? 'en' : 'th'; } catch(_) { return 'th'; } };
+
+/* ---------- state ---------- */
+const S = { screen:'home', tone:null, picks:[], showAll:false, ctx:null, dur:null, history:[], dir:'fwd', note:'', noteUp:false, lang:savedLang(), at:null };
+const app = document.getElementById('app');
+const allWords = () => TONES.flatMap(t => [...t.words, ...t.more].map(x => ({...x, tone:t})));
+
+function go(screen){ S.history.push(S.screen); S.screen = screen; S.dir = 'fwd'; render(); }
+function back(){ S.screen = S.history.pop() || 'home'; S.dir = 'back'; render(); }
+function restart(){ Object.assign(S,{screen:'home',tone:null,picks:[],showAll:false,ctx:null,dur:null,history:[],dir:'back',note:'',noteUp:false,at:null}); render(); }
+
+/* ---------- helpers ---------- */
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// numbers stay with the next word ("2 สัปดาห์")
+const ph = s => esc(s).replace(/(\d[\d–]*) /g, '$1 ').split(' ').map(w => `<span class="ph">${w}</span>`).join(' ');
+// when a card was made, in the page's language: ["พฤหัสบดี 29 ต.ค. 2569", "14:32 น."] / ["Thu, Oct 29, 2026", "2:32 PM"]
+// (Thai drops the "วัน…ที่" wrapper around the weekday so the longest day still fits one line at 320px)
+const stampOf = t => { const d = new Date(t), en = S.lang === 'en', loc = en ? 'en-US' : 'th-TH';
+  const day = en ? d.toLocaleDateString(loc, {weekday:'short', month:'short', day:'numeric', year:'numeric'})
+    : new Intl.DateTimeFormat(loc, {weekday:'long', day:'numeric', month:'short', year:'numeric'}).formatToParts(d)
+        .filter(p => p.type !== 'literal').map(p => p.type === 'weekday' ? p.value.replace(/^วัน/, '') : p.value).join(' ');
+  return [day, d.toLocaleTimeString(loc, {hour:'numeric', minute:'2-digit'}) + (en ? '' : ' น.')]; };
+const ico = {
+  back:'<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>',
+  close:'<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>',
+  check:'<svg class="ck" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>',
+  checkW:'<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>',
+  arrow:'<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>',
+  pen:'<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
+  play:'<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16l13 -8z"/></svg>',
+  refresh:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>',
+  cal:'<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M16 3v4M8 3v4M4 11h16"/></svg>',
+  save:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 11l5 5l5 -5"/><path d="M12 4v12"/></svg>',
+  phone:'<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"/></svg>',
+  ok:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#DBF0EE"/><path d="M4.8 8.2l2.1 2.1l4.3-4.4" fill="none" stroke="#00796B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
+// round flags for the language switch: Thailand, and the centre of the Union Jack for English
+const FLAG = {
+  th:'<svg viewBox="0 0 18 18"><rect width="18" height="18" fill="#A51931"/><rect y="3" width="18" height="12" fill="#F4F5F8"/><rect y="6" width="18" height="6" fill="#2D2A4A"/></svg>',
+  en:'<svg viewBox="15 0 30 30"><rect width="60" height="30" fill="#012169"/><path d="M0 0l60 30M60 0L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30M60 0L0 30" stroke="#C8102E" stroke-width="2.4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></svg>'
+};
+const DOTS = '<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>';
+function topBar(step){
+  const bars = [1,2,3,4].map(i => `<span class="${i<=step?'on':''}${i===step?' now':''}"></span>`).join('');
+  return `<div class="top"><button class="icon-btn" data-act="back" aria-label="${L('back')}">${ico.back}</button>
+  <div class="progress" aria-hidden="true">${bars}</div><span class="step-count">${L('step')(step)}</span></div>`;
+}
+// page-level text that lives outside the rendered screens
+function applyLang(){
+  document.documentElement.lang = S.lang;
+  document.title = L('title');
+  document.querySelector('meta[name="description"]').content = L('desc');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = L(el.dataset.i18n); });
+  document.querySelector('[data-note="close"]').setAttribute('aria-label', L('noteClose'));
+}
+function setLang(lang){
+  S.lang = lang;
+  try { localStorage.setItem('ooca-lang', lang); } catch(_) {}
+  // same-screen render: no entrance replay, focus stays on the switch, only the words ease in
+  applyLang(); render();
+  app.querySelector('.screen').classList.add('relang');
+  if (S.screen === 'home') greet(0);
+}
+function guide(img, q, sub, tags='', cls=''){
+  return `<div class="guide"><span class="mooca"><img class="float" src="${img}" alt=""></span><div class="bubble talks ${cls}">${DOTS}${tags}<h1 tabindex="-1">${q}</h1>${sub?`<p data-swap="sub">${sub}</p>`:''}</div></div>`;
+}
+function setZone(t){
+  app.style.setProperty('--zone', t ? t.zone : '#1F77DF');
+  app.style.setProperty('--zone-solid', t ? t.solid : '#1A68C7');
+  app.style.setProperty('--zone-ink', t ? t.ink : '#0A47CA');
+  app.style.setProperty('--zone-line', t ? t.line : '#C7DDF7');
+  app.style.setProperty('--bg', t ? t.bg : '#E4EFFB');
+}
+function toast(msg){
+  const el = document.getElementById('toast'); el.textContent = msg; el.hidden = false;
+  void el.offsetWidth; el.classList.add('show');
+  clearTimeout(toast.t); toast.t = setTimeout(() => { el.classList.remove('show'); toast.t = setTimeout(() => el.hidden = true, 300); }, 2400);
+}
+
+/* ---------- screens ---------- */
+const V = {};
+V.home = () => { setZone(null); app.style.setProperty('--bg','#F6F6F6'); return `
+<section class="screen home">
+  <div class="top" style="justify-content:space-between"><img class="brand" src="${IMG.logo}" width="123" height="24" alt="mindfull">
+    <div class="lang-sw" role="group" aria-label="ภาษา / Language" data-on="${S.lang}"><span class="thumb" aria-hidden="true"></span>
+      ${['th','en'].map(l => `<button data-act="lang" data-id="${l}" lang="${l}" aria-pressed="${S.lang===l}"><span class="flag" aria-hidden="true">${FLAG[l]}</span>${l==='th'?'ไทย':'EN'}</button>`).join('')}
+    </div></div>
+  <div class="hero"><div class="halo"></div><div class="say talks" aria-hidden="true">${DOTS}<span>${L('hello')[0]}</span></div><span class="mooca"><img class="float" src="${IMG.phone}" alt="${L('phoneAlt')}"></span></div>
+  <p class="badge">${ico.ok}${L('noSignup')}</p>
+  <h1 tabindex="-1">${L('homeTitle')}</h1>
+  <p class="sub">${L('homeSub')}</p>
+  <div class="grow"></div>
+  <div class="actions">
+    <button class="primary start" data-act="start">${L('start')}${ico.arrow}</button>
+    <p class="fine">${L('homeFine')}</p>
+  </div>
+</section>`; };
+
+V.tone = () => { const t = S.tone; setZone(t); return `
+<section class="screen">
+  ${topBar(1)}
+  ${guide(t ? t.img : IMG.calm, L('q1'), t ? loc(t).reply : L('q1sub'))}
+  <div class="tones" role="group" aria-label="${L('tonesAria')}">
+  ${TONES.map(x => `<button class="tone" data-act="tone" data-id="${x.id}" aria-pressed="${t&&t.id===x.id}" style="--zone:${x.zone};--zone-ink:${x.ink};--zone-solid:${x.solid}">
+     <span class="art" style="--tbg:${x.bg};--tz:${x.zone}"><img src="${x.img}" alt=""><i class="ck">${ico.checkW}</i></span>
+     <b>${ph(loc(x).label)}</b><small>${ph(loc(x).eg)}</small></button>`).join('')}
+  </div>
+  <button class="text-btn" data-act="all">${L('seeAll')}</button>
+  <div class="grow"></div>
+  <div class="actions"><button class="primary" data-act="toWords" ${t?'':'disabled'}>${L('next')}</button></div>
+</section>`; };
+
+V.words = () => {
+  const t = S.tone;
+  setZone(S.showAll ? null : t);
+  const list = S.showAll ? null : [...t.words, ...t.more];
+  const btn = x => { const on = S.picks.some(p => p.w===x.w); const full = !on && S.picks.length>=2;
+    return `<button class="word" data-act="word" data-w="${esc(x.w)}" aria-pressed="${on}" ${full?'disabled':''} ${S.showAll?`style="--zone:${x.tone.zone};--zone-line:${x.tone.line};--zone-solid:${x.tone.solid}"`:''}>${on?'✓ ':''}${esc(loc(x).w)}</button>`; };
+  const grid = S.showAll
+    ? TONES.map(tt => `<p class="group-label">${loc(tt).label}</p><div class="words">${[...tt.words,...tt.more].map(x=>btn({...x,tone:tt})).join('')}</div>`).join('')
+    : `<div class="words" role="group" aria-label="${L('wordsAria')}">${list.map(btn).join('')}</div>`;
+  const sub = L('q2sub')[S.picks.length];
+  return `
+<section class="screen">
+  ${topBar(2)}
+  ${guide(t?t.img:IMG.calm, L('q2'), sub)}
+  ${grid}
+  <div class="meaning ${S.picks.length?'':'empty'}" data-swap="meaning">${S.picks.length?S.picks.map(p=>`<p>${L('meaning')(esc(loc(p).w), esc(loc(p).m))}</p>`).join(''):L('meaningEmpty')}</div>
+  <button class="text-btn" data-act="neutral">${L('neutralBtn')}</button>
+  <div class="grow"></div>
+  <div class="actions"><button class="primary" data-act="toCtx" ${S.picks.length?'':'disabled'}>${L('next')}</button></div>
+</section>`; };
+
+const tagsFor = (extra=[]) => `<div class="tags">${S.picks.map(p=>`<span class="tag">${esc(loc(p).w)}</span>`).join('')}${extra.map(e=>`<span class="tag soft">${esc(e)}</span>`).join('')}</div>`;
+
+V.ctx = () => { setZone(S.tone); return `
+<section class="screen">
+  ${topBar(3)}
+  ${guide(moocaFor(IMG.calm), L('q3'), !S.ctx ? L('q3sub') : L('q3done')(S.ctx==='unsure'), tagsFor())}
+  <div class="opts" role="group" aria-label="${L('q3')}">
+  ${CONTEXTS.map(c => `<button class="opt with-ic" data-act="ctx" data-id="${c.id}" aria-pressed="${S.ctx===c.id}"><span class="oi">${CTX_ICON[c.id]}</span><span class="ol">${loc(c).label}</span>${ico.check}</button>`).join('')}
+  </div>
+  <div class="grow"></div>
+  <div class="actions">
+    <button class="primary" data-act="toDur" ${S.ctx?'':'disabled'}>${L('next')}</button>
+    <button class="text-btn" data-act="skipCtx">${L('skip')}</button>
+  </div>
+</section>`; };
+
+V.dur = () => { setZone(S.tone); const c = CONTEXTS.find(x=>x.id===S.ctx); const good = feelsGood(); return `
+<section class="screen">
+  ${topBar(4)}
+  ${good
+    // the longer question takes the tag row's place, so the bubble keeps the shared height
+    ? guide(moocaFor(IMG.calm), L('qGood'), !S.dur ? L('durSub') : L('durDoneGood')(S.dur), '', 'q-wrap')
+    : guide(moocaFor(IMG.calm), L('qHeavy'), !S.dur ? L('durSub') : L('durDoneHeavy')(S.dur), tagsFor(c&&c.id!=='unsure'?[loc(c).label]:[]))}
+  <div class="opts" role="group" aria-label="${L('durAria')}">
+  ${durList().map(d => `<button class="opt" data-act="dur" data-id="${d.id}" aria-pressed="${S.dur===d.id}">${loc(d).label}${ico.check}</button>`).join('')}
+  </div>
+  <div class="grow"></div>
+  <div class="actions">
+    <button class="primary" data-act="toResult" ${S.dur?'':'disabled'}>${L('seeCard')}</button>
+    <button class="text-btn" data-act="skipDur">${L('skip')}</button>
+  </div>
+</section>`; };
+
+function resultData(){
+  const picks = S.picks.length ? S.picks : [NEUTRAL];
+  const main = picks[0];
+  const c = CONTEXTS.find(x=>x.id===S.ctx); const d = durList().find(x=>x.id===S.dur);
+  let lv = Math.max(...picks.map(p=>p.lv));
+  if (lv > 0 && d) lv = Math.max(lv, d.floor); // duration sets the minimum level
+  return { picks, main, lv, ctx: c&&loc(c).say, cause: loc(main).c, since: d&&loc(d).say };
+}
+
+V.result = () => {
+  setZone(S.picks.length ? (S.picks[0].tone || S.tone) : null);
+  const r = resultData();
+  const two = r.picks.length > 1;
+  const name = r.picks.map(p=>esc(loc(p).w)).join(L('and'));
+  const neutral = r.main === NEUTRAL;
+  const feelGood = r.lv === 0;
+  const [talkLead, talkRest] = L('talk')[r.lv] || ['', ''];
+  const talkCopy = `${talkLead ? `<b style="font-weight:600">${ph(talkLead)}</b> ` : ''}${ph(talkRest)}`;
+  const talk = feelGood ? '' : `
+  <div class="talk ${r.lv===1?'quiet':''}">
+    <p>${talkCopy}</p>
+    <a class="cta ${r.lv===1?'ghost':''}" href="${OOCA_URL}" target="_blank" rel="noopener"><span>${L('cta')}</span>${ico.arrow}</a>
+  </div>`;
+  const action = `<div class="crow"><span class="lb">${L('writeLb')}</span><span>${ph(loc(r.main).a)}</span>
+     ${S.note.trim() ? `<p class="note-snip">${esc(S.note.trim())}</p>` : ''}
+     <button class="timer${S.noteUp?' done':''}" data-act="timer" aria-haspopup="dialog">${S.note.trim() ? `<span>${L('openNote')}</span>` : `${ico.pen}<span>${S.noteUp?L('keepWriting'):L('writeBtn')}</span>`}</button></div>`;
+  const parts = r.lv===3
+    ? talk + `<div class="card" style="padding-top:4px">${action.replace('class="crow"','class="crow" style="border-top:none"')}</div>`
+    : '';
+  // the moment this card was made stays fixed while you write the note or come back to it
+  if (!S.at) S.at = Date.now();
+  const [day, time] = stampOf(S.at);
+  return `
+<section class="screen result">
+  <div class="top" style="justify-content:space-between"><span style="font-size:16px;font-weight:500;color:var(--text-2)">${L('resTitle')}</span>
+    <button class="icon-btn" data-act="restart" aria-label="${L('closeRestart')}">${ico.close}</button></div>
+  <div class="card main">
+    <div class="card-head">
+      <p class="stamp">${ico.cal}<time datetime="${new Date(S.at).toISOString()}"><span class="nw">${day}</span> <span class="nw">· ${time}</span></time></p>
+      <div class="talks who">${DOTS}<span class="lb">${neutral?L('nowLb'):L('feelLb')}</span><h1 class="name ${two||neutral?'two':''}" tabindex="-1"><span class="mark">${name}</span></h1></div>
+      <span class="mooca"><img class="float" src="${moocaFor(feelGood?IMG.happy:IMG.thanks)}" alt="">${feelGood?'<i class="spark" aria-hidden="true">✦</i>'.repeat(3):''}</span>
+      <div class="say-card talks">${DOTS}<span class="lb">${neutral?L('okLb'):L('causeLb')}</span><p>${neutral?ph(loc(NEUTRAL).m):`${r.ctx?`<b style="font-weight:600">${ph(r.ctx)}</b> `:''}${ph(r.cause || loc(r.main).m)}`}</p>${!neutral&&r.since?`<span class="since">${ph(r.since)}</span>`:''}</div>
+    </div>
+    ${r.lv===3 ? '' : action}
+  </div>
+  ${r.lv===3 ? parts : talk}
+  <div class="grow"></div>
+  <div class="duo">
+    <button class="soft-btn" data-act="save">${ico.save}${L('save')}</button>
+    <button class="soft-btn" data-act="restart">${ico.refresh}${L('restart')}</button>
+  </div>
+  <p class="fine" style="color:var(--text-2);font-size:13px">${ph(L('resFine'))}</p>
+</section>`; };
+
+V.safety = () => { app.style.setProperty('--bg','#FFF4EC'); return `
+<section class="screen safety">
+  <div class="top" style="justify-content:flex-end"><button class="icon-btn" data-act="back" aria-label="${L('back')}">${ico.back}</button></div>
+  <div class="hug"><img src="${IMG.hug}" alt="${L('hugAlt')}"></div>
+  <h1 tabindex="-1">${L('safeTitle')}</h1>
+  <p class="msg">${ph(L('safeMsg'))}</p>
+  <a class="call" href="tel:1323"><span class="ic">${ico.phone}</span><span><b>${L('call')}</b><small>${L('callSmall')}</small></span></a>
+  <a class="cta ghost" href="${OOCA_URL}" target="_blank" rel="noopener"><span>${L('cta')}</span>${ico.arrow}</a>
+  <p class="fine">${L('safeFine')}</p>
+  <div class="grow"></div>
+  <button class="text-btn" data-act="rePick">${L('rePick')}</button>
+</section>`; };
+
+/* ---------- render + events ---------- */
+let timerId = null, loopId = null, lastHit = null;
+let shown = null;
+
+// ---- 30-second note ----
+// the timer is a gentle guide: when it ends the clock rings, but the note stays open so nobody is cut off mid-sentence
+const noteDlg = document.getElementById('note'), noteText = document.getElementById('note-text'), notePaper = noteDlg.querySelector('.paper');
+const noteClock = noteDlg.querySelector('.clock'), noteSec = noteClock.querySelector('.sec'), noteProg = noteClock.querySelector('.prog'), noteStatus = noteDlg.querySelector('.note-status');
+let noteTimer = null;
+function chime(){
+  // a single soft "ding" — one bell strike that fades out, never a repeating alarm
+  try {
+    const ac = new (window.AudioContext || window.webkitAudioContext)(), t = ac.currentTime;
+    [[1318.5,.07],[2637,.018]].forEach(([f,v]) => { const o = ac.createOscillator(), g = ac.createGain(); o.type='sine'; o.frequency.value=f;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t+.005); g.gain.exponentialRampToValueAtTime(.0001, t+.9);
+      o.connect(g).connect(ac.destination); o.start(t); o.stop(t+.95); });
+    setTimeout(() => ac.close(), 1300);
+  } catch(_) {}
+  if (navigator.vibrate) navigator.vibrate(60);
+}
+function noteTimeUp(sound){
+  S.noteUp = true; clearInterval(noteTimer); noteTimer = null;
+  noteSec.textContent = L('timeUp'); noteSec.style.fontSize = '13px'; noteProg.style.strokeDashoffset = 100;
+  notePaper.classList.add('timeup');
+  noteStatus.textContent = L('timeUpMsg');
+  if (sound) { noteClock.classList.remove('ringing'); void noteClock.offsetWidth; noteClock.classList.add('ringing'); chime(); }
+}
+function openNote(prompt){
+  clearInterval(noteTimer); noteTimer = null;
+  noteDlg.querySelector('.note-q').innerHTML = ph(prompt);
+  noteText.placeholder = L('placeholder');
+  noteText.value = S.note;
+  notePaper.classList.remove('timeup'); noteClock.classList.remove('ringing'); noteStatus.textContent = ''; noteSec.style.fontSize = '';
+  noteDlg.showModal();
+  noteText.focus({preventScroll:true});
+  if (S.noteUp) { noteTimeUp(false); return; }
+  // only ever one countdown, and it stops itself the moment it rings, so the ding plays exactly once
+  clearInterval(noteTimer);
+  const end = performance.now() + 30000;
+  const id = setInterval(() => tick(), 250);
+  const tick = () => { if (noteTimer !== id) return clearInterval(id);
+    const left = Math.max(0, end - performance.now());
+    noteSec.textContent = Math.ceil(left / 1000); noteProg.style.strokeDashoffset = 100 - left / 300;
+    if (left <= 0) { clearInterval(id); noteTimeUp(true); } };
+  noteTimer = id; tick();
+}
+function closeNote(){
+  clearInterval(noteTimer); noteTimer = null;
+  S.note = noteText.value; if (noteDlg.open) noteDlg.close();
+  if (S.screen === 'result') render();
+}
+noteDlg.addEventListener('click', e => {
+  const b = e.target.closest('[data-note]');
+  if (b) closeNote(); else if (e.target === noteDlg) closeNote(); // a tap on the dimmed backdrop
+});
+noteDlg.addEventListener('cancel', e => { e.preventDefault(); closeNote(); });
+noteText.addEventListener('input', () => { S.note = noteText.value; });
+const calm = matchMedia('(prefers-reduced-motion: reduce)');
+const keyOf = el => el && el.dataset && el.dataset.act ? `[data-act="${el.dataset.act}"]` + (el.dataset.id ? `[data-id="${el.dataset.id}"]` : el.dataset.w ? `[data-w="${CSS.escape(el.dataset.w)}"]` : '') : null;
+// idle loops follow the clock, so an image moved into a re-rendered screen doesn't jump back to frame 0
+function syncFloat(){
+  const t = performance.now();
+  app.querySelectorAll('.float').forEach(el => { const d = parseFloat(getComputedStyle(el).animationDuration) * 1000 || 4000; el.style.animationDelay = `-${Math.round(t % d)}ms`; });
+}
+// choices rise in one after another once Mooca has spoken
+function stagger(){
+  app.querySelectorAll('.screen > :not(.top,.guide,.hero,.grow,.tones,.words,.opts,.card.main), .tone, .word, .opt')
+    .forEach((el, i) => { el.classList.add('rise'); el.style.setProperty('--i', Math.min(i, 12)); });
+}
+// home bubble keeps chatting
+function greet(n){
+  if (calm.matches) return;
+  loopId = setTimeout(() => {
+    const say = app.querySelector('.say'); if (!say) return;
+    const hello = L('hello'); n = (n + 1) % hello.length;
+    say.style.setProperty('--talk', '.7s');
+    say.innerHTML = `${DOTS}<span>${hello[n]}</span>`;
+    greet(n);
+  }, n === 0 ? 5000 : 4000);
+}
+function render(){
+  clearInterval(timerId); clearTimeout(loopId);
+  const same = shown === S.screen; shown = S.screen;
+  if (!same){
+    app.innerHTML = V[S.screen]();
+    app.querySelector('.screen').classList.add(S.dir);
+    stagger(); syncFloat(); lastHit = null;
+    if (S.screen === 'home') greet(0);
+    const h = app.querySelector('h1'); if (h && S.history.length) h.focus({preventScroll:true});
+    window.scrollTo(0,0); app.scrollTop = 0;
+    return;
+  }
+  // same screen (a selection changed): no entrance, keep scroll, images and focus; only what changed reacts
+  const y = window.scrollY, ay = app.scrollTop;
+  const key = keyOf(document.activeElement), hit = keyOf(lastHit); lastHit = null;
+  const sig = e => e.dataset.key ?? e.textContent;
+  const before = new Map([...app.querySelectorAll('[data-swap]')].map(e => [e.dataset.swap, sig(e)]));
+  const wasOff = !!app.querySelector('.actions .primary:disabled');
+  const oldImgs = [...app.querySelectorAll('img')];
+  app.innerHTML = V[S.screen]();
+  app.querySelector('.screen').classList.add('stay');
+  app.querySelectorAll('img').forEach(n => { const i = oldImgs.findIndex(o => o.getAttribute('src') === n.getAttribute('src') && o.className === n.className); if (i >= 0) n.replaceWith(oldImgs.splice(i,1)[0]); });
+  app.querySelectorAll('[data-swap]').forEach(e => {
+    const was = before.get(e.dataset.swap); if (was === undefined || was === sig(e)) return;
+    if (e.dataset.key === undefined) e.classList.add('swap');
+    else { e.classList.add('reflow'); [...e.children].forEach((c, i) => c.style.setProperty('--i', i)); }
+  });
+  const j = hit && app.querySelector(hit); if (j) j.classList.add('just');
+  const m = app.querySelector('.guide .mooca'); if (m) m.classList.add('hop');
+  const p = app.querySelector('.actions .primary'); if (wasOff && p && !p.disabled) p.classList.add('ready');
+  syncFloat();
+  const f = key && app.querySelector(key); if (f) f.focus({preventScroll:true});
+  window.scrollTo(0,y); app.scrollTop = ay;
+}
+
+// the start button grows into a circle that fills the app frame (not the whole page), then the next screen shows through
+function burst(btn, e, next){
+  if (calm.matches) return next();
+  if (btn.dataset.busy) return; btn.dataset.busy = '1';
+  const a = app.getBoundingClientRect(), r = btn.getBoundingClientRect();
+  const left = Math.max(a.left, 0), top = Math.max(a.top, 0);
+  const w = Math.min(a.right, innerWidth) - left, h = Math.min(a.bottom, innerHeight) - top;
+  const x = (e.clientX || r.left + r.width/2) - left, y = (e.clientY || r.top + r.height/2) - top;
+  const R = Math.hypot(Math.max(x, w - x), Math.max(y, h - y));
+  const clip = document.createElement('div'); clip.className = 'burst-clip';
+  clip.style.cssText = `left:${left}px;top:${top}px;width:${w}px;height:${h}px;border-radius:${getComputedStyle(app).borderRadius}`;
+  const c = document.createElement('div'); c.className = 'burst';
+  c.style.cssText = `left:${x-R}px;top:${y-R}px;width:${2*R}px;height:${2*R}px`;
+  clip.appendChild(c); document.body.appendChild(clip);
+  c.addEventListener('animationend', () => { next(); clip.classList.add('out'); setTimeout(() => clip.remove(), 400); }, {once:true});
+}
+
+// ---- save the card as an image ----
+// the card is drawn onto a canvas (not a DOM screenshot), so the keepsake looks the same on every device
+const CARD_FONT = '"Gotham Rounded Latin", Prompt, sans-serif';
+const cardFont = (weight, size) => `${weight} ${size}px ${CARD_FONT}`;
+const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+const mixHex = (a, b, p) => { const h = s => [1, 3, 5].map(i => parseInt(s.slice(i, i + 2), 16)); const x = h(a), y = h(b); return `rgb(${x.map((v, i) => Math.round(v * p + y[i] * (1 - p))).join(',')})`; };
+function roundRect(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+// styled runs [{t, f, c}] → lines no wider than w. Like ph() on screen, lines break at the spaces between
+// Thai phrases; only a phrase wider than the whole line is split, and then between words (Intl.Segmenter)
+function wrapRuns(m, runs, w){
+  const seg = window.Intl && Intl.Segmenter ? new Intl.Segmenter(S.lang, {granularity:'word'}) : null;
+  const lines = [[]]; let x = 0;
+  const add = (t, r) => { m.font = r.f; const tw = m.measureText(t).width;
+    if (!t.trim()) { if (lines[lines.length - 1].length) { lines[lines.length - 1].push({t, f: r.f, c: r.c, w: tw}); x += tw; } return; }
+    if (x + tw > w && x > 0) { lines.push([]); x = 0; }
+    if (tw > w && seg && t.length > 1) { [...seg.segment(t)].forEach(p => add(p.segment, r)); return; }
+    lines[lines.length - 1].push({t, f: r.f, c: r.c, w: tw}); x += tw; };
+  for (const r of runs) r.t.split(/( +)/).filter(Boolean).forEach(t => add(t, r));
+  return lines.map(l => { while (l.length && !l[l.length - 1].t.trim()) l.pop(); return {runs: l, w: l.reduce((a, r) => a + r.w, 0)}; }).filter(l => l.runs.length);
+}
+// lays the card out once (measuring), returning its size and a draw(ctx) that paints it at 1x units
+async function buildCardImage(withImages){
+  const r = resultData(), neutral = r.main === NEUTRAL, good = r.lv === 0;
+  const Z = (S.picks.length && (S.picks[0].tone || S.tone)) || {zone:'#1F77DF', ink:'#0A47CA', bg:'#E4EFFB'};
+  const TEXT = '#355956', TEXT2 = '#3F6866';
+  await Promise.all([400, 500, 600].map(w => document.fonts.load(cardFont(w, 20), 'กขA1')));
+  const [mooca, logo] = withImages ? await Promise.all([moocaFor(good ? IMG.happy : IMG.thanks), IMG.logo].map(s => loadImg(s).catch(() => null))) : [null, null];
+  const m = document.createElement('canvas').getContext('2d');
+  const W = 540, P = 28, IP = 30, X = P + IP, IW = W - 2 * (P + IP);
+  // header row (brand left, app name right) sits above the card
+  const headY = P, cardTop = P + 24 + 18;
+  const ops = []; let y = cardTop + IP;
+  const lines = (runs, w = IW) => wrapRuns(m, runs, w);
+  // queue lines of text at the current y, centred or left, then move y past them
+  const put = (ls, x, lh, align = 'left', w = IW) => {
+    ls.forEach((l, i) => { let xx = align === 'center' ? x + (w - l.w) / 2 : x; const yy = y + lh / 2 + i * lh;
+      l.runs.forEach(rn => { const at = xx; ops.push(c => { c.font = rn.f; c.fillStyle = rn.c; c.fillText(rn.t, at, yy); }); xx += rn.w; }); });
+    y += ls.length * lh;
+  };
+  // date chip
+  const [day, time] = stampOf(S.at || Date.now()), when = `${day} · ${time}`;
+  m.font = cardFont(500, 15); const chipW = m.measureText(when).width + 50, chipX = (W - chipW) / 2, chipY = y;
+  ops.push(c => { c.fillStyle = '#DBF0EE'; roundRect(c, chipX, chipY, chipW, 34, 17); c.fill();
+    c.strokeStyle = '#009688'; c.lineWidth = 1.6; roundRect(c, chipX + 15, chipY + 10, 15, 15, 3); c.stroke();
+    c.beginPath(); c.moveTo(chipX + 15, chipY + 15.5); c.lineTo(chipX + 30, chipY + 15.5); c.moveTo(chipX + 19, chipY + 8); c.lineTo(chipX + 19, chipY + 12); c.moveTo(chipX + 26, chipY + 8); c.lineTo(chipX + 26, chipY + 12); c.stroke();
+    c.font = cardFont(500, 15); c.fillStyle = TEXT; c.fillText(when, chipX + 38, chipY + 18); });
+  y += 34 + 20;
+  // the feeling, highlighted like on screen
+  put(lines([{t: neutral ? L('nowLb') : L('feelLb'), f: cardFont(600, 15), c: Z.ink}]), X, 22, 'center');
+  y += 2;
+  const big = r.picks.length > 1 || neutral ? 36 : 46, nlh = Math.round(big * 1.3);
+  const nls = lines([{t: r.picks.map(p => loc(p).w).join(L('and')), f: cardFont(600, big), c: Z.ink}]);
+  nls.forEach((l, i) => { const hx = X + (IW - l.w) / 2 - 6, hy = y + i * nlh + nlh * 0.56; ops.push(c => { c.fillStyle = Z.bg; roundRect(c, hx, hy, l.w + 12, big * 0.42, 4); c.fill(); }); });
+  put(nls, X, nlh, 'center');
+  // Mooca in the middle
+  y += 10;
+  if (mooca) { const bw = 180, bh = 140, s = Math.min(bw / mooca.naturalWidth, bh / mooca.naturalHeight), dw = mooca.naturalWidth * s, dh = mooca.naturalHeight * s, mx = (W - dw) / 2, my = y + bh - dh;
+    ops.push(c => c.drawImage(mooca, mx, my, dw, dh));
+    if (good) [[-102, 18, 20], [96, 34, 15], [-84, 116, 13]].forEach(([dx, dy, sz]) => { const sy = y + dy; ops.push(c => { c.font = `${sz}px sans-serif`; c.fillStyle = Z.zone; c.fillText('✦', W / 2 + dx, sy); }); });
+    y += bh; }
+  // what Mooca says, in a bubble pointing up at it
+  y += 16;
+  const bubTop = y, bp = 20, bubFill = mixHex(Z.bg, '#FFFFFF', .7), bubAt = ops.length;
+  y += bp;
+  put(lines([{t: neutral ? L('okLb') : L('causeLb'), f: cardFont(600, 14), c: Z.ink}], IW - 2 * bp), X + bp, 22, 'left', IW - 2 * bp);
+  y += 2;
+  const body = neutral ? [{t: loc(NEUTRAL).m, f: cardFont(400, 18), c: TEXT}]
+    : [...(r.ctx ? [{t: `${r.ctx} `, f: cardFont(600, 18), c: TEXT}] : []), {t: r.cause || loc(r.main).m, f: cardFont(400, 18), c: TEXT}];
+  put(lines(body, IW - 2 * bp), X + bp, 30, 'left', IW - 2 * bp);
+  if (!neutral && r.since) { y += 2; put(lines([{t: r.since, f: cardFont(400, 16), c: TEXT2}], IW - 2 * bp), X + bp, 26, 'left', IW - 2 * bp); }
+  y += bp;
+  const bubH = y - bubTop;
+  ops.splice(bubAt, 0, c => { c.fillStyle = bubFill; c.save(); c.translate(W / 2, bubTop); c.rotate(Math.PI / 4); roundRect(c, -10, -10, 20, 20, 3); c.fill(); c.restore(); roundRect(c, X, bubTop, IW, bubH, 22); c.fill(); });
+  // the 30-second writing prompt, and the note if one was written
+  y += 26; const divY = y; ops.push(c => { c.fillStyle = '#E6EEF0'; c.fillRect(X, divY, IW, 1); }); y += 22;
+  put(lines([{t: L('writeLb'), f: cardFont(600, 14), c: Z.ink}]), X, 22);
+  y += 2;
+  put(lines([{t: loc(r.main).a, f: cardFont(400, 18), c: TEXT}]), X, 30);
+  const note = S.note.trim();
+  if (note) { y += 12; const nTop = y, np = 16, noteAt = ops.length; y += np;
+    const nls2 = note.split('\n').flatMap(p => p.trim() ? lines([{t: p, f: cardFont(400, 17), c: TEXT}], IW - 2 * np) : [{runs: [], w: 0}]).slice(0, 10);
+    put(nls2, X + np, 28, 'left', IW - 2 * np); y += np;
+    const nH = y - nTop; ops.splice(noteAt, 0, c => { c.fillStyle = '#DBF0EE'; roundRect(c, X, nTop, IW, nH, 14); c.fill(); }); }
+  y += IP;
+  const cardH = y - cardTop;
+  y += P;
+  const H = Math.ceil(y);
+  return { W, H, draw(c){
+    const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, Z.bg); g.addColorStop(1, mixHex(Z.bg, '#FFFFFF', .35)); c.fillStyle = g; c.fillRect(0, 0, W, H);
+    c.textBaseline = 'middle';
+    if (logo) c.drawImage(logo, P + 4, headY, 24 * logo.naturalWidth / logo.naturalHeight, 24);
+    c.font = cardFont(500, 13); c.fillStyle = TEXT2; c.textAlign = 'right'; c.fillText(L('title'), W - P - 4, headY + 12); c.textAlign = 'left';
+    c.save(); c.shadowColor = 'rgba(31,119,223,.12)'; c.shadowBlur = 28; c.shadowOffsetY = 8; c.fillStyle = '#FFFFFF'; roundRect(c, P, cardTop, W - 2 * P, cardH, 28); c.fill(); c.restore();
+    ops.forEach(op => op(c));
+  } };
+}
+async function cardCanvas(){
+  for (const withImages of [true, false]) {
+    const card = await buildCardImage(withImages), cv = document.createElement('canvas'), c = cv.getContext('2d');
+    cv.width = card.W * 2; cv.height = card.H * 2; c.scale(2, 2); card.draw(c);
+    // images opened straight from disk (file://) taint the canvas; then the card is redrawn without them
+    try { cv.toDataURL('image/png', 0); return cv; } catch (e) { if (!withImages) throw e; }
+  }
+}
+// download on desktop; on phones open the share sheet so "Save image" puts it in the photo library
+async function saveCardImage(){
+  const cv = await cardCanvas();
+  const blob = await new Promise((ok, no) => cv.toBlob(b => b ? ok(b) : no(new Error('no image')), 'image/png'));
+  const d = new Date(S.at || Date.now()), two = n => String(n).padStart(2, '0');
+  const name = `mooca-card-${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())}-${two(d.getHours())}${two(d.getMinutes())}.png`;
+  const file = new File([blob], name, {type: 'image/png'});
+  if (matchMedia('(pointer:coarse)').matches && navigator.canShare && navigator.canShare({files: [file]})) {
+    try { await navigator.share({files: [file]}); return true; }
+    catch (e) { if (e.name === 'AbortError') return false; } // a refused share falls through to a plain download
+  }
+  const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(blob), download: name});
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  return true;
+}
+app.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const act = b.dataset.act, id = b.dataset.id; lastHit = b;
+  switch(act){
+    case 'start': burst(b, e, () => go('tone')); break;
+    case 'lang': {
+      if (id === S.lang) break;
+      // slide the thumb first, then swap the words once it lands
+      const sw = b.closest('.lang-sw'); sw.dataset.on = id;
+      sw.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+      setTimeout(() => setLang(id), calm.matches ? 0 : 260);
+      break;
+    }
+    case 'back': if (S.screen==='safety') S.picks=[]; back(); break;
+    case 'restart': restart(); break;
+    case 'tone': S.tone = TONES.find(t=>t.id===id); S.showAll=false; S.picks=[]; render(); break;
+    case 'all': S.showAll = true; S.picks=[]; go('words'); break;
+    case 'toWords': S.showAll=false; go('words'); break;
+    case 'word': {
+      const w = b.dataset.w;
+      const found = allWords().find(x=>x.w===w);
+      if (found.risk){ S.picks=[found]; go('safety'); return; }
+      const i = S.picks.findIndex(p=>p.w===w);
+      if (i>=0) S.picks.splice(i,1); else if (S.picks.length<2) S.picks.push(found);
+      if (!S.tone) S.tone = found.tone;
+      render(); break;
+    }
+    case 'neutral': S.picks=[]; S.ctx=null; S.dur=null; go('result'); break;
+    case 'toCtx': go('ctx'); break;
+    case 'ctx': S.ctx = id; render(); break;
+    case 'skipCtx': S.ctx = null; go('dur'); break;
+    case 'toDur': go('dur'); break;
+    case 'dur': S.dur = id; render(); break;
+    case 'skipDur': S.dur = null; go('result'); break;
+    case 'toResult': go('result'); break;
+    case 'rePick': S.picks=[]; S.screen='words'; S.history=['home','tone']; S.dir='back'; if(!S.tone) S.tone=TONES[3]; render(); break;
+    case 'timer': openNote(loc(resultData().main).a); break;
+    case 'save': {
+      const ic = b.querySelector('svg'); ic.classList.remove('drop'); void ic.getBoundingClientRect(); ic.classList.add('drop');
+      if (b.dataset.busy) break; b.dataset.busy = '1';
+      const r = resultData();
+      const card = { date:new Date(S.at || Date.now()).toISOString(), words:r.picks.map(p=>p.w), ctx:S.ctx, dur:S.dur, note:S.note.trim() || undefined };
+      try { const k='ooca-feeling-cards'; const list = JSON.parse(localStorage.getItem(k)||'[]'); list.push(card); localStorage.setItem(k, JSON.stringify(list.slice(-30))); } catch(_) {}
+      saveCardImage().then(done => { if (done) toast(L('saved')); }).catch(() => toast(L('saveFail'))).finally(() => { delete b.dataset.busy; });
+      break;
+    }
+  }
+});
+applyLang();
+render();
+</script>
+</body>
+</html>

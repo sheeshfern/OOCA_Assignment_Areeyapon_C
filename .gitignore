@@ -1,0 +1,13 @@
+# Only the project goes to git. The brief, CI files and raw Figma exports in this folder stay local.
+/*
+!/.gitignore
+!/README.md
+!/web/
+!/app/
+!/docs/
+!/tools/
+
+# local working files
+/web/.impeccable/
+/web/*.backup*.html
+.DS_Store

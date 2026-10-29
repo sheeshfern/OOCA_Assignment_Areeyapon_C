@@ -1,0 +1,436 @@
+/* Gotham Rounded (installed on this machine) draws Latin + digits; it has no Thai, so Thai stays on Prompt.
+   The range leaves out the space so Prompt still sets line metrics and nothing shifts. */
+@font-face{font-family:'Gotham Rounded Latin';src:local('Gotham Rounded Light'),local('GothamRounded-Light');font-weight:300;unicode-range:U+21-7E,U+A1-FF,U+2013-2014,U+2018-201E,U+2022,U+2026}
+@font-face{font-family:'Gotham Rounded Latin';src:local('Gotham Rounded Book'),local('GothamRounded-Book');font-weight:400;unicode-range:U+21-7E,U+A1-FF,U+2013-2014,U+2018-201E,U+2022,U+2026}
+@font-face{font-family:'Gotham Rounded Latin';src:local('Gotham Rounded Medium'),local('GothamRounded-Medium');font-weight:500;unicode-range:U+21-7E,U+A1-FF,U+2013-2014,U+2018-201E,U+2022,U+2026}
+@font-face{font-family:'Gotham Rounded Latin';src:local('Gotham Rounded Bold'),local('GothamRounded-Bold');font-weight:600 700;unicode-range:U+21-7E,U+A1-FF,U+2013-2014,U+2018-201E,U+2022,U+2026}
+:root{
+  --action:#009688; --action-pressed:#00796B; --brand:#00C4B3; --tint:#DBF0EE; --tint-2:#B3EDE8;
+  --text:#355956; --text-2:#3F6866;
+  --blue:#1F77DF; --blue-dark:#1764D7; --blue-ink:#0A47CA; --blue-bg:#E4EFFB; --blue-line:#C7DDF7;
+  --yellow:#F9A000; --yellow-bg:#F8E4B3; --orange:#FF8F4B; --orange-bg:#FFDDC9; --green:#8AD866; --green-bg:#DCF3D1;
+  --white:#FFFFFF; --line:#E6EEF0;
+  --e1:0 2px 8px rgba(0,196,179,.08); --e2:0 8px 16px rgba(0,196,179,.12); --e3:0 12px 24px rgba(0,196,179,.16);
+  --r-sm:12px; --r-md:18px; --r-lg:26px;
+}
+*{box-sizing:border-box}
+/* React mounts into #root; keep it out of the layout so body centres .app exactly like the static page */
+#root{display:contents}
+html,body{margin:0;height:100%}
+body{font-family:'Gotham Rounded Latin','Prompt',system-ui,sans-serif;color:var(--text);background:#F3F7F7;-webkit-font-smoothing:antialiased}
+button,a{font-family:inherit;-webkit-tap-highlight-color:transparent}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.app{--pad:clamp(16px,5vw,20px);max-width:430px;overflow-x:clip;min-height:100vh;min-height:100dvh;margin:0 auto;display:flex;flex-direction:column;background-color:var(--bg,var(--blue-bg));transition:background-color .3s;
+  /* soft light washed over the tone colour; the bottom stays pure --bg so the sticky action bar blends in */
+  background-image:radial-gradient(ellipse 110% 50% at 100% 0%,rgba(255,255,255,.75),transparent 65%),radial-gradient(ellipse 90% 40% at 0% 30%,rgba(255,255,255,.45),transparent 70%),radial-gradient(ellipse 70% 35% at 100% 55%,color-mix(in srgb,var(--zone,#1F77DF) 10%,transparent),transparent 70%)}
+/* phone-card frame only when the window is big enough to show it; short laptops get a card that fits the height */
+@media (min-width:600px) and (min-height:600px){
+  /* a fixed-size phone frame: the page itself never scrolls (so the backdrop has no seam and the card never moves);
+     a step taller than the frame scrolls inside the card, with the action bar stuck to the card's bottom */
+  body{display:flex;align-items:center;justify-content:center;height:100dvh;overflow:hidden;padding:24px;
+    background:radial-gradient(circle at 12% 18%,#DBF0EE,transparent 38%),radial-gradient(circle at 88% 85%,#E4EFFB,transparent 42%),radial-gradient(circle at 85% 12%,#FFF1CC,transparent 28%),#F3F7F7;background-attachment:fixed}
+  .app{width:100%;max-width:560px;--pad:32px;height:min(900px,calc(100dvh - 48px));min-height:0;border-radius:36px;box-shadow:0 24px 64px rgba(53,89,86,.16);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+}
+/* no visible scrollbars: one appearing on a longer step would narrow the content and make everything jump sideways */
+html,.app{scrollbar-width:none}
+html::-webkit-scrollbar,.app::-webkit-scrollbar{display:none}
+.screen{flex:1;display:flex;flex-direction:column;gap:14px;padding:16px var(--pad) calc(28px + env(safe-area-inset-bottom));animation:in .25s ease-out}
+h1,p,.crow span{text-wrap:pretty}
+/* Thai sentences: ph() wraps each phrase so lines break at spaces, not mid-word; a phrase longer than the line still wraps inside */
+.ph{display:inline-block}
+.nw{white-space:nowrap}
+/* main action stays reachable on short screens and long word lists */
+.actions{position:sticky;bottom:0;z-index:2;display:flex;flex-direction:column;gap:8px;margin:0 calc(-1 * var(--pad)) calc(-28px - env(safe-area-inset-bottom));padding:20px var(--pad) calc(16px + env(safe-area-inset-bottom));background:linear-gradient(to bottom,transparent,var(--bg,var(--blue-bg)) 20px)}
+.screen.stay{animation:none}
+.grow{flex-grow:1}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;min-height:44px}
+.icon-btn{width:44px;height:44px;border:none;border-radius:var(--r-sm);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text)}
+.progress{flex:1;display:flex;gap:6px}
+.progress span{position:relative;overflow:hidden;flex:1;height:6px;border-radius:3px;background:var(--white)}
+.progress span.on::after{content:"";position:absolute;inset:0;background:var(--action);transform-origin:left}
+.step-count{font-size:14px;color:var(--text-2)}
+
+/* mooca + bubble */
+.guide{display:flex;align-items:center;gap:4px;margin-left:-12px}
+.mooca{display:block;flex-shrink:0;transform-origin:50% 90%}
+.mooca img{display:block}
+.guide img{width:clamp(92px,30vw,150px);height:auto;aspect-ratio:150/118;object-fit:contain}
+@media (max-height:700px){.guide img{width:clamp(84px,24vw,120px)}.tone .art{height:72px}}
+.bubble{position:relative;flex:1;min-width:0;background:var(--white);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 8px rgba(31,119,223,.08)}
+.bubble::before{content:"";position:absolute;left:-7px;top:calc(50% - 7px);width:14px;height:14px;background:var(--white);transform:rotate(45deg)}
+.bubble>*{position:relative}
+.bubble h1{margin:0;font-size:clamp(18px,5.4vw,20px);line-height:1.35;font-weight:600}
+.bubble p{margin:0;font-size:15px;line-height:1.4;color:var(--text-2)}
+/* every question screen shares one guide height and each bubble line stays on one line,
+   so the choices start at the same spot on every step and never move when Mooca replies */
+.screen .guide{min-height:var(--guide-h,118px);align-items:stretch}
+.bubble>*{flex-shrink:0}
+.screen .guide .mooca{align-self:center}
+.bubble h1,.bubble p[data-swap="sub"]{white-space:nowrap}
+.bubble.q-wrap h1{white-space:normal}
+.bubble{justify-content:center}
+.tags{flex-wrap:nowrap;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 85%,transparent);mask-image:linear-gradient(90deg,#000 85%,transparent)}
+.tag{flex-shrink:0}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:13px;font-weight:600;padding:3px 12px;border-radius:999px;background:var(--blue-dark);color:var(--white)}
+.tag.soft{background:var(--blue-bg);color:var(--blue-ink);font-weight:500}
+
+/* buttons */
+.primary{min-height:58px;border:none;border-radius:var(--r-md);background:var(--action);color:var(--white);font-size:20px;font-weight:600;box-shadow:var(--e2);width:100%}
+.primary:active{background:var(--action-pressed)}
+.primary:disabled{background:#A9C7C3;box-shadow:none;cursor:not-allowed}
+.text-btn{min-height:44px;border:none;background:transparent;color:var(--text-2);font-size:16px;text-decoration:underline;padding:0 4px}
+.text-btn.teal{color:var(--action-pressed);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+
+/* S1 tone cards */
+.tones{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tone{border:2px solid transparent;border-radius:20px;background:var(--white);text-align:center;padding:8px 8px 12px;display:flex;flex-direction:column;align-items:center;color:var(--text);transition:border-color .15s, box-shadow .15s}
+.tone .art{position:relative;width:100%;background:radial-gradient(ellipse 75% 60% at 50% 100%,color-mix(in srgb,var(--tz) 24%,var(--tbg)),transparent 75%),linear-gradient(160deg,color-mix(in srgb,var(--tbg) 35%,#fff),var(--tbg) 70%);height:clamp(76px,24vw,104px);border-radius:14px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;margin-bottom:8px}
+.tone .art img{height:90%;max-width:94%;object-fit:contain;transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+.tone .ck{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:var(--zone-solid,var(--zone));display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.4);transition:opacity .15s,transform .25s cubic-bezier(.3,1.4,.5,1)}
+.tone .ck svg{width:18px;height:18px}
+.tone b{display:block;font-size:17px;font-weight:600;line-height:1.35}
+.tone small{display:block;font-size:14px;color:var(--text-2);margin-top:2px;line-height:1.4}
+.tone[aria-pressed="true"]{border-color:var(--zone);box-shadow:0 8px 16px rgba(31,119,223,.16)}
+.tone[aria-pressed="true"] .ck{opacity:1;transform:none}
+.tone[aria-pressed="true"] .art img{transform:translateY(-3px) scale(1.06)}
+.tone[aria-pressed="true"] b{color:var(--zone-ink)}
+
+/* S2 words */
+.words{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.word{min-height:58px;border-radius:var(--r-md);border:2px solid var(--zone-line);background:var(--white);color:var(--text);font-size:18px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 10px;text-align:center;line-height:1.3}
+/* filled picks use the deeper tone so white text stays readable on yellow/green/orange */
+.word[aria-pressed="true"]{background:var(--zone-solid,var(--zone));border-color:var(--zone-solid,var(--zone));color:var(--white);font-weight:600}
+.word:disabled{opacity:.45;cursor:not-allowed}
+.group-label{font-size:14px;font-weight:600;color:var(--text-2);margin:6px 0 -4px}
+/* sized for one meaning (empty and one pick look the same); the second pick adds a row */
+.meaning{background:var(--white);border-radius:16px;padding:12px 16px;font-size:15px;line-height:1.55;min-height:calc(1.55em + 24px);display:flex;flex-direction:column;justify-content:center}
+.meaning.empty{color:var(--text-2);justify-content:center;text-align:center}
+.meaning p{margin:0}
+.meaning p+p{margin-top:8px;padding-top:8px;border-top:1px solid var(--zone-line,#E8EEF0)}
+.row-between{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* S3/S4 options */
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{min-height:58px;border-radius:var(--r-md);border:2px solid #B3EDE8;background:var(--white);color:var(--text);font-size:18px;font-weight:500;display:flex;align-items:center;justify-content:space-between;padding:0 18px;text-align:left}
+/* picked row in the CI turquoise: Turquoise 1 edge, Turquoise 50 fill, turquoise lift, and a filled check */
+.opt[aria-pressed="true"]{border-color:#00C4B3;background:#E0F8F6;font-weight:600;box-shadow:0 6px 14px -6px rgba(0,196,179,.55)}
+/* every row shows an empty ring, so it reads as "pick one"; the picked row fills it with a check */
+.opt .ck{flex-shrink:0;box-sizing:content-box;padding:4px;border-radius:50%;box-shadow:inset 0 0 0 2px #B3EDE8;color:transparent;transition:background-color .15s,box-shadow .15s,color .15s}
+.opt[aria-pressed="true"] .ck{background:#009688;box-shadow:none;color:var(--white)}
+/* the icon tile sits the same distance from the top, bottom and left edge at every row height, with a concentric corner */
+.opt.with-ic{--in:6px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:var(--in) 18px var(--in) var(--in)}
+.opt .ol{flex:1}
+.opt .oi{align-self:stretch;aspect-ratio:1;flex-shrink:0;border-radius:calc(var(--r-md) - 2px - var(--in));display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--zone,#1F77DF) 10%,#fff);transition:background .2s,transform .25s cubic-bezier(.3,1.4,.5,1)}
+.opt[aria-pressed="true"] .oi{background:var(--white)}
+.opt[aria-pressed="true"] .oi svg{transform:scale(1.1)}
+.opt .oi svg{width:72%;height:auto;transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+
+/* S0 */
+/* tint at the top fading to soft grey; --bg is the grey so the sticky action bar blends with the bottom */
+.home{background:linear-gradient(180deg,#DBF0EE 30%,#EFF4F6 50%,#F6F6F6 60%)}
+.brand{display:block;height:24px;width:auto}
+/* "no sign-up" sits right above the headline as a small promise */
+.badge{align-self:center;display:inline-flex;align-items:center;gap:6px;margin:0 0 8px;padding:5px 12px 5px 6px;border-radius:999px;background:var(--white);box-shadow:var(--e1);font-size:13px;font-weight:500;line-height:1.3;color:var(--action-pressed);white-space:nowrap}
+.badge svg{flex-shrink:0}
+/* language switch: both flags show and a white thumb slides to the active one */
+.lang-sw{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:3px;border-radius:999px;background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(0,150,136,.18)}
+.lang-sw .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.08),var(--e1);transition:transform .32s cubic-bezier(.3,1.3,.5,1)}
+.lang-sw[data-on="en"] .thumb{transform:translateX(100%)}
+.lang-sw button{position:relative;display:flex;align-items:center;justify-content:center;gap:5px;min-height:32px;padding:0 10px 0 6px;border:0;border-radius:999px;background:none;font:inherit;font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;transition:color .2s}
+.lang-sw button[aria-pressed="true"]{color:var(--text);font-weight:600}
+.lang-sw button:focus-visible{outline:2px solid var(--action-pressed);outline-offset:1px}
+.flag{width:18px;height:18px;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 1px rgba(0,0,0,.08);transition:filter .2s}
+.flag svg{display:block;width:100%;height:100%}
+.lang-sw button[aria-pressed="false"] .flag{filter:saturate(.35) opacity(.75)}
+.lang-sw button.just .flag{animation:flagWave .55s cubic-bezier(.3,1.3,.5,1)}
+/* after a switch the new words ease in instead of snapping */
+.screen.relang :is(h1,.sub,.badge,.say span,.fine,.primary){animation:talkIn .3s ease-out both}
+.hero{position:relative;height:clamp(210px,38dvh,330px);flex-shrink:0;display:flex;align-items:flex-end;justify-content:center}
+.hero .halo{position:absolute;left:50%;top:40px;height:calc(100% - 70px);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:var(--white);opacity:.6}
+.hero .say{position:absolute;right:0;top:6px;z-index:1;background:var(--white);border-radius:18px 18px 18px 4px;padding:10px 16px;font-size:17px;font-weight:500;box-shadow:var(--e1)}
+.hero .mooca{position:relative;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.hero img{width:300px;max-width:90%;max-height:calc(100% - 40px);height:auto;object-fit:contain}
+.home h1{margin:0;font-size:clamp(24px,7.2vw,28px);line-height:1.35;font-weight:600;text-align:center}
+.home h1 .hl{display:inline-block;margin-top:6px;padding:0 14px 2px;border-radius:14px;background:#FFD45C;transform:rotate(-1.5deg)}
+/* one line on every phone: shrinks with the screen, never under 13px */
+.home .sub{margin:0;font-size:clamp(13px,4.1vw,15px);line-height:1.5;color:var(--text-2);text-align:center;white-space:nowrap}
+/* start button invites a tap: the arrow nudges forward */
+.start{display:flex;align-items:center;justify-content:center;gap:8px}
+.start svg{animation:nudge 1.6s ease-in-out infinite}
+.screen.home:not(.stay) .start{animation:ready 1.2s 1.2s ease-out 2}
+.burst-clip{position:fixed;z-index:20;overflow:hidden;pointer-events:none}
+.burst{position:absolute;border-radius:50%;background:var(--action);animation:burst .5s cubic-bezier(.5,0,.2,1) both}
+.burst-clip.out{opacity:0;transition:opacity .35s ease}
+.fine{margin:0;font-size:14px;line-height:1.5;text-align:center}
+.fine a{color:var(--action-pressed);font-weight:600;white-space:nowrap;display:inline-block;padding:12px 2px;margin:-12px 0}
+/* the link's 12px tap padding must not reach into the button above it */
+.actions .fine{margin-top:6px}
+
+/* S5 result */
+.card{background:var(--white);border-radius:var(--r-lg);padding:6px 20px 4px;box-shadow:0 8px 16px rgba(31,119,223,.10)}
+/* the name leads, Mooca stands in the middle, and its explanation comes out as a speech bubble pointing back at it */
+.card-head{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 0 18px}
+.card-head .who{width:100%}
+/* date and time the card was made, so a saved or screenshotted card says which day it was */
+.stamp{margin:0 0 12px;max-width:100%;display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:999px;background:#DBF0EE;color:var(--text);font-size:13px;font-weight:500;line-height:1.4}
+.stamp svg{flex-shrink:0;color:#009688}
+.card-head .mooca{position:relative;margin-top:8px}
+.card-head img{width:136px;height:106px;object-fit:contain}
+.say-card{position:relative;align-self:stretch;margin-top:14px;padding:12px 16px 14px;border-radius:18px;background:color-mix(in srgb,var(--bg) 70%,#fff);text-align:left;display:flex;flex-direction:column;gap:4px;font-size:16px;line-height:1.55}
+.say-card::before{content:"";position:absolute;left:calc(50% - 10px);top:-9px;width:20px;height:20px;border-radius:4px 0 0 0;background:inherit;transform:rotate(45deg)}
+.say-card>*{position:relative}
+.say-card p{margin:0}
+.say-card .since{font-size:15px;color:var(--text-2)}
+.lb{font-size:13px;font-weight:600;color:var(--zone-ink,var(--blue-dark));letter-spacing:.2px}
+.name{margin:2px 0 0;font-size:clamp(30px,9.6vw,38px);line-height:1.2;font-weight:600;color:var(--zone-ink,var(--blue-dark))}
+.name.two{font-size:clamp(26px,8vw,30px)}
+/* English words can't break mid-word like Thai can, so on phones they get a little more room */
+@media (max-width:599px){
+  html[lang="en"] .word{font-size:16px;padding:6px}
+}
+.crow{display:flex;flex-direction:column;gap:6px;padding:14px 0;border-top:1px solid var(--line);font-size:16px;line-height:1.55}
+.crow .since{font-size:15px;color:var(--text-2)}
+.timer{align-self:flex-start;min-height:44px;border:2px solid var(--action);border-radius:14px;background:var(--white);color:var(--action-pressed);font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:6px;padding:0 14px;margin-top:4px}
+.timer.done{background:var(--tint);border-color:var(--tint)}
+/* talk card in ooca's own CI turquoise: Turquoise Gradient 02, Turquoise 2 edge, turquoise-tinted elevation 03 */
+.talk{background:linear-gradient(160deg,#E0FEFB,#D7FFFC);border-radius:22px;padding:16px 18px 18px;display:flex;flex-direction:column;gap:14px;border:1.5px solid #B3EDE8;box-shadow:0 8px 16px rgba(0,196,179,.12)}
+.talk.quiet{background:var(--white);border-color:#DBF0EE;box-shadow:none}
+.talk p{margin:0;font-size:16px;line-height:1.5}
+/* the button to ooca: CI "Turquoise text" #009688 with large bold white type (3.7:1, AA for large text),
+   a turquoise glow (elevation 07) and the arrow in a white circle, the CI shape for high-prominence controls */
+.cta{position:relative;min-height:60px;border:none;border-radius:999px;background:linear-gradient(180deg,#009F91,#008D80);color:var(--white);text-decoration:none;padding:8px 8px 8px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:19px;font-weight:700;line-height:1.3;box-shadow:0 14px 26px -8px rgba(0,196,179,.6),0 4px 10px -4px rgba(0,150,136,.45)}
+.cta>svg{flex-shrink:0;box-sizing:content-box;padding:10px;border-radius:50%;background:var(--white);color:#009688;transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
+.cta::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
+@media (hover:hover){
+  .cta:hover{transform:translateY(-2px);box-shadow:0 18px 30px -8px rgba(0,196,179,.7),0 6px 12px -4px rgba(0,150,136,.5)}
+  .cta:hover>svg{transform:translateX(3px)}
+}
+.cta:focus-visible{outline:3px solid #00C4B3;outline-offset:3px}
+.cta.ghost{background:var(--white);color:var(--text);border:2px solid #00C4B3;box-shadow:0 2px 8px rgba(0,196,179,.08);font-weight:600;font-size:17px}
+.cta.ghost>svg{background:#DBF0EE;color:#00796B}
+/* the wordmark sits on the text baseline, its round letters a touch taller than the x-height */
+.ooca-logo{display:inline-block;height:.74em;width:auto;aspect-ratio:2486/769;vertical-align:baseline}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.soft-btn{min-height:50px;border:none;border-radius:14px;background:var(--white);color:var(--text);font-size:16px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
+
+/* S6 safety */
+.safety{background:#FFF4EC}
+.safety .hug{display:flex;justify-content:center;position:relative;margin-top:8px}
+.safety .hug::before{content:"";position:absolute;top:10px;width:220px;height:220px;border-radius:50%;background:var(--white);opacity:.7}
+.safety .hug img{position:relative;width:240px;height:200px;object-fit:contain}
+.safety h1{margin:0;font-size:26px;font-weight:600;text-align:center}
+.safety .msg{margin:0;font-size:17px;line-height:1.6;text-align:center;color:var(--text-2)}
+.call{min-height:72px;border-radius:20px;background:var(--action-pressed);color:var(--white);text-decoration:none;display:flex;align-items:center;gap:14px;padding:12px 18px;box-shadow:var(--e3)}
+.call .ic{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.call b{display:block;font-size:19px;font-weight:600}
+.call small{display:block;font-size:14px;opacity:.9}
+
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--white);padding:12px 18px;border-radius:14px;font-size:15px;box-shadow:var(--e3);z-index:9;width:max-content;max-width:calc(100% - 32px);text-align:center;opacity:0;transform:translate(-50%,12px);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* phones held sideways: keep the headline and CTA in view */
+@media (max-height:500px){
+  .hero{height:170px}
+  .hero .say{font-size:15px;padding:8px 14px}
+  .guide img{width:84px}
+}
+/* tablet and desktop: a roomier card, so everything steps up a size */
+@media (min-width:600px) and (min-height:600px){
+  .guide img{width:150px}
+  .bubble{padding:18px 22px;border-radius:24px}
+  .bubble h1{font-size:23px}
+  .screen .guide{--guide-h:132px}
+  .bubble p{font-size:16px}
+  .tone{padding:10px 10px 16px}
+  .tone .art{height:128px}
+  .tone b{font-size:20px}
+  .tone small{font-size:16px}
+  .words{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .word,.opt{min-height:58px;font-size:19px}
+  .meaning,.talk p,.crow{font-size:17px}
+  .hero{height:clamp(260px,40dvh,400px)}
+  .hero img{width:360px}
+  .hero .say{font-size:18px}
+  .home h1{font-size:34px;padding-block:4px} /* room for the tilted highlight */
+  .home .sub{font-size:16px}
+  .primary{min-height:62px}
+  .card{padding:10px 28px 6px}
+  .card-head img{width:150px;height:117px}
+  .say-card{font-size:17px;padding:14px 20px 16px}
+  .name{font-size:40px}
+  .name.two{font-size:30px}
+  .safety .hug img{width:280px;height:230px}
+  .safety h1{font-size:30px}
+}
+/* short laptops: the size-up block above would overflow a ~650px frame, so keep the steps compact enough to fit */
+@media (min-width:600px) and (min-height:600px) and (max-height:899px){
+  .screen{gap:12px;padding-top:12px}
+  .screen .guide{--guide-h:118px}
+  .bubble h1{font-size:21px}
+  .guide img{width:118px}
+  .tone .art{height:clamp(68px,calc(100dvh - 640px),118px)}
+  .tone{padding:8px 8px 12px}
+  .word,.opt{min-height:52px}
+  .bubble{padding:14px 18px}
+  .hero{height:clamp(170px,min(40dvh,calc(100dvh - 470px)),400px)} /* Mooca gives way so the badge, title and subtitle all show above the start button */
+}
+
+/* ---------- motion ---------- */
+/* Mooca speaks first (typing dots, then words), then the choices rise in.
+   Entrance runs once per new screen; .stay (a pick on the same screen) skips it and only the changed parts react. */
+@keyframes in{from{opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+@keyframes popIn{0%{opacity:0;transform:scale(.6) translateY(12px)}60%{opacity:1;transform:scale(1.05)}100%{transform:none}}
+@keyframes bubbleIn{0%{opacity:0;transform:scale(.85)}70%{opacity:1;transform:scale(1.02)}100%{transform:none}}
+@keyframes talkIn{from{opacity:0;transform:translateY(4px)}}
+@keyframes dots{0%,80%{opacity:1}100%{opacity:0}}
+@keyframes dot{0%,60%,100%{transform:none;opacity:.35}30%{transform:translateY(-4px);opacity:1}}
+@keyframes float{0%,100%{transform:none}50%{transform:translateY(-6px) scale(1.015,.985)}}
+@keyframes sway{0%,100%{transform:none}30%{transform:translateY(-8px) rotate(-1.5deg)}60%{transform:translateY(-3px) rotate(1deg)}}
+@keyframes hop{0%,100%{transform:none}30%{transform:translateY(-12px) scale(.95,1.06)}60%{transform:scale(1.06,.94)}80%{transform:scale(.98,1.02)}}
+@keyframes breathe{0%,100%{transform:scale(1)}40%{transform:scale(1.08)}}
+@keyframes wave{0%{transform:scale(.92);opacity:.9}100%{transform:scale(1.4);opacity:0}}
+@keyframes nudge{0%,100%{transform:none}50%{transform:translateX(4px)}}
+@keyframes burst{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes hlIn{0%{opacity:0;transform:scale(.6) rotate(4deg)}60%{opacity:1;transform:scale(1.08) rotate(-3deg)}100%{transform:rotate(-1.5deg)}}
+@keyframes halo{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}
+@keyframes pick{0%{transform:scale(.96)}55%{transform:scale(1.03)}100%{transform:none}}
+@keyframes unpick{from{transform:scale(.97)}}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.25)}100%{transform:none}}
+@keyframes fill{from{transform:scaleX(0)}}
+@keyframes ready{0%{transform:none;box-shadow:0 0 0 0 rgba(0,150,136,.35),var(--e2)}40%{transform:scale(1.03)}100%{transform:none;box-shadow:0 0 0 14px rgba(0,150,136,0),var(--e2)}}
+@keyframes mark{from{background-size:0% .42em}}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes drop{40%{transform:translateY(4px)}}
+@keyframes ctaRing{0%{box-shadow:0 0 0 0 rgba(0,196,179,.55)}100%{box-shadow:0 0 0 14px rgba(0,196,179,0)}}
+@keyframes flagWave{0%{transform:scale(.6) rotate(-20deg)}50%{transform:scale(1.25) rotate(10deg)}75%{transform:rotate(-5deg)}100%{transform:none}}
+
+/* idle life: Mooca floats, the home halo breathes */
+.float{animation:float 4s ease-in-out infinite;transform-origin:50% 90%}
+.hero .float{animation-name:sway;animation-duration:6s}
+.safety .float{animation-duration:6s}
+.hero .halo{animation:halo 5s ease-in-out infinite}
+/* waves roll out from behind Mooca */
+.hero .halo::before,.hero .halo::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(0,196,179,.5);background:rgba(255,255,255,.55);animation:wave 4s cubic-bezier(.2,.6,.4,1) infinite}
+.hero .halo::after{animation-delay:-2s}
+.safety .hug::before{animation:breathe 6s ease-in-out infinite}
+
+/* typing dots before Mooca's words */
+.talks{position:relative}
+.talks>.dots{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:5px;opacity:0;pointer-events:none}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--text-2);animation:dot 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}
+.dots i:nth-child(3){animation-delay:.3s}
+.screen:not(.stay) .talks>.dots{animation:dots var(--talk,.6s) both}
+.screen:not(.stay) .talks>:not(.dots){animation:talkIn .3s var(--talk,.6s) ease-out both}
+
+/* screen entrance */
+.screen:not(.stay) .guide .mooca{animation:popIn .5s cubic-bezier(.2,.8,.2,1) both}
+.screen:not(.stay) .bubble{transform-origin:0 50%;animation:bubbleIn .35s .12s cubic-bezier(.2,.8,.2,1) both}
+.screen:not(.stay) .tag{animation:pop .4s .7s cubic-bezier(.3,1.4,.5,1) both}
+.screen:not(.stay) .tag+.tag{animation-delay:.8s}
+.screen:not(.stay) .tag+.tag+.tag{animation-delay:.9s}
+.screen:not(.stay) .rise{animation:rise .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--base,.45s) + var(--i,0) * 45ms)}
+.screen.fwd:not(.stay) .progress .now::after{animation:fill .5s .15s cubic-bezier(.2,.8,.2,1) both}
+.home{--base:.2s}
+.screen.home:not(.stay) .hl{animation:hlIn .55s .55s cubic-bezier(.3,1.4,.5,1) both}
+.home .say{--talk:1.1s;transform-origin:0 100%}
+.screen.home:not(.stay) .hero .mooca{animation:popIn .6s .05s cubic-bezier(.2,.8,.2,1) both}
+.screen.home:not(.stay) .say{animation:bubbleIn .4s .35s cubic-bezier(.2,.8,.2,1) both}
+.safety{--base:.1s}
+
+/* result: card opens, the name appears and gets highlighted, then Mooca types its explanation, then the rest */
+.result{--base:1.45s}
+.card-head .who{--talk:.6s}
+.card-head .say-card{--talk:1.15s}
+.screen:not(.stay) .card.main{transform-origin:50% 0;animation:bubbleIn .45s .05s cubic-bezier(.2,.8,.2,1) both}
+.screen:not(.stay) .card-head .mooca{animation:popIn .5s .25s cubic-bezier(.2,.8,.2,1) both}
+.mark{background:linear-gradient(var(--bg),var(--bg)) no-repeat 0 88%/100% .42em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.screen:not(.stay) .mark{animation:mark .6s .85s cubic-bezier(.6,0,.2,1) both}
+.screen:not(.stay) .say-card{transform-origin:50% 0;animation:bubbleIn .4s .7s cubic-bezier(.2,.8,.2,1) both}
+.screen:not(.stay) .card.main .crow{animation:rise .45s 1.35s cubic-bezier(.2,.8,.2,1) both}
+/* once the talk card has risen in, the ooca button sends out two soft rings, then rests */
+.screen:not(.stay) .talk .cta:not(.ghost)::after{animation:ctaRing 1.1s 2.1s ease-out 2}
+.spark{position:absolute;font-style:normal;color:var(--zone);opacity:0;animation:twinkle 2.4s ease-in-out infinite;pointer-events:none}
+.spark:nth-of-type(1){top:2px;left:4px;font-size:15px}
+.spark:nth-of-type(2){top:10px;right:-2px;font-size:11px;animation-delay:.8s}
+.spark:nth-of-type(3){bottom:8px;left:-2px;font-size:10px;animation-delay:1.6s}
+.card.breathing .card-head img{animation:breathe 5s ease-in-out infinite}
+.timer{position:relative;overflow:hidden;isolation:isolate}
+.timer::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--tint);transform:scaleX(0);transform-origin:left;transition:transform 30s linear}
+.timer.running::before{transform:scaleX(1)}
+.timer.done{animation:pick .4s cubic-bezier(.3,1.4,.5,1)}
+
+/* reacting to a pick */
+.tone,.word,.opt,.primary,.soft-btn,.cta,.call,.timer,.icon-btn{transition:transform .15s ease,border-color .15s,box-shadow .15s,background-color .15s}
+:is(.tone,.word,.opt,.primary,.soft-btn,.cta,.call,.timer,.icon-btn):active:not(:disabled){transform:scale(.97)}
+.just[aria-pressed="true"]{animation:pick .4s cubic-bezier(.3,1.4,.5,1)}
+.just[aria-pressed="false"]{animation:unpick .25s ease-out}
+.tone.just .ck svg,.opt.just .ck{animation:pop .35s .05s cubic-bezier(.3,1.4,.5,1) both}
+.text-btn.just svg{animation:spin .5s ease-in-out}
+.mooca.hop{animation:hop .55s ease-out}
+.primary.ready{animation:ready .7s ease-out}
+.swap{animation:talkIn .3s ease-out}
+.reflow>*{animation:rise .35s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 35ms)}
+.drop{animation:drop .5s ease-in-out}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .app{transition:none}
+  .timer::before{transition-duration:30s!important}
+}
+
+/* ---- 30-second note: a lined note card in the ooca CI (white rounded card, turquoise accents, Prompt) ---- */
+.note-dlg{border:none;padding:0;margin:0;background:transparent;width:100%;max-width:none;height:100%;max-height:none;inset:0;color:var(--text)}
+.note-dlg[open]{display:flex;align-items:center;justify-content:center;overflow-y:auto}
+.note-dlg::backdrop{background:rgba(29,52,50,.38);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.note-wrap{width:min(440px,100%);padding:20px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;margin:auto}
+.note-top{display:flex;justify-content:flex-end}
+/* white card, CI rounded rectangle (24px) and turquoise elevation 07 */
+.paper{--lh:34px;position:relative;background:var(--white);border-radius:24px;padding:20px 20px 16px;box-shadow:0 16px 32px rgba(0,196,179,.18),0 4px 12px -4px rgba(0,196,179,.28)}
+.paper:focus-within{outline:2px solid rgba(0,196,179,.5);outline-offset:4px}
+.paper.timeup{box-shadow:0 0 0 2px #00C4B3,0 16px 32px rgba(0,196,179,.18)}
+.note-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:8px;padding-bottom:12px;border-bottom:1px solid #DBF0EE}
+.note-head>div:first-child{flex:1;min-width:0}
+.note-lb{display:inline-block;font-size:13px;font-weight:600;color:var(--text);background:#DBF0EE;border-radius:999px;padding:2px 10px}
+.note-q{margin:8px 0 0;font-size:18px;font-weight:500;line-height:1.45;color:var(--text)}
+.clock{position:relative;width:64px;height:64px;flex-shrink:0;margin:-6px -4px 0 0}
+.clock svg{display:block;width:100%;height:100%;overflow:visible}
+.clock .track{stroke:#DBF0EE}
+.clock .prog{stroke:#00C4B3;transition:stroke-dashoffset .25s linear}
+.clock .sec{position:absolute;left:0;right:0;top:36px;transform:translateY(-50%);text-align:center;font-size:17px;font-weight:600;line-height:1;color:var(--text);font-variant-numeric:tabular-nums}
+.clock.ringing{animation:ring .5s ease-in-out 1}
+.clock.ringing .bell{animation:bell .25s ease-in-out 2}
+@keyframes ring{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(6deg)}}
+@keyframes bell{50%{transform:translateY(-2px)}}
+.note-text{display:block;width:100%;min-height:calc(var(--lh) * 5);border:none;outline:none;resize:none;padding:0 2px;margin:0;font:inherit;font-size:17px;line-height:var(--lh);color:var(--text);caret-color:#009688;
+  background:repeating-linear-gradient(to bottom,transparent 0 calc(var(--lh) - 1px),#DBF0EE calc(var(--lh) - 1px) var(--lh));background-attachment:local}
+.note-text::placeholder{color:#65726F}
+.note-status{margin:8px 0 0;min-height:1.5em;font-size:14px;color:var(--text-2)}
+.paper.timeup .note-status{color:var(--text);font-weight:600}
+.note-private{margin:0 auto;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--text-2);text-align:center;background:rgba(255,255,255,.92);border-radius:999px;padding:5px 12px}
+.note-dlg .icon-btn{background:rgba(255,255,255,.92)}
+.note-dlg[open] .note-wrap{animation:noteIn .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes noteIn{from{opacity:0;transform:translateY(24px) scale(.96)}}
+/* the note snippet that stays on the result card */
+.note-snip{margin:6px 0 0;padding:8px 12px;border-radius:12px;background:#DBF0EE;font-size:16px;line-height:1.5;color:var(--text);white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+@media (max-height:620px){.paper{--lh:30px}.note-text{min-height:calc(var(--lh) * 3)}}
+@media (max-width:360px){.paper{padding:18px 16px 14px}.note-q{font-size:17px}}
+/* sideways phones: a shorter note so the Done button stays on screen */
+@media (max-height:500px){
+  .note-wrap{width:min(560px,100%);padding-top:10px;gap:8px}
+  .note-top .icon-btn{width:40px;height:40px}
+  .paper{--lh:28px;padding:14px 18px 10px}
+  .note-head{margin-bottom:2px;padding-bottom:8px}
+  .note-q{font-size:16px;padding-right:48px}
+  .clock{width:48px;height:48px;margin:-6px 0 0}
+  .clock .sec{top:27px;font-size:14px}
+  .note-text{min-height:calc(var(--lh) * 2);font-size:17px}
+  .note-private{display:none}
+}
