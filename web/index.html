@@ -809,7 +809,7 @@ function topBar(step){
 // page-level text that lives outside the rendered screens
 function applyLang(){
   document.documentElement.lang = S.lang;
-  document.title = 'Assignment_AreeyaponC'; // the tab keeps the assignment name in both languages; L('title') still heads the saved card
+  document.title = 'Assignment_AreeyaponC'; // the tab keeps the assignment name in both languages
   document.querySelector('meta[name="description"]').content = L('desc');
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = L(el.dataset.i18n); });
   document.querySelector('[data-note="close"]').setAttribute('aria-label', L('noteClose'));
@@ -1178,7 +1178,7 @@ async function buildCardImage(withImages){
   const [mooca, logo] = withImages ? await Promise.all([moocaFor(good ? IMG.happy : IMG.thanks), IMG.logo].map(s => loadImg(s).catch(() => null))) : [null, null];
   const m = document.createElement('canvas').getContext('2d');
   const W = 540, P = 28, IP = 30, X = P + IP, IW = W - 2 * (P + IP);
-  // header row (brand left, app name right) sits above the card
+  // header row (the mindfull logo) sits above the card
   const headY = P, cardTop = P + 24 + 18;
   const ops = []; let y = cardTop + IP;
   const lines = (runs, w = IW) => wrapRuns(m, runs, w);
@@ -1240,7 +1240,6 @@ async function buildCardImage(withImages){
     const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, Z.bg); g.addColorStop(1, mixHex(Z.bg, '#FFFFFF', .35)); c.fillStyle = g; c.fillRect(0, 0, W, H);
     c.textBaseline = 'middle';
     if (logo) c.drawImage(logo, P + 4, headY, 24 * logo.naturalWidth / logo.naturalHeight, 24);
-    c.font = cardFont(500, 13); c.fillStyle = TEXT2; c.textAlign = 'right'; c.fillText(L('title'), W - P - 4, headY + 12); c.textAlign = 'left';
     c.save(); c.shadowColor = 'rgba(31,119,223,.12)'; c.shadowBlur = 28; c.shadowOffsetY = 8; c.fillStyle = '#FFFFFF'; roundRect(c, P, cardTop, W - 2 * P, cardH, 28); c.fill(); c.restore();
     ops.forEach(op => op(c));
   } };

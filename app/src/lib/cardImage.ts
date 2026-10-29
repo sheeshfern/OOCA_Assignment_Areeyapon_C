@@ -58,7 +58,7 @@ async function buildCardImage(s: State, L: Copy, withImages: boolean) {
     : [null, null];
   const m = document.createElement('canvas').getContext('2d')!;
   const W = 540, P = 28, IP = 30, X = P + IP, IW = W - 2 * (P + IP);
-  // header row (brand left, app name right) sits above the card
+  // header row (the mindfull logo) sits above the card
   const headY = P, cardTop = P + 24 + 18;
   const ops: ((c: Ctx) => void)[] = [];
   let y = cardTop + IP;
@@ -164,7 +164,6 @@ async function buildCardImage(s: State, L: Copy, withImages: boolean) {
       c.fillStyle = g; c.fillRect(0, 0, W, H);
       c.textBaseline = 'middle';
       if (logo) c.drawImage(logo, P + 4, headY, (24 * logo.naturalWidth) / logo.naturalHeight, 24);
-      c.font = cardFont(500, 13); c.fillStyle = TEXT2; c.textAlign = 'right'; c.fillText(L.title, W - P - 4, headY + 12); c.textAlign = 'left';
       c.save(); c.shadowColor = 'rgba(31,119,223,.12)'; c.shadowBlur = 28; c.shadowOffsetY = 8; c.fillStyle = '#FFFFFF';
       roundRect(c, P, cardTop, W - 2 * P, cardH, 28); c.fill(); c.restore();
       ops.forEach(op => op(c));
