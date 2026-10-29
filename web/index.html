@@ -1052,7 +1052,7 @@ noteDlg.addEventListener('click', e => {
 });
 noteDlg.addEventListener('cancel', e => { e.preventDefault(); closeNote(); });
 // the note stops at NOTE_MAX characters (the textarea's maxlength also covers pasting)
-const NOTE_MAX = 500;
+const NOTE_MAX = 250;
 noteText.maxLength = NOTE_MAX;
 function noteCount(n){
   const c = document.getElementById('note-count');
