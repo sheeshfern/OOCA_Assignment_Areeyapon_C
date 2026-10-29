@@ -430,7 +430,11 @@ h1,p,.crow span{text-wrap:pretty}
 .note-dlg[open] .note-wrap{animation:noteIn .35s cubic-bezier(.2,.8,.2,1) both}
 @keyframes noteIn{from{opacity:0;transform:translateY(24px) scale(.96)}}
 /* the note snippet that stays on the result card */
-.note-snip{margin:6px 0 0;padding:8px 12px;border-radius:12px;background:#DBF0EE;font-size:16px;line-height:1.5;color:var(--text);white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* the note on the card: up to 6 lines, then "อ่านทั้งหมด" opens the rest in place.
+   Top/bottom spacing is a border, not padding: a clamped box clips at its padding edge, so padding let the next line peek through */
+.note-snip{margin:6px 0 0;padding:0 12px;border:8px solid #DBF0EE;border-inline-width:0;border-radius:12px;background:#DBF0EE;font-size:16px;line-height:1.5;color:var(--text);white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.note-snip.open{display:block;-webkit-line-clamp:unset}
+.snip-more{align-self:flex-start;min-height:32px;margin-top:2px;padding:4px 2px;border:none;background:none;color:var(--action-pressed);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
 @media (max-height:620px){.paper{--lh:30px}.note-text{min-height:calc(var(--lh) * 3)}}
 @media (max-width:360px){.paper{padding:18px 16px 14px}.note-q{font-size:17px}}
 /* sideways phones: a shorter note so the Done button stays on screen */

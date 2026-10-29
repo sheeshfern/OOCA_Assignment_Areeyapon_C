@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useApp } from '../AppContext';
 import { Dots } from '../components/bits';
 import { Screen } from '../components/Screen';
@@ -20,6 +21,14 @@ export function Result() {
   const at = s.at ?? Date.now();
   const [day, time] = stampOf(at, s.lang);
   const note = s.note.trim();
+  // the note shows up to 6 lines; "อ่านทั้งหมด" appears only when it is actually cut off
+  const [snipOpen, setSnipOpen] = useState(false);
+  const [snipCut, setSnipCut] = useState(false);
+  const snip = useRef<HTMLParagraphElement>(null);
+  useLayoutEffect(() => {
+    const el = snip.current;
+    setSnipCut(!!el && el.scrollHeight > el.clientHeight + 1);
+  }, [note, snipOpen, s.lang]);
 
   const talk = feelGood ? null : (
     <div className={`talk${r.lv === 1 ? ' quiet' : ''}`}>
@@ -31,7 +40,11 @@ export function Result() {
   const action = (
     <div className="crow" style={r.lv === 3 ? { borderTop: 'none' } : undefined}>
       <span className="lb">{L.writeLb}</span><span><Ph text={main.a ?? ''} /></span>
-      {note && <p className="note-snip">{note}</p>}
+      {note && <>
+        <p ref={snip} id="note-snip" className={`note-snip${snipOpen ? ' open' : ''}`}>{note}</p>
+        <button className="snip-more" data-act="snipMore" aria-controls="note-snip" aria-expanded={snipOpen}
+          hidden={!snipOpen && !snipCut} onClick={() => setSnipOpen(o => !o)}>{snipOpen ? L.snipLess : L.snipMore}</button>
+      </>}
       <button className={`timer${s.noteUp ? ' done' : ''}`} data-act="timer" aria-haspopup="dialog" onClick={openNote}>
         {note ? <span>{L.openNote}</span> : <>{ico.pen}<span>{s.noteUp ? L.keepWriting : L.writeBtn}</span></>}
       </button>

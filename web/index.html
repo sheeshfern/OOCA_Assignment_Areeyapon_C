@@ -440,7 +440,11 @@ h1,p,.crow span{text-wrap:pretty}
 .note-dlg[open] .note-wrap{animation:noteIn .35s cubic-bezier(.2,.8,.2,1) both}
 @keyframes noteIn{from{opacity:0;transform:translateY(24px) scale(.96)}}
 /* the note snippet that stays on the result card */
-.note-snip{margin:6px 0 0;padding:8px 12px;border-radius:12px;background:#DBF0EE;font-size:16px;line-height:1.5;color:var(--text);white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* the note on the card: up to 6 lines, then "อ่านทั้งหมด" opens the rest in place.
+   Top/bottom spacing is a border, not padding: a clamped box clips at its padding edge, so padding let the next line peek through */
+.note-snip{margin:6px 0 0;padding:0 12px;border:8px solid #DBF0EE;border-inline-width:0;border-radius:12px;background:#DBF0EE;font-size:16px;line-height:1.5;color:var(--text);white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.note-snip.open{display:block;-webkit-line-clamp:unset}
+.snip-more{align-self:flex-start;min-height:32px;margin-top:2px;padding:4px 2px;border:none;background:none;color:var(--action-pressed);font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
 @media (max-height:620px){.paper{--lh:30px}.note-text{min-height:calc(var(--lh) * 3)}}
 @media (max-width:360px){.paper{padding:18px 16px 14px}.note-q{font-size:17px}}
 /* sideways phones: a shorter note so the Done button stays on screen */
@@ -714,7 +718,7 @@ const UI = {
     call:'โทรสายด่วนสุขภาพจิต <span class="nw">1323</span>', callSmall:'ฟรี ตลอด 24 ชั่วโมง',
     safeFine:'ถ้าคุณหรือคนใกล้ตัวกำลังอยู่ในอันตราย <a href="tel:1669">โทร 1669</a> ทันที', rePick:'กลับไปเลือกคำใหม่',
     noteClose:'ปิดโน้ต', notePrivate:'โน้ตนี้อยู่ในเครื่องคุณเท่านั้น ไม่ถูกส่งไปไหน', done:'เสร็จแล้ว', placeholder:'เริ่มเขียนได้เลย ไม่ต้องสวย',
-    noteEditLb:'โน้ตของคุณ · แก้ได้ตลอด', noteCount:(n, max) => `${n}/${max} คำ`, noteFull:'ครบ 500 คำแล้ว', timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
+    noteEditLb:'โน้ตของคุณ · แก้ได้ตลอด', noteCount:(n, max) => `${n}/${max} คำ`, noteFull:'ครบ 500 คำแล้ว', snipMore:'อ่านทั้งหมด', snipLess:'ย่อโน้ต', timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
     saveTitle:'เก็บการ์ดไว้ในเครื่อง', saveShare:'บันทึกรูปลงเครื่อง', saveDownload:'ดาวน์โหลดรูปการ์ด', saveClose:'ปิด',
     saveHint:'หรือกดค้างที่รูป แล้วเลือกบันทึกรูปภาพ', savePrivate:'รูปนี้สร้างในเครื่องคุณ ไม่ถูกส่งไปไหน', cardAlt:'การ์ดความรู้สึกของคุณ'
   },
@@ -741,7 +745,7 @@ const UI = {
     call:'Call the mental health hotline <span class="nw">1323</span>', callSmall:'Free, 24 hours a day',
     safeFine:'If you or someone near you is in danger, <a href="tel:1669">call 1669</a> now', rePick:'Choose a different word',
     noteClose:'Close note', notePrivate:'This note stays on your device and isn’t sent anywhere', done:'Done', placeholder:'Just start. Messy is fine.',
-    noteEditLb:'Your note · edit any time', noteCount:(n, max) => `${n}/${max} words`, noteFull:'Limit reached', timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.',
+    noteEditLb:'Your note · edit any time', noteCount:(n, max) => `${n}/${max} words`, noteFull:'Limit reached', snipMore:'Read all', snipLess:'Show less', timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.',
     saveTitle:'Save your card', saveShare:'Save image', saveDownload:'Download card image', saveClose:'Close',
     saveHint:'Or press and hold the image to save it', savePrivate:'Made on your device. Nothing is sent anywhere.', cardAlt:'Your feeling card'
   }
@@ -752,13 +756,13 @@ const loc = x => S.lang === 'en' && x && x.en ? {...x, ...x.en} : x;
 const savedLang = () => { try { return localStorage.getItem('ooca-lang') === 'en' ? 'en' : 'th'; } catch(_) { return 'th'; } };
 
 /* ---------- state ---------- */
-const S = { screen:'home', tone:null, picks:[], showAll:false, ctx:null, dur:null, history:[], dir:'fwd', note:'', noteUp:false, noteDone:false, lang:savedLang(), at:null };
+const S = { screen:'home', tone:null, picks:[], showAll:false, ctx:null, dur:null, history:[], dir:'fwd', note:'', noteUp:false, noteDone:false, snipOpen:false, lang:savedLang(), at:null };
 const app = document.getElementById('app');
 const allWords = () => TONES.flatMap(t => [...t.words, ...t.more].map(x => ({...x, tone:t})));
 
 function go(screen){ S.history.push(S.screen); S.screen = screen; S.dir = 'fwd'; render(); }
 function back(){ S.screen = S.history.pop() || 'home'; S.dir = 'back'; render(); }
-function restart(){ Object.assign(S,{screen:'home',tone:null,picks:[],showAll:false,ctx:null,dur:null,history:[],dir:'back',note:'',noteUp:false,noteDone:false,at:null}); render(); }
+function restart(){ Object.assign(S,{screen:'home',tone:null,picks:[],showAll:false,ctx:null,dur:null,history:[],dir:'back',note:'',noteUp:false,noteDone:false,snipOpen:false,at:null}); render(); }
 
 /* ---------- helpers ---------- */
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -940,7 +944,7 @@ V.result = () => {
     <a class="cta ${r.lv===1?'ghost':''}" href="${OOCA_URL}" target="_blank" rel="noopener"><span>${L('cta')}</span>${ico.arrow}</a>
   </div>`;
   const action = `<div class="crow"><span class="lb">${L('writeLb')}</span><span>${ph(loc(r.main).a)}</span>
-     ${S.note.trim() ? `<p class="note-snip">${esc(S.note.trim())}</p>` : ''}
+     ${S.note.trim() ? `<p class="note-snip${S.snipOpen?' open':''}" id="note-snip">${esc(S.note.trim())}</p><button class="snip-more" data-act="snipMore" aria-controls="note-snip" aria-expanded="${!!S.snipOpen}" hidden>${L(S.snipOpen?'snipLess':'snipMore')}</button>` : ''}
      <button class="timer${S.noteUp?' done':''}" data-act="timer" aria-haspopup="dialog">${S.note.trim() ? `<span>${L('openNote')}</span>` : `${ico.pen}<span>${S.noteUp?L('keepWriting'):L('writeBtn')}</span>`}</button></div>`;
   const parts = r.lv===3
     ? talk + `<div class="card" style="padding-top:4px">${action.replace('class="crow"','class="crow" style="border-top:none"')}</div>`
@@ -1092,6 +1096,11 @@ function greet(n){
     greet(n);
   }, n === 0 ? 5000 : 4000);
 }
+// show "อ่านทั้งหมด" only when the card's note is actually cut off (or already opened)
+function fitSnip(){
+  const s = app.querySelector('.note-snip'), b = app.querySelector('.snip-more');
+  if (s && b) b.hidden = !s.classList.contains('open') && s.scrollHeight <= s.clientHeight + 1;
+}
 function render(){
   clearInterval(timerId); clearTimeout(loopId);
   const same = shown === S.screen; shown = S.screen;
@@ -1102,6 +1111,7 @@ function render(){
     if (S.screen === 'home') greet(0);
     const h = app.querySelector('h1'); if (h && S.history.length) h.focus({preventScroll:true});
     window.scrollTo(0,0); app.scrollTop = 0;
+    fitSnip();
     return;
   }
   // same screen (a selection changed): no entrance, keep scroll, images and focus; only what changed reacts
@@ -1125,6 +1135,7 @@ function render(){
   syncFloat();
   const f = key && app.querySelector(key); if (f) f.focus({preventScroll:true});
   window.scrollTo(0,y); app.scrollTop = ay;
+  fitSnip();
 }
 
 // the start button grows into a circle that fills the app frame (not the whole page), then the next screen shows through
@@ -1330,6 +1341,7 @@ app.addEventListener('click', e => {
     case 'toResult': go('result'); break;
     case 'rePick': S.picks=[]; S.screen='words'; S.history=['home','tone']; S.dir='back'; if(!S.tone) S.tone=TONES[3]; render(); break;
     case 'timer': openNote(loc(resultData().main).a); break;
+    case 'snipMore': S.snipOpen = !S.snipOpen; render(); break;
     case 'save': {
       const ic = b.querySelector('svg'); ic.classList.remove('drop'); void ic.getBoundingClientRect(); ic.classList.add('drop');
       if (b.dataset.busy) break; b.dataset.busy = '1';
