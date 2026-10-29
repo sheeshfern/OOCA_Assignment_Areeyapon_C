@@ -73,6 +73,13 @@ const th = {
   timeUpMsg: 'ครบแล้ว เขียนต่อให้จบได้นะ',
   saved: 'บันทึกรูปการ์ดแล้ว',
   saveFail: 'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
+  saveTitle: 'เก็บการ์ดไว้ในเครื่อง',
+  saveShare: 'บันทึกรูปลงเครื่อง',
+  saveDownload: 'ดาวน์โหลดรูปการ์ด',
+  saveClose: 'ปิด',
+  saveHint: 'หรือกดค้างที่รูป แล้วเลือกบันทึกรูปภาพ',
+  savePrivate: 'รูปนี้สร้างในเครื่องคุณ ไม่ถูกส่งไปไหน',
+  cardAlt: 'การ์ดความรู้สึกของคุณ',
 };
 
 export type Copy = typeof th;
@@ -146,6 +153,13 @@ const en: Copy = {
   timeUpMsg: 'Time’s up. Feel free to finish your thought.',
   saved: 'Card image saved',
   saveFail: 'Couldn’t save the image. Try a screenshot instead.',
+  saveTitle: 'Save your card',
+  saveShare: 'Save image',
+  saveDownload: 'Download card image',
+  saveClose: 'Close',
+  saveHint: 'Or press and hold the image to save it',
+  savePrivate: 'Made on your device. Nothing is sent anywhere.',
+  cardAlt: 'Your feeling card',
 };
 
 export const UI: Record<Lang, Copy> = { th, en };

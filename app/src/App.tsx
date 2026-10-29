@@ -4,7 +4,8 @@ import { NoteDialog } from './components/NoteDialog';
 import { Toast, useToast } from './components/Toast';
 import { IMG } from './data/images';
 import { UI } from './data/ui';
-import { saveCardImage } from './lib/cardImage';
+import { SaveSheet } from './components/SaveSheet';
+import { makeCardImage, type CardImage } from './lib/cardImage';
 import { replay } from './lib/motion';
 import { loc } from './lib/text';
 import { Ctx } from './screens/Ctx';
@@ -21,6 +22,8 @@ const SCREENS: Record<Screen, () => ReactElement> = { home: Home, tone: Tone, wo
 export default function App() {
   const [s, dispatch] = useReducer(reducer, undefined, initialState);
   const [noteOpen, setNoteOpen] = useState(false);
+  // the saved-card preview: set once the image is made, cleared when the sheet closes
+  const [card, setCard] = useState<CardImage | null>(null);
   const { toast, show } = useToast();
   const L = UI[s.lang];
 
@@ -49,8 +52,8 @@ export default function App() {
       list.push(card);
       localStorage.setItem(k, JSON.stringify(list.slice(-30)));
     } catch { /* storage full or blocked: the image still saves */ }
-    saveCardImage(s, L)
-      .then(done => { if (done) show(L.saved); })
+    makeCardImage(s, L)
+      .then(setCard)
       .catch(() => show(L.saveFail))
       .finally(() => { delete btn.dataset.busy; });
   }, [s, L, show]);
@@ -72,6 +75,7 @@ export default function App() {
       </main>
       <Toast toast={toast} />
       <NoteDialog open={noteOpen} prompt={loc(resultData(s).main, s.lang).a ?? ''} onClose={() => setNoteOpen(false)} />
+      <SaveSheet card={card} onClose={() => setCard(null)} onSaved={() => show(L.saved)} />
     </AppContext.Provider>
   );
 }

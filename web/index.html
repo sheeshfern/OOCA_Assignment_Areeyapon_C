@@ -444,6 +444,18 @@ h1,p,.crow span{text-wrap:pretty}
   .note-text{min-height:calc(var(--lh) * 2);font-size:17px}
   .note-private{display:none}
 }
+
+/* ---- save sheet: the card image as it will be saved, then one clear button ---- */
+.save-wrap{gap:12px}
+.save-img{display:block;margin:0 auto;width:auto;max-width:100%;max-height:calc(100dvh - 220px - env(safe-area-inset-bottom));border-radius:20px;background:var(--white);
+  box-shadow:0 16px 32px rgba(0,196,179,.18),0 4px 12px -4px rgba(0,196,179,.28);-webkit-touch-callout:default}
+.save-go{display:flex;align-items:center;justify-content:center;gap:10px}
+.save-go svg{width:22px;height:22px}
+@media (max-height:500px){
+  .save-wrap{gap:8px}
+  .save-img{max-height:calc(100dvh - 150px)}
+  .save-tip{display:none}
+}
 </style>
 </head>
 <body>
@@ -471,6 +483,14 @@ h1,p,.crow span{text-wrap:pretty}
     </div>
     <p class="note-private"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span data-i18n="notePrivate">โน้ตนี้อยู่ในเครื่องคุณเท่านั้น ไม่ถูกส่งไปไหน</span></p>
     <button class="primary" data-note="done" data-i18n="done">เสร็จแล้ว</button>
+  </div>
+</dialog>
+<!-- save sheet: openSave() adds the card image and fills in the texts -->
+<dialog id="save" class="note-dlg save-dlg">
+  <div class="note-wrap save-wrap">
+    <div class="note-top"><button class="icon-btn" data-save="close"></button></div>
+    <p class="note-private save-tip"></p>
+    <button class="primary save-go" data-save="go"></button>
   </div>
 </dialog>
 
@@ -683,7 +703,9 @@ const UI = {
     call:'โทรสายด่วนสุขภาพจิต <span class="nw">1323</span>', callSmall:'ฟรี ตลอด 24 ชั่วโมง',
     safeFine:'ถ้าคุณหรือคนใกล้ตัวกำลังอยู่ในอันตราย <a href="tel:1669">โทร 1669</a> ทันที', rePick:'กลับไปเลือกคำใหม่',
     noteClose:'ปิดโน้ต', notePrivate:'โน้ตนี้อยู่ในเครื่องคุณเท่านั้น ไม่ถูกส่งไปไหน', done:'เสร็จแล้ว', placeholder:'เริ่มเขียนได้เลย ไม่ต้องสวย',
-    timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน'
+    timeUp:'ครบ', timeUpMsg:'ครบแล้ว เขียนต่อให้จบได้นะ', saved:'บันทึกรูปการ์ดแล้ว', saveFail:'บันทึกรูปไม่ได้ ลองแคปหน้าจอเก็บไว้แทน',
+    saveTitle:'เก็บการ์ดไว้ในเครื่อง', saveShare:'บันทึกรูปลงเครื่อง', saveDownload:'ดาวน์โหลดรูปการ์ด', saveClose:'ปิด',
+    saveHint:'หรือกดค้างที่รูป แล้วเลือกบันทึกรูปภาพ', savePrivate:'รูปนี้สร้างในเครื่องคุณ ไม่ถูกส่งไปไหน', cardAlt:'การ์ดความรู้สึกของคุณ'
   },
   en: {
     title:'Name your feeling · ooca', desc:'Take 2 minutes and 4 quick questions to name how you feel and find a way to care for it.',
@@ -708,7 +730,9 @@ const UI = {
     call:'Call the mental health hotline <span class="nw">1323</span>', callSmall:'Free, 24 hours a day',
     safeFine:'If you or someone near you is in danger, <a href="tel:1669">call 1669</a> now', rePick:'Choose a different word',
     noteClose:'Close note', notePrivate:'This note stays on your device and isn’t sent anywhere', done:'Done', placeholder:'Just start. Messy is fine.',
-    timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.'
+    timeUp:'Done', timeUpMsg:'Time’s up. Feel free to finish your thought.', saved:'Card image saved', saveFail:'Couldn’t save the image. Try a screenshot instead.',
+    saveTitle:'Save your card', saveShare:'Save image', saveDownload:'Download card image', saveClose:'Close',
+    saveHint:'Or press and hold the image to save it', savePrivate:'Made on your device. Nothing is sent anywhere.', cardAlt:'Your feeling card'
   }
 };
 const L = k => UI[S.lang][k];
@@ -748,6 +772,7 @@ const ico = {
   cal:'<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M16 3v4M8 3v4M4 11h16"/></svg>',
   save:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/><path d="M7 11l5 5l5 -5"/><path d="M12 4v12"/></svg>',
   phone:'<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"/></svg>',
+  lock:'<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
   ok:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#DBF0EE"/><path d="M4.8 8.2l2.1 2.1l4.3-4.4" fill="none" stroke="#00796B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 // round flags for the language switch: Thailand, and the centre of the Union Jack for English
@@ -1184,20 +1209,50 @@ async function cardCanvas(){
   }
 }
 // download on desktop; on phones open the share sheet so "Save image" puts it in the photo library
-async function saveCardImage(){
+// "เก็บการ์ดไว้" opens a sheet that shows the card image first. On phones the button opens the share sheet
+// (which has "Save Image") and the image itself can be pressed and held; elsewhere the button downloads the PNG.
+// The file is made before the sheet opens, so the share call runs straight from a tap, as iOS requires.
+const saveDlg = document.getElementById('save'), saveGo = saveDlg.querySelector('[data-save="go"]'), saveTip = saveDlg.querySelector('.save-tip');
+let saveFile = null;
+const touchDevice = () => matchMedia('(pointer:coarse)').matches;
+const canShareFile = f => touchDevice() && !!navigator.canShare && navigator.canShare({files: [f]});
+async function openSave(){
   const cv = await cardCanvas();
   const blob = await new Promise((ok, no) => cv.toBlob(b => b ? ok(b) : no(new Error('no image')), 'image/png'));
   const d = new Date(S.at || Date.now()), two = n => String(n).padStart(2, '0');
   const name = `mooca-card-${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())}-${two(d.getHours())}${two(d.getMinutes())}.png`;
-  const file = new File([blob], name, {type: 'image/png'});
-  if (matchMedia('(pointer:coarse)').matches && navigator.canShare && navigator.canShare({files: [file]})) {
-    try { await navigator.share({files: [file]}); return true; }
-    catch (e) { if (e.name === 'AbortError') return false; } // a refused share falls through to a plain download
-  }
-  const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(blob), download: name});
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-  return true;
+  saveFile = new File([blob], name, {type: 'image/png'});
+  // a data: URL (not blob:) so press-and-hold "Save image" works in every phone browser
+  const img = saveDlg.querySelector('.save-img') || saveTip.insertAdjacentElement('beforebegin', Object.assign(document.createElement('img'), {className: 'save-img'}));
+  img.src = cv.toDataURL('image/png'); img.alt = L('cardAlt');
+  saveDlg.setAttribute('aria-label', L('saveTitle'));
+  const x = saveDlg.querySelector('[data-save="close"]'); x.innerHTML = ico.close; x.setAttribute('aria-label', L('saveClose'));
+  saveGo.innerHTML = `${ico.save}<span>${L(canShareFile(saveFile) ? 'saveShare' : 'saveDownload')}</span>`;
+  saveTip.innerHTML = touchDevice() ? `<span>${L('saveHint')}</span>` : `${ico.lock}<span>${L('savePrivate')}</span>`;
+  saveDlg.showModal();
+  saveGo.focus({preventScroll:true});
 }
+function closeSave(){
+  if (saveDlg.open) saveDlg.close();
+  saveDlg.querySelector('.save-img')?.remove(); saveFile = null;
+}
+async function saveNow(){
+  const f = saveFile; if (!f) return;
+  if (canShareFile(f)) {
+    // the share sheet confirms on its own, so no toast here
+    try { await navigator.share({files: [f]}); closeSave(); return; }
+    catch (e) { if (e.name === 'AbortError') return; } // a refused share falls through to a plain download
+  }
+  const a = Object.assign(document.createElement('a'), {href: URL.createObjectURL(f), download: f.name});
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  closeSave(); toast(L('saved'));
+}
+saveDlg.addEventListener('click', e => {
+  const b = e.target.closest('[data-save]');
+  if (b) b.dataset.save === 'go' ? saveNow() : closeSave();
+  else if (e.target === saveDlg) closeSave(); // a tap on the dimmed backdrop
+});
+saveDlg.addEventListener('cancel', e => { e.preventDefault(); closeSave(); });
 app.addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act, id = b.dataset.id; lastHit = b;
@@ -1241,7 +1296,7 @@ app.addEventListener('click', e => {
       const r = resultData();
       const card = { date:new Date(S.at || Date.now()).toISOString(), words:r.picks.map(p=>p.w), ctx:S.ctx, dur:S.dur, note:S.note.trim() || undefined };
       try { const k='ooca-feeling-cards'; const list = JSON.parse(localStorage.getItem(k)||'[]'); list.push(card); localStorage.setItem(k, JSON.stringify(list.slice(-30))); } catch(_) {}
-      saveCardImage().then(done => { if (done) toast(L('saved')); }).catch(() => toast(L('saveFail'))).finally(() => { delete b.dataset.busy; });
+      openSave().catch(() => toast(L('saveFail'))).finally(() => { delete b.dataset.busy; });
       break;
     }
   }

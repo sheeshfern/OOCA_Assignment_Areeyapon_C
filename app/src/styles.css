@@ -434,3 +434,15 @@ h1,p,.crow span{text-wrap:pretty}
   .note-text{min-height:calc(var(--lh) * 2);font-size:17px}
   .note-private{display:none}
 }
+
+/* ---- save sheet: the card image as it will be saved, then one clear button ---- */
+.save-wrap{gap:12px}
+.save-img{display:block;margin:0 auto;width:auto;max-width:100%;max-height:calc(100dvh - 220px - env(safe-area-inset-bottom));border-radius:20px;background:var(--white);
+  box-shadow:0 16px 32px rgba(0,196,179,.18),0 4px 12px -4px rgba(0,196,179,.28);-webkit-touch-callout:default}
+.save-go{display:flex;align-items:center;justify-content:center;gap:10px}
+.save-go svg{width:22px;height:22px}
+@media (max-height:500px){
+  .save-wrap{gap:8px}
+  .save-img{max-height:calc(100dvh - 150px)}
+  .save-tip{display:none}
+}

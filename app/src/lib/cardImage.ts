@@ -182,19 +182,32 @@ export async function cardCanvas(s: State, L: Copy): Promise<HTMLCanvasElement> 
   throw new Error('no card image');
 }
 
-// download on desktop; on phones open the share sheet so "Save image" puts it in the photo library
-export async function saveCardImage(s: State, L: Copy): Promise<boolean> {
+export interface CardImage {
+  /** data: URL for the preview (press-and-hold "Save image" works with data: in every phone browser) */
+  url: string;
+  file: File;
+}
+
+/** The card as a PNG file, made before the save sheet opens so the share call can run straight from a tap (iOS needs that). */
+export async function makeCardImage(s: State, L: Copy): Promise<CardImage> {
   const cv = await cardCanvas(s, L);
   const blob = await new Promise<Blob>((ok, no) => cv.toBlob(b => (b ? ok(b) : no(new Error('no image'))), 'image/png'));
   const d = new Date(s.at ?? Date.now()), two = (n: number) => String(n).padStart(2, '0');
   const name = `mooca-card-${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())}-${two(d.getHours())}${two(d.getMinutes())}.png`;
-  const file = new File([blob], name, { type: 'image/png' });
-  if (matchMedia('(pointer:coarse)').matches && navigator.canShare?.({ files: [file] })) {
-    try { await navigator.share({ files: [file] }); return true; }
-    catch (e) { if ((e as Error).name === 'AbortError') return false; } // a refused share falls through to a plain download
+  return { url: cv.toDataURL('image/png'), file: new File([blob], name, { type: 'image/png' }) };
+}
+
+export const touchDevice = () => matchMedia('(pointer:coarse)').matches;
+export const canShareFile = (f: File) => touchDevice() && !!navigator.canShare?.({ files: [f] });
+
+/** Phones get the share sheet (it has "Save Image"); everything else downloads the PNG. */
+export async function saveCardFile(f: File): Promise<'shared' | 'downloaded' | 'cancelled'> {
+  if (canShareFile(f)) {
+    try { await navigator.share({ files: [f] }); return 'shared'; }
+    catch (e) { if ((e as Error).name === 'AbortError') return 'cancelled'; } // a refused share falls through to a plain download
   }
-  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: name });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(f), download: f.name });
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-  return true;
+  return 'downloaded';
 }
