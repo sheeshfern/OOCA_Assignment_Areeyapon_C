@@ -138,9 +138,10 @@ h1,p,.crow span{text-wrap:pretty}
 .opt .ck{flex-shrink:0;box-sizing:content-box;padding:4px;border-radius:50%;box-shadow:inset 0 0 0 2px #B3EDE8;color:transparent;transition:background-color .15s,box-shadow .15s,color .15s}
 .opt[aria-pressed="true"] .ck{background:#009688;box-shadow:none;color:var(--white)}
 /* the icon tile sits the same distance from the top, bottom and left edge at every row height, with a concentric corner */
-.opt.with-ic{--in:6px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:var(--in) 18px var(--in) var(--in)}
+/* tile and check circle sit the same distance from the row's rounded ends (centre to edge 29px) */
+.opt.with-ic{--in:8px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:var(--in) 12px var(--in) var(--in)}
 .opt .ol{flex:1}
-.opt .oi{align-self:stretch;aspect-ratio:1;flex-shrink:0;border-radius:8px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--zone,#1F77DF) 10%,#fff);transition:background .2s,transform .25s cubic-bezier(.3,1.4,.5,1)}
+.opt .oi{width:38px;height:38px;flex-shrink:0;border-radius:8px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--zone,#1F77DF) 10%,#fff);transition:background .2s,transform .25s cubic-bezier(.3,1.4,.5,1)}
 .opt[aria-pressed="true"] .oi{background:var(--white)}
 .opt[aria-pressed="true"] .oi svg{transform:scale(1.1)}
 .opt .oi svg{width:72%;height:auto;transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
