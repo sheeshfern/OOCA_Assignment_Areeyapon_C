@@ -33,7 +33,7 @@ export function Result() {
   const talk = feelGood ? null : (
     <div className={`talk${r.lv === 1 ? ' quiet' : ''}`}>
       <p>{talkLead && <><b style={{ fontWeight: 600 }}><Ph text={talkLead} /></b>{' '}</>}<Ph text={talkRest} /></p>
-      <a className={`cta${r.lv === 1 ? ' ghost' : ''}`} href={OOCA_URL} target="_blank" rel="noopener"><span>{L.cta}</span>{ico.arrow}</a>
+      <a className="cta" href={OOCA_URL} target="_blank" rel="noopener"><span>{L.cta}</span>{ico.arrow}</a>
     </div>
   );
 
