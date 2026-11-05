@@ -1,4 +1,4 @@
-import { createContext, useContext, type Dispatch } from 'react';
+import { createContext, useContext, type Dispatch, type MouseEvent } from 'react';
 import type { Copy } from './data/ui';
 import type { Action, Screen, State } from './state';
 
@@ -8,6 +8,8 @@ export interface AppApi {
   /** interface copy in the current language */
   L: Copy;
   go: (screen: Screen) => void;
+  /** a tapped choice: plays its reaction, then dispatches */
+  tap: (e: MouseEvent<HTMLElement>, action: Action) => void;
   openNote: () => void;
   saveCard: (btn: HTMLButtonElement) => void;
 }

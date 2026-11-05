@@ -1,40 +1,37 @@
 import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../AppContext';
 import { ico } from '../data/icons';
+import { IMG } from '../data/images';
 import { chime, replay } from '../lib/motion';
-import { NOTE_MAX, Ph } from '../lib/text';
+import { NOTE_MAX, NOTE_MS, Ph } from '../lib/text';
+import { useDialog } from './useDialog';
 
 // The 30-second note. The timer is a gentle guide: when it ends the clock rings once,
 // but the note stays open so nobody is cut off mid-sentence.
 export function NoteDialog({ open, prompt, onClose }: { open: boolean; prompt: string; onClose: () => void }) {
   const { s, L, dispatch } = useApp();
-  const dlg = useRef<HTMLDialogElement>(null), text = useRef<HTMLTextAreaElement>(null), clock = useRef<HTMLDivElement>(null);
-  const [left, setLeft] = useState(30000);
-  const [timeUp, setTimeUp] = useState(false);
+  const dialog = useDialog(open, onClose), text = useRef<HTMLTextAreaElement>(null), clock = useRef<HTMLDivElement>(null);
+  const [left, setLeft] = useState(NOTE_MS);
+  const timeUp = s.noteUp;
   // typing reached NOTE_MAX characters
   const [limitHit, setLimitHit] = useState(false);
   const chars = s.note.length;
 
   useEffect(() => {
-    const d = dlg.current!;
-    if (!open) { if (d.open) d.close(); return; }
-    if (!d.open) d.showModal();
+    if (!open) return;
     text.current?.focus({ preventScroll: true });
     clock.current?.classList.remove('ringing');
     setLimitHit(false);
     // once a note has been written and closed, later opens are plain editing: no clock, no countdown
-    if (s.noteDone) return;
     // already rang on an earlier open: show the finished clock, no sound
-    if (s.noteUp) { setTimeUp(true); setLeft(0); return; }
-    setTimeUp(false);
+    if (s.noteDone || s.noteUp) return;
     // only ever one countdown, and it stops itself the moment it rings, so the ding plays exactly once
-    const end = performance.now() + 30000;
+    const end = performance.now() + NOTE_MS;
     const tick = () => {
       const ms = Math.max(0, end - performance.now());
       setLeft(ms);
       if (ms <= 0) {
         clearInterval(id);
-        setTimeUp(true);
         dispatch({ type: 'noteUp' });
         replay(clock.current, 'ringing');
         chime();
@@ -48,11 +45,10 @@ export function NoteDialog({ open, prompt, onClose }: { open: boolean; prompt: s
   }, [open]);
 
   return (
-    <dialog id="note" ref={dlg} className="note-dlg" aria-labelledby="note-q"
-      onCancel={e => { e.preventDefault(); onClose(); }}
-      onClick={e => { if (e.target === dlg.current) onClose(); /* a tap on the dimmed backdrop */ }}>
+    <dialog id="note" {...dialog} className="note-dlg" aria-labelledby="note-q">
       <div className="note-wrap">
         <div className="note-top">
+          <img className="note-mooca" src={timeUp || s.noteDone ? IMG.written : IMG.write} alt="" />
           <button className="icon-btn" data-note="close" aria-label={L.noteClose} onClick={onClose}>{ico.close}</button>
         </div>
         <div className={`paper${s.noteDone ? ' editing' : timeUp ? ' timeup' : ''}`}>
@@ -64,16 +60,16 @@ export function NoteDialog({ open, prompt, onClose }: { open: boolean; prompt: s
             <div className="clock" aria-hidden="true" ref={clock}>
               <svg viewBox="0 0 64 64" fill="none">
                 <g className="bell">
-                  <path d="M9 17a9 9 0 0 1 13-9" stroke="#009688" strokeWidth="3.5" strokeLinecap="round" />
-                  <path d="M55 17a9 9 0 0 0-13-9" stroke="#009688" strokeWidth="3.5" strokeLinecap="round" />
+                  <path d="M9 17a9 9 0 0 1 13-9" stroke="#00A28B" strokeWidth="3.5" strokeLinecap="round" />
+                  <path d="M55 17a9 9 0 0 0-13-9" stroke="#00A28B" strokeWidth="3.5" strokeLinecap="round" />
                 </g>
-                <path d="M19 55l-4 5M45 55l4 5" stroke="#009688" strokeWidth="3" strokeLinecap="round" />
+                <path d="M19 55l-4 5M45 55l4 5" stroke="#00A28B" strokeWidth="3" strokeLinecap="round" />
                 <circle cx="32" cy="36" r="22" fill="#fff" />
                 <circle className="track" cx="32" cy="36" r="22" strokeWidth="5" />
                 <circle className="prog" cx="32" cy="36" r="22" strokeWidth="5" strokeLinecap="round" pathLength={100} strokeDasharray="100"
-                  style={{ strokeDashoffset: timeUp ? 100 : 100 - left / 300 }} transform="rotate(-90 32 36)" />
+                  style={{ strokeDashoffset: timeUp ? 100 : 100 - left / (NOTE_MS / 100) }} transform="rotate(-90 32 36)" />
               </svg>
-              <b className="sec" style={timeUp ? { fontSize: 12 } : undefined}>{timeUp ? L.timeUp : Math.ceil(left / 1000)}</b>
+              <b className="sec">{timeUp ? L.timeUp : Math.ceil(left / 1000)}</b>
             </div>
           </div>
           <textarea id="note-text" ref={text} className="note-text" aria-labelledby="note-q" aria-describedby="note-count" rows={5}

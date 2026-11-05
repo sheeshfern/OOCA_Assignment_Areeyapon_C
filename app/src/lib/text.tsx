@@ -41,4 +41,6 @@ export function stampOf(t: number, lang: Lang): [string, string] {
 }
 
 /** The note stops at NOTE_MAX characters (the textarea's maxLength also covers pasting). */
+/** how long the note's clock runs */
+export const NOTE_MS = 30000;
 export const NOTE_MAX = 250;

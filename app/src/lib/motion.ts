@@ -17,12 +17,13 @@ export function syncFloat(root: ParentNode) {
     const d = parseFloat(getComputedStyle(el).animationDuration) * 1000 || 4000;
     el.style.animationDelay = `-${Math.round(t % d)}ms`;
   });
+  document.documentElement.style.setProperty('--clock', `-${Math.round(t % 5500)}ms`); // the word clouds' 5.5s float
 }
 
 // choices rise in one after another once Mooca has spoken
 export function stagger(screen: HTMLElement) {
   const els = [
-    ...screen.querySelectorAll<HTMLElement>(':scope > :not(.top,.guide,.hero,.grow,.tones,.words,.opts,.card.main), .tone, .word, .opt'),
+    ...screen.querySelectorAll<HTMLElement>(':scope > :not(.top,.progress,.guide,.hero,.grow,.tones,.words,.opts,.card.main), .tone, .word, .opt'),
   ];
   els.forEach((el, i) => { el.classList.add('rise'); el.style.setProperty('--i', String(Math.min(i, 12))); });
 }

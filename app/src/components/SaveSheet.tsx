@@ -1,20 +1,16 @@
 import { useEffect, useRef } from 'react';
 import { useApp } from '../AppContext';
 import { ico } from '../data/icons';
+import { useDialog } from './useDialog';
 import { canShareFile, saveCardFile, touchDevice, type CardImage } from '../lib/cardImage';
 
 // "เก็บการ์ดไว้" opens this sheet with the card image first. On phones the button opens the share sheet
 // (which has "Save Image") and the image itself can be pressed and held; elsewhere the button downloads the PNG.
 export function SaveSheet({ card, onClose, onSaved }: { card: CardImage | null; onClose: () => void; onSaved: () => void }) {
   const { L } = useApp();
-  const dlg = useRef<HTMLDialogElement>(null), go = useRef<HTMLButtonElement>(null);
+  const dialog = useDialog(!!card, onClose), go = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    const d = dlg.current!;
-    if (!card) { if (d.open) d.close(); return; }
-    if (!d.open) d.showModal();
-    go.current?.focus({ preventScroll: true });
-  }, [card]);
+  useEffect(() => { if (card) go.current?.focus({ preventScroll: true }); }, [card]);
 
   const save = async () => {
     if (!card) return;
@@ -27,9 +23,7 @@ export function SaveSheet({ card, onClose, onSaved }: { card: CardImage | null; 
 
   const touch = card ? touchDevice() : false;
   return (
-    <dialog id="save" ref={dlg} className="note-dlg save-dlg" aria-label={L.saveTitle}
-      onCancel={e => { e.preventDefault(); onClose(); }}
-      onClick={e => { if (e.target === dlg.current) onClose(); /* a tap on the dimmed backdrop */ }}>
+    <dialog id="save" {...dialog} className="note-dlg save-dlg" aria-label={L.saveTitle}>
       <div className="note-wrap save-wrap">
         <div className="note-top">
           <button className="icon-btn" data-save="close" aria-label={L.saveClose} onClick={onClose}>{ico.close}</button>

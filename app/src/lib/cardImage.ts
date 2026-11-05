@@ -1,9 +1,9 @@
 // Save the result card as an image. The card is drawn onto a canvas (not a DOM screenshot),
 // so the keepsake looks the same on every device and color-mix() etc. don't get in the way.
-import { NEUTRAL } from '../data/content';
+import { NEUTRAL, TONES } from '../data/content';
 import { IMG } from '../data/images';
 import type { Copy } from '../data/ui';
-import { moocaFor, resultData, type State } from '../state';
+import { posesFor, resultData, type State } from '../state';
 import { loc, stampOf } from './text';
 
 const CARD_FONT = '"Gotham Rounded Latin", Prompt, sans-serif';
@@ -49,13 +49,13 @@ function wrapRuns(m: Ctx, runs: Run[], w: number, lang: string): Line[] {
 
 // lays the card out once (measuring), returning its size and a draw(ctx) that paints it at 1x units
 async function buildCardImage(s: State, L: Copy, withImages: boolean) {
-  const r = resultData(s), neutral = r.main === NEUTRAL, good = r.lv === 0;
-  const Z = (s.picks.length && (s.picks[0].tone || s.tone)) || { zone: '#1F77DF', ink: '#0A47CA', bg: '#E4EFFB' };
+  const r = resultData(s), { neutral, good } = r;
+  const Z = s.picks[0]?.tone ?? TONES[3];
   const TEXT = '#355956', TEXT2 = '#3F6866';
   await Promise.all([400, 500, 600].map(w => document.fonts.load(cardFont(w, 20), 'กขA1')));
-  const [mooca, logo] = withImages
-    ? await Promise.all([moocaFor(s, good ? IMG.happy : IMG.thanks), IMG.logo].map(src => loadImg(src).catch(() => null)))
-    : [null, null];
+  const [logo, ...moocas] = withImages
+    ? await Promise.all([IMG.logo, ...posesFor(s)].map(src => loadImg(src).catch(() => null)))
+    : [null];
   const m = document.createElement('canvas').getContext('2d')!;
   const W = 540, P = 28, IP = 30, X = P + IP, IW = W - 2 * (P + IP);
   // header row (the mindfull logo) sits above the card
@@ -78,8 +78,8 @@ async function buildCardImage(s: State, L: Copy, withImages: boolean) {
   m.font = cardFont(500, 15);
   const chipW = m.measureText(when).width + 50, chipX = (W - chipW) / 2, chipY = y;
   ops.push(c => {
-    c.fillStyle = '#DBF0EE'; roundRect(c, chipX, chipY, chipW, 34, 17); c.fill();
-    c.strokeStyle = '#009688'; c.lineWidth = 1.6; roundRect(c, chipX + 15, chipY + 10, 15, 15, 3); c.stroke();
+    c.fillStyle = '#E0F8F6'; roundRect(c, chipX, chipY, chipW, 34, 17); c.fill();
+    c.strokeStyle = '#00A28B'; c.lineWidth = 1.6; roundRect(c, chipX + 15, chipY + 10, 15, 15, 3); c.stroke();
     c.beginPath(); c.moveTo(chipX + 15, chipY + 15.5); c.lineTo(chipX + 30, chipY + 15.5);
     c.moveTo(chipX + 19, chipY + 8); c.lineTo(chipX + 19, chipY + 12); c.moveTo(chipX + 26, chipY + 8); c.lineTo(chipX + 26, chipY + 12); c.stroke();
     c.font = cardFont(500, 15); c.fillStyle = TEXT; c.fillText(when, chipX + 38, chipY + 18);
@@ -99,11 +99,12 @@ async function buildCardImage(s: State, L: Copy, withImages: boolean) {
 
   // Mooca in the middle
   y += 10;
-  if (mooca) {
-    const bw = 180, bh = 140, sc = Math.min(bw / mooca.naturalWidth, bh / mooca.naturalHeight);
-    const dw = mooca.naturalWidth * sc, dh = mooca.naturalHeight * sc, mx = (W - dw) / 2, my = y + bh - dh;
-    ops.push(c => c.drawImage(mooca, mx, my, dw, dh));
-    if (good) ([[-102, 18, 20], [96, 34, 15], [-84, 116, 13]] as const).forEach(([dx, dy, sz]) => {
+  const shown = moocas.filter((m): m is HTMLImageElement => !!m);
+  if (shown.length) {
+    // one Mooca per picked word, overlapping a little when there are two
+    const bh = 176, size = shown.length > 1 ? 156 : bh, step = size - 18, from = (W - (size + step * (shown.length - 1))) / 2;
+    shown.forEach((im, i) => { const mx = from + step * i, my = y + bh - size; ops.push(c => c.drawImage(im, mx, my, size, size)); });
+    if (good) ([[-132, 18, 20], [124, 34, 15], [-118, 146, 13]] as const).forEach(([dx, dy, sz]) => {
       const sy = y + dy;
       ops.push(c => { c.font = `${sz}px sans-serif`; c.fillStyle = Z.zone; c.fillText('✦', W / 2 + dx, sy); });
     });
@@ -133,7 +134,7 @@ async function buildCardImage(s: State, L: Copy, withImages: boolean) {
   // the 30-second writing prompt, and the note if one was written
   y += 26;
   const divY = y;
-  ops.push(c => { c.fillStyle = '#E6EEF0'; c.fillRect(X, divY, IW, 1); });
+  ops.push(c => { c.fillStyle = '#D7E7E2'; c.fillRect(X, divY, IW, 1); });
   y += 22;
   put(lines([{ t: L.writeLb, f: cardFont(600, 14), c: Z.ink }]), X, 22);
   y += 2;
@@ -149,7 +150,7 @@ async function buildCardImage(s: State, L: Copy, withImages: boolean) {
     put(nls2, X + np, 28, 'left', IW - 2 * np);
     y += np;
     const nH = y - nTop;
-    ops.splice(noteAt, 0, c => { c.fillStyle = '#DBF0EE'; roundRect(c, X, nTop, IW, nH, 14); c.fill(); });
+    ops.splice(noteAt, 0, c => { c.fillStyle = '#E0F8F6'; roundRect(c, X, nTop, IW, nH, 14); c.fill(); });
   }
   y += IP;
   const cardH = y - cardTop;

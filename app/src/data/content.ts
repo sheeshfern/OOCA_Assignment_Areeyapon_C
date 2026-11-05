@@ -5,7 +5,7 @@ import type { Tone, Option, Duration, Word } from './types';
 
 // level: 0 = feel-good, 1 = light, 2 = medium, 3 = professional first. risk → safety screen
 export const TONES: Tone[] = [
-  { id: "yellow", label: "สดใส มีแรง", eg: "เช่น ตื่นเต้น ภูมิใจ มีหวัง", zone: "#F9A000", solid: "#A35F00", bg: "#F8E4B3", ink: "#9A5B00", line: "#F4D280", img: IMG.happy, reply: "ดีใจด้วยนะ ไปต่อกัน",
+  { id: "yellow", label: "สดใส มีแรง", eg: "เช่น ตื่นเต้น ภูมิใจ มีหวัง", zone: "#E9A400", solid: "#A35F00", bg: "#F8E4B3", ink: "#9A5B00", line: "#F4D280", img: IMG.happy, reply: "ดีใจด้วยนะ ไปต่อกัน",
     en: { label: "Bright and lively", eg: "like excited, proud, hopeful", reply: "So glad! Let’s go on" },
     words: [
       { w: "ตื่นเต้น", m: "ใจเต้นแรง เพราะรอสิ่งที่อยากให้เกิด", c: "มีเรื่องใหม่ที่คุณตั้งตารอ", a: "เขียนถึงสิ่งที่รออยู่ ว่าอยากให้ออกมาแบบไหน", lv: 0,
@@ -27,7 +27,7 @@ export const TONES: Tone[] = [
       { w: "กระตือรือร้น", m: "อยากลงมือทำทันที", c: "คุณมีเป้าหมายที่ชัด", a: "เขียนสิ่งแรกที่จะลงมือทำ ตอนที่ไฟยังแรง", lv: 0,
         en: { w: "Eager", m: "wanting to get started right away", c: "You have a clear goal.", a: "Write your first step while you’re fired up" } }
     ] },
-  { id: "green", label: "สงบ สบายใจ", eg: "เช่น ผ่อนคลาย พอใจ อุ่นใจ", zone: "#6DC849", solid: "#2F7A12", bg: "#DCF3D1", ink: "#2F6B16", line: "#C5ECB3", img: IMG.hug, reply: "ดีจังเลย ไปต่อกัน",
+  { id: "green", label: "สงบ สบายใจ", eg: "เช่น ผ่อนคลาย พอใจ อุ่นใจ", zone: "#6DC849", solid: "#2F7A12", bg: "#DCF3D1", ink: "#2F6B16", line: "#C5ECB3", img: IMG.relax, reply: "ดีจังเลย ไปต่อกัน",
     en: { label: "Calm and at ease", eg: "like relaxed, content, comforted", reply: "Lovely. Let’s go on" },
     words: [
       { w: "ผ่อนคลาย", m: "ร่างกายและใจ ไม่ต้องรีบ", c: "คุณได้พักอย่างที่ต้องการ", a: "เขียนว่าตอนนี้ ร่างกายสบายตรงไหนบ้าง", lv: 0,
@@ -73,7 +73,7 @@ export const TONES: Tone[] = [
       { w: "อับอาย", m: "อยากหลบจากสายตาคนอื่น", c: "กลัวว่าคนอื่นจะมองเราไม่ดี", a: "เขียนถึงตัวเอง แบบที่จะปลอบเพื่อนสนิท", lv: 2,
         en: { w: "Ashamed", m: "wanting to hide from other people’s eyes", c: "You’re afraid others will think badly of you.", a: "Write to yourself like you’d comfort a friend" } }
     ] },
-  { id: "blue", label: "หนักใจ หมดแรง", eg: "เช่น เหนื่อย เศร้า เหงา", zone: "#1F77DF", solid: "#1A68C7", bg: "#E4EFFB", ink: "#0A47CA", line: "#C7DDF7", img: IMG.sad, reply: "ขอบคุณที่บอกนะ",
+  { id: "blue", label: "หนักใจ หมดแรง", eg: "เช่น เหนื่อย เศร้า เหงา", zone: "#1F77DF", solid: "#1764D7", bg: "#E4EFFB", ink: "#0A47CA", line: "#C7DDF7", img: IMG.sad, reply: "ขอบคุณที่บอกนะ",
     en: { label: "Heavy and drained", eg: "like tired, sad, lonely", reply: "Thanks for telling me" },
     words: [
       { w: "เหนื่อยล้า", m: "แรงกายแรงใจ เหลือน้อย", c: "คุณใช้แรงมาต่อเนื่อง ยังไม่ได้พักจริงๆ", a: "เขียนว่าวันนี้เหนื่อยกับอะไร แล้วพักก่อนนะ", lv: 1,

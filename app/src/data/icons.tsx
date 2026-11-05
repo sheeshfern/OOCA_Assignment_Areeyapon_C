@@ -6,6 +6,7 @@ const line = { fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinec
 export const ico = {
   back: <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" {...line}><path d="M15 6l-6 6l6 6" /></svg>,
   close: <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" {...line}><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>,
+  shield: <svg aria-hidden="true" width={16} height={16} viewBox="0 0 24 24" {...line}><path d="M12 3l7 3v5c0 4.6-3 8.3-7 10c-4-1.7-7-5.4-7-10V6z" /><path d="M9 12l2.2 2.2L15.2 10" /></svg>,
   check: <svg className="ck" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" {...line} strokeWidth={2.5}><path d="M5 12l5 5l10 -10" /></svg>,
   checkW: <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" {...line} stroke="#fff" strokeWidth={2.5}><path d="M5 12l5 5l10 -10" /></svg>,
   arrow: <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" {...line}><path d="M9 6l6 6l-6 6" /></svg>,
@@ -17,10 +18,12 @@ export const ico = {
   lock: <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" {...line}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>,
   ok: (
     <svg aria-hidden="true" width="18" height="18" viewBox="0 0 16 16">
-      <circle cx="8" cy="8" r="8" fill="#DBF0EE" />
-      <path d="M4.8 8.2l2.1 2.1l4.3-4.4" fill="none" stroke="#00796B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="8" cy="8" r="8" fill="#E0F8F6" />
+      <path d="M4.8 8.2l2.1 2.1l4.3-4.4" fill="none" stroke="#3F6866" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
+  // the result card's postage stamp and postmark: decoration only
+  post: <svg className="post" viewBox="0 0 96 78" aria-hidden="true"><g fill="none" stroke="#7FD6CC" strokeWidth="2.5" strokeLinecap="round"><circle cx="24" cy="38" r="17"/><circle cx="24" cy="38" r="11" strokeDasharray="3 4"/><path d="M6 30q8-5 16 0t16 0t16 0M6 38q8-5 16 0t16 0t16 0M6 46q8-5 16 0t16 0t16 0"/></g><g transform="rotate(6 66 38)"><rect x="40" y="6" width="52" height="64" rx="3" fill="#fff"/><rect x="42.5" y="8.5" width="47" height="59" rx="2" fill="none" stroke="#E6DFD2" strokeWidth="2" strokeDasharray="2 3"/><rect x="47" y="13" width="38" height="50" rx="2" fill="#BDEDE6"/><circle cx="70" cy="30" r="8" fill="#FFD45C"/><path d="M70 17v4M70 39v4M57 30h4M79 30h4M61 21l3 3M79 21l-3 3" stroke="#FFC23D" strokeWidth="2" strokeLinecap="round"/><path d="M50 58a7 7 0 0 1 3-13a9 9 0 0 1 17 2a6 6 0 0 1 1 11z" fill="#fff"/></g></svg>,
 } satisfies Record<string, ReactElement>;
 
 // round flags for the language switch: Thailand, and the centre of the Union Jack for English

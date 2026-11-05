@@ -1,15 +1,15 @@
 import type { CSSProperties } from 'react';
 import { useApp } from '../AppContext';
-import { Guide, TopBar } from '../components/bits';
-import { Screen } from '../components/Screen';
+import { Guide, NextBar, TopBar } from '../components/bits';
+import { Screen, useStay } from '../components/Screen';
 import { TONES } from '../data/content';
 import { ico } from '../data/icons';
 import { IMG } from '../data/images';
-import { replay } from '../lib/motion';
 import { loc, Ph } from '../lib/text';
+import { CI_TINT } from '../state';
 
 export function Tone() {
-  const { s, L, dispatch } = useApp();
+  const { s, L, dispatch, tap } = useApp();
   const t = s.tone;
   return (
     <Screen>
@@ -21,20 +21,28 @@ export function Tone() {
           return (
             <button key={x.id} className="tone" data-act="tone" data-id={x.id} aria-pressed={t?.id === x.id}
               style={{ '--zone': x.zone, '--zone-ink': x.ink, '--zone-solid': x.solid } as CSSProperties}
-              onClick={e => { replay(e.currentTarget, 'just'); dispatch({ type: 'tone', id: x.id }); }}>
-              <span className="art" style={{ '--tbg': x.bg, '--tz': x.zone } as CSSProperties}>
+              onClick={e => tap(e, { type: 'tone', id: x.id })}>
+              <span className="art" style={{ '--tbg': CI_TINT[x.id][1], '--tz': x.zone } as CSSProperties}>
                 <img src={x.img} alt="" /><i className="ck">{ico.checkW}</i>
               </span>
               <b><Ph text={lx.label} /></b><small><Ph text={lx.eg} /></small>
             </button>
           );
         })}
+        <Hub text={t ? loc(t, s.lang).label : null} empty={L.pickOne} id={t?.id ?? 'none'} />
       </div>
       <button className="text-btn" data-act="all" onClick={() => dispatch({ type: 'all' })}>{L.seeAll}</button>
-      <div className="grow" />
-      <div className="actions">
-        <button className="primary" data-act="toWords" disabled={!t} onClick={() => dispatch({ type: 'toWords' })}>{L.next}</button>
-      </div>
+      <NextBar act="toWords" label={L.next} disabled={!t} onClick={() => dispatch({ type: 'toWords' })} />
     </Screen>
+  );
+}
+
+// the circle in the middle names the pick; a new pick re-pops it
+function Hub({ text, empty, id }: { text: string | null; empty: string; id: string }) {
+  const stay = useStay();
+  return (
+    <div key={id} className={`hub${text ? '' : ' empty'}${stay ? ' swap' : ''}`} aria-hidden="true">
+      <span><Ph text={text ?? empty} /></span>
+    </div>
   );
 }

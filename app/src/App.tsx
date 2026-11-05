@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useReducer, useState, type ReactElement } from 'react';
+import { useEffect, useReducer, useState, type MouseEvent, type ReactElement } from 'react';
 import { AppContext, type AppApi } from './AppContext';
 import { NoteDialog } from './components/NoteDialog';
 import { Toast, useToast } from './components/Toast';
-import { IMG } from './data/images';
+import { CONTEXTS, DURATIONS, TONES } from './data/content';
+import { ctxArt, durArt, IMG, WORD_POSE } from './data/images';
 import { UI } from './data/ui';
 import { SaveSheet } from './components/SaveSheet';
 import { makeCardImage, type CardImage } from './lib/cardImage';
@@ -15,7 +16,7 @@ import { Result } from './screens/Result';
 import { Safety } from './screens/Safety';
 import { Tone } from './screens/Tone';
 import { Words } from './screens/Words';
-import { initialState, reducer, resultData, zoneVars, type Screen } from './state';
+import { initialState, reducer, resultData, wordsOf, zoneVars, type Action, type Screen } from './state';
 
 const SCREENS: Record<Screen, () => ReactElement> = { home: Home, tone: Tone, words: Words, ctx: Ctx, dur: Dur, result: Result, safety: Safety };
 
@@ -29,6 +30,15 @@ export default function App() {
 
   // warm the image cache so Mooca never pops in late
   useEffect(() => { Object.values(IMG).forEach(src => { new Image().src = src; }); }, []);
+  // ...and the poses this tone can lead to, so tapping a word changes Mooca at once
+  useEffect(() => {
+    const warm = (src?: string) => { if (src) new Image().src = src; };
+    (s.showAll ? TONES : s.tone ? [s.tone] : []).forEach(t => wordsOf(t).forEach(w => warm(WORD_POSE[w.w])));
+    if (s.tone) {
+      CONTEXTS.forEach(c => warm(ctxArt(c.id, s.tone!.id)));
+      DURATIONS.forEach(d => { warm(durArt(true, d.id)); warm(durArt(false, d.id)); });
+    }
+  }, [s.tone, s.showAll]);
 
   // page-level text that lives outside the screens
   useEffect(() => {
@@ -38,14 +48,16 @@ export default function App() {
     try { localStorage.setItem('ooca-lang', s.lang); } catch { /* private mode: the choice just isn't remembered */ }
   }, [s.lang, L]);
 
-  const go = useCallback((screen: Screen) => dispatch({ type: 'go', screen, now: Date.now() }), []);
-  const openNote = useCallback(() => setNoteOpen(true), []);
+  const go = (screen: Screen) => dispatch({ type: 'go', screen, now: Date.now() });
+  const openNote = () => setNoteOpen(true);
+  // a choice reacts where it was tapped, then updates the answers
+  const tap = (e: MouseEvent<HTMLElement>, action: Action) => { replay(e.currentTarget, 'just'); dispatch(action); };
   const closeNote = () => {
     setNoteOpen(false);
     if (s.note.trim()) dispatch({ type: 'noteDone' });
   };
 
-  const saveCard = useCallback((btn: HTMLButtonElement) => {
+  const saveCard = (btn: HTMLButtonElement) => {
     replay(btn.querySelector('svg'), 'drop');
     if (btn.dataset.busy) return;
     btn.dataset.busy = '1';
@@ -60,15 +72,15 @@ export default function App() {
       .then(setCard)
       .catch(() => show(L.saveFail))
       .finally(() => { delete btn.dataset.busy; });
-  }, [s, L, show]);
+  };
 
-  const api = useMemo<AppApi>(() => ({ s, dispatch, L, go, openNote, saveCard }), [s, L, go, openNote, saveCard]);
+  const api: AppApi = { s, dispatch, L, go, tap, openNote, saveCard };
 
   // hooks for the layout and copy-fit checks in tools/ (dev builds only)
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     (window as unknown as { __ooca: unknown }).__ooca = { s, dispatch, go, openNote, closeNote: () => setNoteOpen(false) };
-  }, [s, go, openNote]);
+  }, [s]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const Current = SCREENS[s.screen];
   return (

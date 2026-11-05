@@ -1,5 +1,5 @@
 export type Lang = 'th' | 'en';
-export type ToneId = 'yellow' | 'green' | 'orange' | 'blue';
+type ToneId = 'yellow' | 'green' | 'orange' | 'blue';
 
 /** A feeling word. `m` meaning, `c` likely cause, `a` 30-second writing prompt, `lv` support level. */
 export interface Word {
