@@ -31,6 +31,7 @@ function roundRect(c: Ctx, x: number, y: number, w: number, h: number, r: number
 // Thai phrases; only a phrase wider than the whole line is split, and then between words (Intl.Segmenter)
 function wrapRuns(m: Ctx, runs: Run[], w: number, lang: string): Line[] {
   const seg = typeof Intl !== 'undefined' && 'Segmenter' in Intl ? new Intl.Segmenter(lang, { granularity: 'word' }) : null;
+  const chars = seg ? new Intl.Segmenter(lang, { granularity: 'grapheme' }) : null;
   const lines: (Run & { w: number })[][] = [[]];
   let x = 0;
   const add = (t: string, r: Run) => {
@@ -38,7 +39,13 @@ function wrapRuns(m: Ctx, runs: Run[], w: number, lang: string): Line[] {
     const cur = () => lines[lines.length - 1];
     if (!t.trim()) { if (cur().length) { cur().push({ ...r, t, w: tw }); x += tw; } return; }
     if (x + tw > w && x > 0) { lines.push([]); x = 0; }
-    if (tw > w && seg && t.length > 1) { [...seg.segment(t)].forEach(p => add(p.segment, r)); return; }
+    if (tw > w && t.length > 1) {
+      // split between words; a "word" with no break inside (e.g. 250 letters typed without spaces) splits by letter.
+      // Only recurse when the pieces really got smaller, or it would loop until the stack overflows.
+      let parts = seg ? [...seg.segment(t)].map(p => p.segment) : [];
+      if (parts.length < 2) parts = chars ? [...chars.segment(t)].map(p => p.segment) : [...t];
+      if (parts.length > 1) { parts.forEach(p => add(p, r)); return; }
+    }
     cur().push({ ...r, t, w: tw }); x += tw;
   };
   for (const r of runs) r.t.split(/( +)/).filter(Boolean).forEach(t => add(t, r));

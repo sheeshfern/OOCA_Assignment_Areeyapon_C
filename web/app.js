@@ -745,11 +745,18 @@ function roundRect(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x + r, y); c.arcTo
 // Thai phrases; only a phrase wider than the whole line is split, and then between words (Intl.Segmenter)
 function wrapRuns(m, runs, w){
   const seg = window.Intl && Intl.Segmenter ? new Intl.Segmenter(S.lang, {granularity:'word'}) : null;
+  const chars = seg ? new Intl.Segmenter(S.lang, {granularity:'grapheme'}) : null;
   const lines = [[]]; let x = 0;
   const add = (t, r) => { m.font = r.f; const tw = m.measureText(t).width;
     if (!t.trim()) { if (lines[lines.length - 1].length) { lines[lines.length - 1].push({t, f: r.f, c: r.c, w: tw}); x += tw; } return; }
     if (x + tw > w && x > 0) { lines.push([]); x = 0; }
-    if (tw > w && seg && t.length > 1) { [...seg.segment(t)].forEach(p => add(p.segment, r)); return; }
+    if (tw > w && t.length > 1) {
+      // split between words; a "word" with no break inside (e.g. 250 letters typed without spaces) splits by letter.
+      // Only recurse when the pieces really got smaller, or it would loop until the stack overflows.
+      let parts = seg ? [...seg.segment(t)].map(p => p.segment) : [];
+      if (parts.length < 2) parts = chars ? [...chars.segment(t)].map(p => p.segment) : [...t];
+      if (parts.length > 1) { parts.forEach(p => add(p, r)); return; }
+    }
     lines[lines.length - 1].push({t, f: r.f, c: r.c, w: tw}); x += tw; };
   for (const r of runs) r.t.split(/( +)/).filter(Boolean).forEach(t => add(t, r));
   return lines.map(l => { while (l.length && !l[l.length - 1].t.trim()) l.pop(); return {runs: l, w: l.reduce((a, r) => a + r.w, 0)}; }).filter(l => l.runs.length);
