@@ -759,7 +759,12 @@ async function buildCardImage(withImages){
   const r = resultData(), neutral = r.main === NEUTRAL, good = r.lv === 0;
   const Z = (S.picks.length && (S.picks[0].tone || S.tone)) || {zone:'#1F77DF', ink:'#0A47CA', bg:'#E4EFFB'};
   const TEXT = '#355956', TEXT2 = '#3F6866';
-  await Promise.all([400, 500, 600].map(w => document.fonts.load(cardFont(w, 20), 'กขA1')));
+  // fonts are a nice-to-have: Gotham is local() only, so on phones it is missing and load() rejects.
+  // A missing font falls back to Prompt; never let it (or a load that never answers) block the card.
+  await Promise.race([
+    Promise.allSettled([400, 500, 600].map(w => document.fonts.load(cardFont(w, 20), 'กขA1'))),
+    new Promise(ok => setTimeout(ok, 2000)),
+  ]);
   const [logo, ...moocas] = withImages ? await Promise.all([IMG.logo, ...posesFor()].map(s => loadImg(s).catch(() => null))) : [null];
   const m = document.createElement('canvas').getContext('2d');
   const W = 540, P = 28, IP = 30, X = P + IP, IW = W - 2 * (P + IP);
