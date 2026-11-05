@@ -413,7 +413,7 @@ V.words = () => {
   const list = S.showAll ? null : [...t.words, ...t.more];
   const btn = x => { const on = S.picks.some(p => p.w===x.w); const full = !on && S.picks.length>=2;
     const w = loc(x).w;
-    return `<button class="word" data-act="word" data-w="${esc(x.w)}" aria-pressed="${on}" ${full?'disabled':''} style="--n:${fitN(w)};--ws:${visLen(w) > 12 ? 'normal' : 'nowrap'}${S.showAll?`;--zone:${x.tone.zone};--zone-line:${x.tone.line};--zone-solid:${x.tone.solid}`:''}">${CLOUD}<span>${esc(w)}</span></button>`; };
+    return `<button class="word" data-act="word" data-w="${esc(x.w)}" aria-pressed="${on}" ${full?'disabled':''} style="--n:${fitN(w)};--ws:${visLen(w) > 12 ? 'normal' : 'nowrap'}${S.showAll?`;--zone:${x.tone.zone};--zone-line:${x.tone.line};--zone-solid:${x.tone.solid};--zone-ink:${x.tone.ink}`:''}">${CLOUD}<span>${esc(w)}</span></button>`; };
   const grid = S.showAll
     ? TONES.map(tt => `<p class="group-label">${loc(tt).label}</p><div class="words">${[...tt.words,...tt.more].map(x=>btn({...x,tone:tt})).join('')}</div>`).join('')
     : `<div class="words" role="group" aria-label="${L('wordsAria')}">${list.map(btn).join('')}</div>`;

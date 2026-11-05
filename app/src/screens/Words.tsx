@@ -21,7 +21,7 @@ export function Words() {
     const w = loc(x, s.lang).w;
     return (
       <button key={x.w} className="word" data-act="word" data-w={x.w} aria-pressed={on} disabled={full}
-        style={{ '--n': fitN(w), '--ws': visLen(w) > 12 ? 'normal' : 'nowrap', ...(s.showAll ? { '--zone': x.tone.zone, '--zone-line': x.tone.line, '--zone-solid': x.tone.solid } : {}) } as CSSProperties}
+        style={{ '--n': fitN(w), '--ws': visLen(w) > 12 ? 'normal' : 'nowrap', ...(s.showAll ? { '--zone': x.tone.zone, '--zone-line': x.tone.line, '--zone-solid': x.tone.solid, '--zone-ink': x.tone.ink } : {}) } as CSSProperties}
         onClick={e => tap(e, { type: 'word', w: x.w })}>
         <Cloud /><span>{w}</span>
       </button>
