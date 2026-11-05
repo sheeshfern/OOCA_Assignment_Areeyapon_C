@@ -58,7 +58,6 @@ export function Result() {
     <Screen className="result">
       <div className="top">
         <span className="res-title">{L.resTitle}</span>
-        <button className="icon-btn" data-act="restart" aria-label={L.closeRestart} onClick={() => dispatch({ type: 'restart' })}>{ico.close}</button>
       </div>
       <div className="card main">
         <div className="card-head">

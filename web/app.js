@@ -236,7 +236,7 @@ const UI = {
     qGood:'<span class="nw">รู้สึกดีแบบนี้</span><wbr><span class="nw">มานานแค่ไหนแล้ว</span>', qHeavy:'เป็นมานานแค่ไหนแล้ว', durAria:'นานแค่ไหน',
     durSub:'ตอบคร่าวๆ ก็พอ', durPick:'แตะจุดด้านล่างได้เลย', durDoneGood:id => `${{week:'เยี่ยมเลย',long:'ดีใจด้วยนะ',unsure:'ไม่เป็นไร'}[id]||'ดีจัง'} ไปดูการ์ดกัน`,
     durDoneHeavy:id => `${{long:'ขอบคุณนะ',unsure:'ไม่เป็นไร'}[id]||'ได้เลย'} ไปดูการ์ดกัน`, seeCard:'ดูการ์ดของฉัน',
-    resTitle:'ความรู้สึกของคุณวันนี้', closeRestart:'ปิดและเริ่มใหม่', feelLb:'ตอนนี้คุณอาจกำลังรู้สึก', nowLb:'ตอนนี้',
+    resTitle:'ความรู้สึกของคุณวันนี้', feelLb:'ตอนนี้คุณอาจกำลังรู้สึก', nowLb:'ตอนนี้',
     causeLb:'อาจมาจาก', okLb:'ไม่เป็นไรเลย', and:' และ ',
     talk:{1:['', 'ถ้ารู้สึกแบบนี้บ่อยขึ้น คุยกับนักจิตวิทยาได้เสมอ'], 2:['คุยได้เลย ไม่ต้องรอให้หนัก', 'ได้เล่าให้คนที่เข้าใจฟัง ช่วยให้ใจเบาลงได้'], 3:['เป็นมาสักพักแล้ว ลองคุยกับนักจิตวิทยาดูนะ', 'คุณไม่ต้องรับมือเรื่องนี้คนเดียว']},
     cta:`คุยกับนักจิตวิทยา<span class="nw">บน ${OOCA_LOGO}</span>`, writeLb:'ลองเขียนดู · 30 วินาที', openNote:'เปิดโน้ตของฉัน', keepWriting:'เขียนต่อ', writeBtn:'เริ่มเขียน 30 วินาที',
@@ -263,7 +263,7 @@ const UI = {
     qGood:'<span class="nw">How long has</span><wbr><span class="nw">it felt this good?</span>', qHeavy:'How long so far?', durAria:'How long', durPick:'Tap a point below',
     durSub:'A rough guess is fine', durDoneGood:id => `${{week:'Great!',long:'So glad!',unsure:'Okay.'}[id]||'Nice!'} Card’s ready`,
     durDoneHeavy:id => `${{long:'Thanks.',unsure:'Okay.'}[id]||'Got it.'} Card’s ready`, seeCard:'See my card',
-    resTitle:'Your feelings today', closeRestart:'Close and start over', feelLb:'You might be feeling', nowLb:'Right now',
+    resTitle:'Your feelings today', feelLb:'You might be feeling', nowLb:'Right now',
     causeLb:'It might come from', okLb:'That’s okay', and:' and ',
     talk:{1:['', 'If this keeps coming back, you can always talk to a psychologist.'], 2:['You don’t have to wait until it’s heavy.', 'Talking to someone who understands can help you feel lighter.'], 3:['It’s been a while. Try talking to a psychologist.', 'You don’t have to handle this alone.']},
     cta:`Talk to a psychologist <span class="nw">on ${OOCA_LOGO}</span>`, writeLb:'Try writing · 30 seconds', openNote:'Open my note', keepWriting:'Keep writing', writeBtn:'Write for 30 seconds',
@@ -514,8 +514,7 @@ V.result = () => {
   const [day, time] = stampOf(S.at);
   return `
 <section class="screen result">
-  <div class="top"><span class="res-title">${L('resTitle')}</span>
-    <button class="icon-btn" data-act="restart" aria-label="${L('closeRestart')}">${ico.close}</button></div>
+  <div class="top"><span class="res-title">${L('resTitle')}</span></div>
   <div class="card main">
     <div class="card-head">
       <span class="post-wrap" aria-hidden="true"><svg class="post" viewBox="0 0 96 78" aria-hidden="true"><g fill="none" stroke="#7FD6CC" stroke-width="2.5" stroke-linecap="round"><circle cx="24" cy="38" r="17"/><circle cx="24" cy="38" r="11" stroke-dasharray="3 4"/><path d="M6 30q8-5 16 0t16 0t16 0M6 38q8-5 16 0t16 0t16 0M6 46q8-5 16 0t16 0t16 0"/></g><g transform="rotate(6 66 38)"><rect x="40" y="6" width="52" height="64" rx="3" fill="#fff"/><rect x="42.5" y="8.5" width="47" height="59" rx="2" fill="none" stroke="#E6DFD2" stroke-width="2" stroke-dasharray="2 3"/><rect x="47" y="13" width="38" height="50" rx="2" fill="#BDEDE6"/><circle cx="70" cy="30" r="8" fill="#FFD45C"/><path d="M70 17v4M70 39v4M57 30h4M79 30h4M61 21l3 3M79 21l-3 3" stroke="#FFC23D" stroke-width="2" stroke-linecap="round"/><path d="M50 58a7 7 0 0 1 3-13a9 9 0 0 1 17 2a6 6 0 0 1 1 11z" fill="#fff"/></g></svg></span>
