@@ -7,7 +7,7 @@ import type { Lang } from './types';
 
 type T2 = { th: string; en: string };
 export type Mood = 'heavy' | 'light';
-export interface Reply { say: string; ask: string | null; end?: boolean }
+export interface Reply { say: string; ask: string | null; end?: boolean; onlyAsk?: boolean }
 
 const hash = (s: string) => [...s].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
 const choose = <X,>(xs: X[], n: number, text: string) => xs[(n + hash(text)) % xs.length];
@@ -61,14 +61,14 @@ const TOPICS: Topic[] = [
       { th: 'เรื่องนี้คุณได้บอกความรู้สึกกับเขาไปบ้างหรือยัง', en: 'Have you been able to tell them how you feel?' }],
     askLight: [{ th: 'เขาทำอะไรที่ทำให้คุณรู้สึกแบบนี้', en: 'What did they do that made you feel this way?' }],
     tip: { th: 'ลองเริ่มประโยคด้วย "เรารู้สึก..." แทน "เธอทำ..." คนฟังจะเปิดใจฟังง่ายขึ้น และคุณได้พูดสิ่งที่อยู่ในใจจริงๆ', en: 'Try starting with "I feel..." instead of "You did...". People listen more openly, and you get to say what’s really inside.' } },
-  { id: 'money', re: /เงิน|หนี้|ค่าใช้จ่าย|เงินเดือน|ผ่อน|ค่าเช่า|บิล|money|debt|rent|bills|salary|loan/i,
+  { id: 'money', re: /เงิน|หนี้|ค่าใช้จ่าย|เงินเดือน|ผ่อนบ้าน|ผ่อนรถ|ค่าผ่อน|ผ่อนจ่าย|ค่าเช่า|ค่าบิล|money|debt|rent|bills|salary|loan/i,
     heavy: [{ th: 'เรื่องเงินทำให้ใจไม่มั่นคงได้ง่าย เพราะมันผูกกับความปลอดภัยของชีวิต', en: 'Money worries shake your sense of safety.' },
       { th: 'ความกังวลเรื่องเงินมักวนอยู่ในหัว แม้ตอนจะนอน', en: 'Money worries tend to loop, even at bedtime.' }],
     light: [{ th: 'ดีใจด้วยนะ เรื่องเงินที่คลี่คลายช่วยให้หายใจได้เต็มปอดขึ้นเยอะ', en: 'So glad. When money eases up, you can finally breathe.' }],
     askHeavy: [{ th: 'ตอนนี้ก้อนไหนที่ทำให้กังวลที่สุด', en: 'Which part worries you most right now?' }],
     askLight: [{ th: 'มีแผนจะใช้หรือเก็บยังไงต่อ', en: 'Any plans for what comes next?' }],
     tip: { th: 'ลองเขียนตัวเลขออกมาให้เห็นทั้งหมดบนกระดาษ ความกังวลที่อยู่ในหัวมักดูใหญ่กว่าตัวเลขจริง แล้วค่อยเลือกจัดการทีละก้อน', en: 'Try writing all the numbers down on paper. Worries in your head often look bigger than the real figures. Then tackle one at a time.' } },
-  { id: 'body', re: /นอนไม่หลับ|ป่วย|ปวด|ไม่สบาย|ร่างกาย|หลับ|นอน|หมอ|sleep|sick|pain|ill|headache|doctor/i,
+  { id: 'body', re: /นอนไม่หลับ|นอนน้อย|ไม่ได้นอน|อดนอน|นอนดึก|หลับไม่|ป่วย|ปวด|ไม่สบาย|ร่างกาย|หาหมอ|sleep|sick|pain|ill|headache|doctor/i,
     heavy: [{ th: 'เวลาร่างกายไม่ไหว ใจก็ไหวยากตามไปด้วยนะ', en: 'When your body is struggling, your mind struggles too.' },
       { th: 'ร่างกายที่ล้าทำให้ทุกอย่างหนักขึ้นเป็นเท่าตัว', en: 'A tired body makes everything twice as heavy.' }],
     light: [{ th: 'ดีจังที่ร่างกายได้พักเต็มที่', en: 'Glad your body got some real rest.' }],
@@ -96,15 +96,21 @@ const VALIDATE: Record<Mood, T2[]> = {
     { th: 'เข้าใจเลย วันแบบนี้มันไม่ง่ายจริงๆ', en: 'I hear you. Days like this aren’t easy.' },
     { th: 'ขอบคุณที่ไว้ใจเล่าให้ฟังนะ', en: 'Thank you for trusting me with this.' },
     { th: 'อืม เข้าใจความรู้สึกนั้นเลย', en: 'Mm, I understand that feeling.' }],
-  light: [{ th: 'อ่านแล้ว Mooca ยิ้มตามเลย', en: 'Reading that made me smile too.' },
-    { th: 'ดีจังเลย ขอบคุณที่แบ่งเรื่องดีๆ ให้ฟังนะ', en: 'That’s lovely. Thanks for sharing something good with me.' }],
+  light: [{ th: 'ดีจังเลย ขอบคุณที่แบ่งเรื่องดีๆ ให้ฟังนะ', en: 'That’s lovely. Thanks for sharing something good with me.' },
+    { th: 'ฟังแล้วอบอุ่นใจจัง', en: 'That sounds so warm.' },
+    { th: 'วันแบบนี้น่าจดไว้เลยนะ', en: 'Days like this are worth writing down.' },
+    { th: 'เรื่องเล็กๆ แบบนี้แหละ ที่ทำให้วันดีขึ้นได้จริงๆ', en: 'It’s little things like this that really make a day.' }],
 };
 const ASK: Record<Mood, T2[]> = {
   heavy: [{ th: 'ตอนนั้นร่างกายคุณรู้สึกยังไงบ้าง', en: 'How did it feel in your body at that moment?' },
     { th: 'ตรงไหนของเรื่องนี้ที่ค้างใจที่สุด', en: 'Which part of this is staying with you most?' },
-    { th: 'มีอะไรเล็กๆ ที่จะช่วยให้คืนนี้เบาลงได้บ้างไหม', en: 'Is there one small thing that could make tonight lighter?' }],
+    { th: 'มีอะไรเล็กๆ ที่จะช่วยให้คืนนี้เบาลงได้บ้างไหม', en: 'Is there one small thing that could make tonight lighter?' },
+    { th: 'ตอนนี้อยากให้ใครสักคนช่วยอะไรไหม', en: 'Is there anything you wish someone could help with right now?' },
+    { th: 'ถ้าวันนี้ใจดีกับตัวเองได้ข้อเดียว อยากทำอะไร', en: 'If you could be kind to yourself in one way today, what would it be?' }],
   light: [{ th: 'ช่วงไหนของวันนี้ที่ชอบที่สุด', en: 'Which moment today did you like best?' },
-    { th: 'อยากเก็บความรู้สึกนี้ไว้ยังไงดี', en: 'How do you want to hold on to this feeling?' }],
+    { th: 'อยากเก็บความรู้สึกนี้ไว้ยังไงดี', en: 'How do you want to hold on to this feeling?' },
+    { th: 'ตอนนั้นมีใครอยู่ด้วยไหม', en: 'Was anyone with you?' },
+    { th: 'พรุ่งนี้อยากให้มีอะไรแบบนี้อีกไหม', en: 'Would you like more of this tomorrow?' }],
 };
 const EMO_LINE: Record<Mood, ((e: string) => T2)[]> = {
   heavy: [e => ({ th: `ฟังแล้วรู้สึกได้เลยว่าคุณ${e}มากนะ`, en: `I can really hear how ${e} you are.` }),
@@ -128,12 +134,12 @@ export function moocaReply(text: string, ctx: { lang: Lang; mood: Mood; word: st
   const history = ctx.history ?? [];
   const asked = new Set(history.filter(m => m.from === 'mooca').map(m => m.text));
   // a question Mooca hasn't asked yet in this chat (falls back to the usual pick when all were used)
-  const fresh = (xs: T2[]) => { const c = choose(xs, n, t); if (!asked.has(pk(c))) return pk(c); const f = xs.find(x => !asked.has(pk(x))); return pk(f ?? c); };
+  const fresh = (xs: T2[]) => { const ok = xs.filter(x => !asked.has(pk(x))); return ok.length ? pk(choose(ok, n, t)) : null; };
   // once the hotline has come up in this chat, Mooca keeps it close instead of signing off cheerfully
   const unsafe = history.some(m => m.from === 'mooca' && m.text.includes('1323'));
   if (THANKS.test(t) && unsafe) return { say: L === 'en' ? 'Thank you for telling me. You don’t have to go through this alone.' : 'ขอบคุณที่บอก Mooca นะ คุณไม่ต้องผ่านเรื่องนี้คนเดียว', ask: L === 'en' ? 'If it gets heavy again, call 1323 any time, day or night. I’m here too.' : 'ถ้าใจหนักขึ้นมาอีก โทร 1323 ได้ตลอด 24 ชั่วโมงนะ Mooca ก็ยังอยู่ตรงนี้' };
   if (THANKS.test(t)) return { say: L === 'en' ? 'Thank you for letting me listen. You did well today.' : 'ขอบคุณที่ให้ Mooca ได้ฟังนะ วันนี้คุณทำดีแล้ว', ask: L === 'en' ? 'Anything else on your mind, or shall we rest here?' : 'ยังมีอะไรค้างใจอีกไหม หรือจะพักกันตรงนี้ก่อนก็ได้นะ', end: true };
-  if (DUNNO.test(t) && t.length < 24) return { say: L === 'en' ? 'Not knowing is completely okay.' : 'ไม่รู้ก็ไม่เป็นไรเลยนะ บางทีความรู้สึกมันยังไม่มีชื่อ', ask: fresh(EASY) };
+  if (DUNNO.test(t) && t.length < 24) return { say: L === 'en' ? 'Not knowing is completely okay.' : 'ไม่รู้ก็ไม่เป็นไรเลยนะ บางทีความรู้สึกมันยังไม่มีชื่อ', ask: fresh(EASY) ?? (L === 'en' ? 'Tell me whatever comes to mind.' : 'เล่าอะไรก็ได้ที่นึกออกเลยนะ') };
   if (OKAY.test(t)) return { say: L === 'en' ? 'Mm, I’m here.' : 'อืม Mooca อยู่ตรงนี้นะ', ask: L === 'en' ? 'If there’s more on your mind, go on. Or we can just sit here a while.' : 'ถ้ายังมีอะไรอยากเล่า เล่าต่อได้เลย หรือจะนั่งเงียบๆ ด้วยกันสักพักก็ได้' };
 
   const emo = EMO.find(e => e.re.test(t));
@@ -157,13 +163,22 @@ export function moocaReply(text: string, ctx: { lang: Lang; mood: Mood; word: st
 
   // say: the feeling it heard (or the topic line), opened with a thank-you when they wrote a lot
   const long = t.length > 70 ? (L === 'en' ? 'Thank you for telling me all of that. ' : 'ขอบคุณที่เล่าละเอียดขนาดนี้นะ ') : '';
-  const emoLine = emo ? pk(choose(EMO_LINE[mood], n, t)(emo[L])) : null;
-  const topicLine = here ? pk(choose(here[mood], n, t)) : null;
-  const say = long + [emoLine, topicLine].filter(Boolean).join(' ') || long + pk(choose(VALIDATE[mood], n, t));
+  // never say the same line twice in one chat: pick one Mooca hasn't used yet, or say nothing extra
+  const said = history.filter(m => m.from === 'mooca').map(m => m.text).join('\n');
+  const unused = (xs: string[]) => { const ok = xs.filter(x => !said.includes(x)); return ok.length ? choose(ok, n, t) : null; };
+  const emoLine = emo ? unused(EMO_LINE[mood].map(f => pk(f(emo[L])))) : null;
+  const topicLine = here ? unused(here[mood].map(pk)) : null;
+  const say = (long + ([emoLine, topicLine].filter(Boolean).join(' ') || (unused(VALIDATE[mood].map(pk)) ?? ''))).trim();
   // a question about their topic first; once those are used up, a general one for this kind of day
   const own = topic ? (mood === 'heavy' ? topic.askHeavy : topic.askLight).filter(x => !asked.has(pk(x))) : [];
   const ask = own.length ? pk(choose(own, n, t)) : fresh(ASK[mood]);
-  return { say: say.trim(), ask };
+  // nothing new to say: just the question, as one bubble; nothing new to ask either: a quiet "go on"
+  if (say) return { say, ask };
+  if (ask) return { say: ask, ask: null, onlyAsk: true };
+  const quiet: T2[] = mood === 'light'
+    ? [{ th: 'อืม ฟังแล้วดีจัง เล่าต่อได้เลยนะ', en: 'Mm, that sounds nice. Go on.' }, { th: 'น่ารักจัง แล้วยังไงต่อ', en: 'Aw, lovely. Then what?' }, { th: 'Mooca ฟังอยู่นะ มีอะไรอีกไหม', en: 'I’m listening. Anything else?' }, { th: 'ชอบที่คุณเล่ามาเลย', en: 'I love hearing this.' }]
+    : [{ th: 'อืม Mooca ฟังอยู่นะ เล่าต่อได้เลย', en: 'Mm, I’m listening. Go on.' }, { th: 'ค่อยๆ เล่าก็ได้ ไม่ต้องรีบ', en: 'Take your time. No rush.' }, { th: 'Mooca ยังอยู่ตรงนี้นะ', en: 'I’m still right here.' }, { th: 'เข้าใจนะ แล้วตอนนี้ใจเป็นยังไงบ้าง', en: 'I hear you. How’s your heart right now?' }];
+  return { say: unused(quiet.map(pk)) ?? pk(quiet[n % quiet.length]), ask: null, onlyAsk: true };
 }
 
 /** the kind of day, from the room they picked (or how heavy the card read when no room) */

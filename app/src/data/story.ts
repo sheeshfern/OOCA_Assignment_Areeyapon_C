@@ -227,7 +227,7 @@ export function onText(text: string, c: ChatCtx, n: number): Turn {
   // (no new question: they answered Mooca's question, so Mooca acknowledges it, wraps up and heads to the summary)
   if (c.vent && n === 1) {
     return {
-      msgs: [{ from: 'mooca', text: r.say }, { from: 'mooca', kind: 'wrap', text: L === 'en' ? 'Thank you for telling me all this. I’ve got it. Let me sum up today for you.' : 'ขอบคุณที่เล่าให้ฟังนะ Mooca เข้าใจแล้ว เดี๋ยวสรุปวันนี้ให้นะ' }],
+      msgs: [...(r.onlyAsk ? [] : [{ from: 'mooca' as const, text: r.say }]), { from: 'mooca', kind: 'wrap', text: L === 'en' ? 'I’ve got it. Let me sum up today for you.' : 'Mooca เข้าใจแล้วนะ เดี๋ยวสรุปวันนี้ให้' }],
       chips: [],
     };
   }
