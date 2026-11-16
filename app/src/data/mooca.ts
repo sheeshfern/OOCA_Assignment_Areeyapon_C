@@ -7,7 +7,7 @@ import type { Lang } from './types';
 
 type T2 = { th: string; en: string };
 export type Mood = 'heavy' | 'light';
-export interface Reply { say: string; ask: string | null; end?: boolean; onlyAsk?: boolean }
+export interface Reply { say: string; ask: string | null; end?: boolean; onlyAsk?: boolean; felt?: boolean }
 
 const hash = (s: string) => [...s].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
 const choose = <X,>(xs: X[], n: number, text: string) => xs[(n + hash(text)) % xs.length];
@@ -128,7 +128,7 @@ const EASY: T2[] = [{ th: 'งั้นลองตอบง่ายๆ ตอ�
   { th: 'งั้นเล่าแค่สิ่งแรกที่นึกออกเกี่ยวกับวันนี้ก็พอ', en: 'Then just tell me the first thing that comes to mind about today.' }];
 
 /** the reply to one typed message (risk words are handled before this is called) */
-export function moocaReply(text: string, ctx: { lang: Lang; mood: Mood; word: string; n: number; topicHint?: string | null; history?: { from: string; text: string }[] }): Reply {
+export function moocaReply(text: string, ctx: { lang: Lang; mood: Mood; word: string; n: number; topicHint?: string | null; history?: { from: string; text: string }[]; feelingOnly?: boolean }): Reply {
   const L = ctx.lang, t = text.trim(), n = ctx.n;
   const pk = (x: T2) => x[L];
   const history = ctx.history ?? [];
@@ -167,13 +167,13 @@ export function moocaReply(text: string, ctx: { lang: Lang; mood: Mood; word: st
   const said = history.filter(m => m.from === 'mooca').map(m => m.text).join('\n');
   const unused = (xs: string[]) => { const ok = xs.filter(x => !said.includes(x)); return ok.length ? choose(ok, n, t) : null; };
   const emoLine = emo ? unused(EMO_LINE[mood].map(f => pk(f(emo[L])))) : null;
-  const topicLine = here ? unused(here[mood].map(pk)) : null;
+  const topicLine = here && !ctx.feelingOnly ? unused(here[mood].map(pk)) : null;
   const say = (long + ([emoLine, topicLine].filter(Boolean).join(' ') || (unused(VALIDATE[mood].map(pk)) ?? ''))).trim();
   // a question about their topic first; once those are used up, a general one for this kind of day
   const own = topic ? (mood === 'heavy' ? topic.askHeavy : topic.askLight).filter(x => !asked.has(pk(x))) : [];
   const ask = own.length ? pk(choose(own, n, t)) : fresh(ASK[mood]);
   // nothing new to say: just the question, as one bubble; nothing new to ask either: a quiet "go on"
-  if (say) return { say, ask };
+  if (say) return { say, ask, felt: !!emoLine };
   if (ask) return { say: ask, ask: null, onlyAsk: true };
   const quiet: T2[] = mood === 'light'
     ? [{ th: 'อืม ฟังแล้วดีจัง เล่าต่อได้เลยนะ', en: 'Mm, that sounds nice. Go on.' }, { th: 'น่ารักจัง แล้วยังไงต่อ', en: 'Aw, lovely. Then what?' }, { th: 'Mooca ฟังอยู่นะ มีอะไรอีกไหม', en: 'I’m listening. Anything else?' }, { th: 'ชอบที่คุณเล่ามาเลย', en: 'I love hearing this.' }]

@@ -1423,3 +1423,17 @@ html[lang="en"] .opt.with-ic .ol{font-size:var(--fs-body2)}
 .chips-hint{font-size:var(--fs-small,12px);color:var(--text-2);padding-left:2px}
 .chips-start .chip{background:var(--white);box-shadow:0 1px 2px rgba(0,0,0,.04)}
 @media (prefers-reduced-motion:reduce){.chips-start{animation:none}}
+
+/* guided note chat: a photo button beside the input once the questions are done, the photo in its bubble,
+   a quiet "finish today's note" link, and two buttons once Mooca has said goodbye */
+.photo-btn{width:48px;height:48px;flex-shrink:0;border:1.5px solid var(--line);border-radius:50%;background:var(--white);color:var(--accent-text);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.photo-btn:disabled{opacity:.5}
+.msg-body.has-img{padding:6px}
+.msg-body.has-img p{padding:4px 8px 6px}
+.msg-img{display:block;width:100%;max-width:220px;border-radius:14px}
+.msg.me .msg-body.has-img{background:var(--white);box-shadow:var(--e02)}
+.chat-foot .end-chat{align-self:center;min-height:36px;font-size:var(--fs-body2)}
+.chat-ended{display:flex;flex-direction:column;gap:8px}
+.chat-ended .soft-btn{width:100%}
+.jc-img{display:block;max-width:60%;border-radius:12px;padding:0;margin-top:6px}
+.jc-img.me{margin-left:auto}

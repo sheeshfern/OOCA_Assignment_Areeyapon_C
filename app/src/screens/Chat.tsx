@@ -5,7 +5,8 @@ import { Screen } from '../components/Screen';
 import { CONTEXTS } from '../data/content';
 import { ico } from '../data/icons';
 import { IMG } from '../data/images';
-import { chipText, onChip, onText, opening, resumeMsg, ventOpening, type ChatCtx, type ChipId, type Msg, type Turn } from '../data/story';
+import { chipText, endTurn, onChip, onPhoto, onText, opening, resumeTurn, ventOpening, type ChatCtx, type ChipId, type Msg, type Turn } from '../data/story';
+import { shrinkPhoto } from '../lib/photo';
 import { loc } from '../lib/text';
 import { moocaFor, resultData } from '../state';
 
@@ -40,7 +41,7 @@ export function Chat() {
   // Mooca opens the chat once per card
   useEffect(() => {
     if (!s.chat.length) { const t = vent ? ventOpening(ctx) : opening(ctx); dispatch({ type: 'chat', msgs: withIds(t), chips: t.chips }); }
-    else if (!vent && !s.chat.some(m => m.kind === 'resume')) dispatch({ type: 'chat', msgs: [{ ...resumeMsg(s.lang), id: nextId++ }], chips: ['cope', 'more', 'done'] });
+    else if (!vent && !s.chat.some(m => m.kind === 'resume') && !s.chat.some(m => m.kind === 'end')) { const t = resumeTurn(ctx); dispatch({ type: 'chat', msgs: withIds(t), chips: t.chips }); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
@@ -74,6 +75,19 @@ export function Chat() {
     if (id === 'ex') openEx();
     reply({ id: nextId++, from: 'me', text: chipText(id, s.lang) }, onChip(id, ctx));
   };
+  // after the last question: they can add a photo, and end the chat (Mooca says goodbye and points to ooca)
+  const open = !vent && s.chat.some(m => m.kind === 'open');
+  const ended = !vent && s.chat.some(m => m.kind === 'end');
+  const file = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const photo = async (f: File | undefined) => {
+    if (!f || typing) return;
+    setBusy(true);
+    try { const img = await shrinkPhoto(f); reply({ id: nextId++, from: 'me', text: '', img }, onPhoto(ctx)); }
+    catch { /* not an image we can read: nothing is sent */ }
+    finally { setBusy(false); if (file.current) file.current.value = ''; }
+  };
+  const end = () => { if (!typing) reply(null, endTurn(ctx)); };
   const send = (e: FormEvent) => {
     e.preventDefault();
     const v = text.trim(); if (!v || typing) return;
@@ -94,8 +108,9 @@ export function Chat() {
         {s.chat.map(m => (
           <div key={m.id} className={`msg ${m.from}${m.kind ? ` k-${m.kind}` : ''}`}>
             {m.from === 'mooca' && <img className="msg-mo" src={IMG.calm} alt="" />}
-            <div className="msg-body">
-              <p>{m.text}</p>
+            <div className={`msg-body${m.img ? ' has-img' : ''}`}>
+              {m.img && <img className="msg-img" src={m.img} alt={L.chatPhotoAlt} />}
+              {m.text && <p>{m.text}</p>}
               {m.kind === 'safety' && <a className="cta call-cta" href="tel:1323">{ico.phone}<span>{L.call1323}</span></a>}
               {m.kind === 'ooca' && <OocaLink />}
             </div>
@@ -111,7 +126,18 @@ export function Chat() {
             <div className="chips">{s.chips.map(id => <button key={id} className="chip" onClick={() => chip(id)}>{chipText(id, s.lang)}</button>)}</div>
           </div>
         )}
-        {!done && <form className="chat-form" onSubmit={send}>
+        {open && !ended && !typing && <button className="text-btn end-chat" data-act="end-chat" onClick={end}>{L.chatEnd}</button>}
+        {ended && !typing && (
+          <div className="chat-ended">
+            <button className="primary" data-act="shelf" onClick={() => go('shelf')}>{L.seeShelf}</button>
+            <button className="soft-btn" data-act="back-card" onClick={() => dispatch({ type: 'back' })}>{L.chatBackCard}</button>
+          </div>
+        )}
+        {!done && !ended && <form className="chat-form" onSubmit={send}>
+          {open && <>
+            <input ref={file} type="file" accept="image/*" hidden onChange={e => photo(e.target.files?.[0])} />
+            <button type="button" className="photo-btn" data-act="photo" aria-label={L.chatPhoto} disabled={busy || typing} onClick={() => file.current?.click()}>{ico.image}</button>
+          </>}
           <input value={text} onChange={e => setText(e.target.value)} placeholder={L.chatPlaceholder} aria-label={L.chatPlaceholder} maxLength={500} enterKeyHint="send" />
           <button className="send" type="submit" aria-label={L.chatSend} disabled={!text.trim() || typing}>{ico.send}</button>
         </form>}

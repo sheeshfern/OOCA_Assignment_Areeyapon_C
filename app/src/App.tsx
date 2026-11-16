@@ -89,7 +89,7 @@ export default function App() {
     if (!s.user || !s.at) return;
     // the card itself first (signing in from the result jumps straight to the chat, before the result could save it)
     logCheckin({ at: s.at, tone: s.picks[0]?.tone.id ?? null, words: s.picks.map(p => p.w), lv: resultData(s).lv, ctx: s.ctx, ctx2: s.ctx2, dur: s.dur, heavy: { before: s.before, after: s.after } });
-    if (s.chat.length) patchCheckin(s.at, { chat: s.chat.map(m => ({ from: m.from, text: m.text })) });
+    if (s.chat.length) patchCheckin(s.at, { chat: s.chat.map(m => ({ from: m.from, text: m.text, ...(m.img ? { img: m.img } : {}) })) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.user, s.at, s.chat, s.before, s.after]);
   const lastAt = useRef<number | null>(null);

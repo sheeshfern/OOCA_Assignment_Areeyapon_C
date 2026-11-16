@@ -132,7 +132,9 @@ export function contextLine(e: { ctx: string | null; ctx2?: string | null; dur: 
 
 /* ---------- Mooca's chat (scripted) ---------- */
 export type ChipId = 'tell' | 'stuck' | 'cope' | 'listen' | 'more' | 'ex' | 'done';
-export interface Msg { id: number; from: 'mooca' | 'me'; text: string; kind?: 'safety' | 'ooca' | 'ex' | 'resume' | 'wrap' }
+// kinds: 'q' a note question, 'open' the "add more, vent or share a photo" turn after the last question,
+// 'end' Mooca's goodbye (an 'ooca' message follows it), 'wrap' the vent chat handing over to the summary
+export interface Msg { id: number; from: 'mooca' | 'me'; text: string; img?: string; kind?: 'safety' | 'ooca' | 'ex' | 'resume' | 'wrap' | 'q' | 'open' | 'end' }
 
 const CHIP: Record<ChipId, T2> = {
   tell: { th: 'เล่าให้ฟังหน่อย', en: 'Let me tell you' },
@@ -157,26 +159,69 @@ const COPE: Record<string, T2> = {
   none: { th: 'ลองแบบนี้ดูนะ\n• หายใจช้าๆ สักนาที\n• เขียนอะไรก็ได้ที่อยู่ในหัว ไม่ต้องตั้งชื่อ\n• กลับมาเช็กใจอีกทีพรุ่งนี้', en: 'Try this:\n• Breathe slowly for a minute.\n• Write whatever is on your mind, no name needed.\n• Check in again tomorrow.' },
 };
 
-export interface ChatCtx { lang: Lang; tone: string; word: string; ctxSay: string | null; lv: number; vent?: boolean; ctxId?: string | null; history?: { from: string; text: string }[] }
+export interface ChatCtx { lang: Lang; tone: string; word: string; ctxSay: string | null; lv: number; vent?: boolean; ctxId?: string | null; history?: { from: string; text: string; kind?: string }[] }
 export interface Turn { msgs: Omit<Msg, 'id'>[]; chips: ChipId[] }
 
+/* Mooca's chat is a guided note: one question at a time, so the jar keeps as much of today as possible.
+   The vent chat (before the summary) asks the first VENT_QS questions; the signed-in chat asks the rest,
+   then opens up ("add more, vent, or share a photo"), and ends with a pointer to a psychologist on ooca. */
+export const VENT_QS = 3;
+const noteQs = (c: ChatCtx): T2[] => {
+  const about = c.ctxSay ? c.ctxSay.replace(/\.$/, '') : null;
+  return moodOf(c.tone, c.lv) === 'light' ? [
+    { th: 'วันนี้มีเรื่องดีๆ อะไรเกิดขึ้นบ้าง เล่าแบบไหนก็ได้นะ', en: 'What good things happened today? Tell it any way you like.' },
+    { th: 'ตอนนั้นรู้สึกยังไงบ้าง ทั้งในใจและในร่างกาย', en: 'How did it feel, in your heart and in your body?' },
+    { th: 'ใครหรืออะไรที่ทำให้วันนี้ดีแบบนี้', en: 'Who or what made today this good?' },
+    { th: 'อยากจำอะไรจากวันนี้ไว้ใช้ในวันที่ยากบ้าง', en: 'What from today would you like to remember for harder days?' },
+  ] : [
+    { th: about ? `วันนี้${about}เกิดอะไรขึ้นบ้าง เล่าแบบไหนก็ได้นะ` : 'วันนี้เกิดอะไรขึ้นบ้าง เล่าแบบไหนก็ได้นะ', en: about ? `What happened today with ${about.toLowerCase()}? Tell it any way you like.` : 'What happened today? Tell it any way you like.' },
+    { th: 'ตอนนั้นรู้สึกยังไงบ้าง ทั้งในใจและในร่างกาย', en: 'How did it feel, in your heart and in your body?' },
+    { th: 'ตอนนั้นคุณอยากได้อะไรมากที่สุด', en: 'What did you need most in that moment?' },
+    { th: 'พรุ่งนี้มีอะไรเล็กๆ ที่อยากทำให้ตัวเองบ้างไหม', en: 'Is there one small thing you’d like to do for yourself tomorrow?' },
+  ];
+};
+const qMsg = (c: ChatCtx, i: number): Omit<Msg, 'id'> => ({ from: 'mooca', kind: 'q', text: pick(noteQs(c)[i], c.lang) });
+const asked = (c: ChatCtx) => (c.history ?? []).filter(m => m.kind === 'q').length;
+const openMsg = (lang: Lang): Omit<Msg, 'id'> => ({ from: 'mooca', kind: 'open', text: lang === 'en'
+  ? 'All noted in today’s jar. Want to add more, let off some steam, or share a photo with me? Go ahead.'
+  : 'Mooca จดไว้ในโหลของวันนี้ครบแล้วนะ อยากบันทึกเพิ่ม ระบายต่อ หรือแชร์รูปให้ Mooca ดูก็ได้เลย' });
+
+/** signed-in chat, nothing said yet */
 export function opening(c: ChatCtx): Turn {
-  const light = moodOf(c.tone, c.lv) === 'light';
-  const th = `วันนี้คุณรู้สึก${c.word}${c.ctxSay ? ` ${c.ctxSay}` : ''} ${light ? 'มีเรื่องดีๆ อะไรบ้าง เล่าให้ Mooca ฟังหน่อย' : 'อยากเล่าให้ Mooca ฟังไหมว่าเกิดอะไรขึ้น'}`;
-  const en = `Today you felt ${c.word.toLowerCase()}${c.ctxSay ? `, around ${c.ctxSay.replace(/\.$/, '').toLowerCase()}` : ''}. ${light ? 'What good things happened? Tell me.' : 'Want to tell me what happened?'}`;
-  return { msgs: [{ from: 'mooca', text: c.lang === 'en' ? en : th }], chips: ['tell', 'stuck', 'cope', 'listen'] };
+  const th = `วันนี้คุณรู้สึก${c.word}${c.ctxSay ? ` ${c.ctxSay}` : ''} มาจดบันทึกใจด้วยกันนะ Mooca จะถามทีละข้อ ตอบสั้นหรือยาวก็ได้`;
+  const en = `Today you felt ${c.word.toLowerCase()}${c.ctxSay ? `, around ${c.ctxSay.replace(/\.$/, '').toLowerCase()}` : ''}. Let’s note it down together. I’ll ask one thing at a time, short or long answers are fine.`;
+  return { msgs: [{ from: 'mooca', text: c.lang === 'en' ? en : th }, qMsg(c, 0)], chips: ['stuck', 'listen'] };
 }
 
-/** venting before the summary: they already said yes, so Mooca just opens the door */
+/** venting before the summary: they already said yes, so Mooca opens the note */
 export function ventOpening(c: ChatCtx): Turn {
-  const light = moodOf(c.tone, c.lv) === 'light';
-  const th = `${light ? 'ได้เลย เล่ามาได้เต็มที่ เรื่องดีๆ ก็อยากฟังนะ' : 'ได้เลย เล่ามาได้เต็มที่ ไม่ต้องเรียบเรียง'}${c.ctxSay ? ` วันนี้${c.ctxSay}เป็นยังไงบ้าง` : ' วันนี้เกิดอะไรขึ้นบ้าง'}`;
-  const en = `${light ? 'Go ahead, I’d love to hear the good stuff too.' : 'Go ahead, let it all out. No need to tidy it up.'} ${c.ctxSay ? `How did ${c.ctxSay.replace(/\.$/, '').toLowerCase()} go today?` : 'What happened today?'}`;
-  return { msgs: [{ from: 'mooca', text: c.lang === 'en' ? en : th }], chips: ['stuck', 'listen'] };
+  const th = 'ได้เลย Mooca จะถามทีละข้อนะ ช่วยกันจดเรื่องวันนี้ไว้ ไม่ต้องเรียบเรียงก็ได้';
+  const en = 'Sure. I’ll ask one thing at a time and we’ll note today down together. No need to tidy it up.';
+  return { msgs: [{ from: 'mooca', text: c.lang === 'en' ? en : th }, qMsg(c, 0)], chips: ['stuck', 'listen'] };
 }
 
-/** coming back to the chat after signing in */
-export const resumeMsg = (lang: Lang): Omit<Msg, 'id'> => ({ from: 'mooca', kind: 'resume', text: lang === 'en' ? 'I’m here. We can keep talking, and this chat is saved in today’s jar.' : 'Mooca อยู่ตรงนี้นะ คุยต่อกันได้เลย บทสนทนานี้บันทึกไว้ในโหลของวันนี้แล้ว' });
+/** coming back to the chat after signing in: carry on with the next question */
+export function resumeTurn(c: ChatCtx): Turn {
+  const msg: Omit<Msg, 'id'> = { from: 'mooca', kind: 'resume', text: c.lang === 'en' ? 'I’m here, and this chat is saved in today’s jar. Let’s keep noting today down.' : 'Mooca อยู่ตรงนี้นะ บทสนทนานี้บันทึกไว้ในโหลของวันนี้แล้ว มาจดต่อกันนะ' };
+  const h = c.history ?? [];
+  if (h.some(m => m.kind === 'open')) return { msgs: [msg], chips: [] };
+  const i = asked(c);
+  return { msgs: [msg, i < noteQs(c).length ? qMsg(c, i) : openMsg(c.lang)], chips: i === 0 ? ['stuck', 'listen'] : [] };
+}
+
+/** a shared photo: kept in the jar with the chat */
+export function onPhoto(c: ChatCtx): Turn {
+  return { msgs: [{ from: 'mooca', text: c.lang === 'en' ? 'Got it, the photo is in today’s jar. Anything you want to say about it?' : 'ได้รับรูปแล้ว เก็บไว้ในโหลของวันนี้นะ อยากเล่าอะไรเกี่ยวกับรูปนี้ไหม' }], chips: [] };
+}
+
+/** the end of the chat: thanks, then a psychologist on ooca for anything they want to talk through with a person */
+export function endTurn(c: ChatCtx): Turn {
+  const L = c.lang;
+  return { msgs: [
+    { from: 'mooca', kind: 'end', text: L === 'en' ? 'Thank you for noting today down with me. Come back tomorrow and tell me more.' : 'ขอบคุณที่มาจดบันทึกใจกับ Mooca วันนี้นะ พรุ่งนี้มาเล่าให้ฟังอีกนะ' },
+    { from: 'mooca', kind: 'ooca', text: L === 'en' ? 'If there’s anything you’d like to talk through with a real person, a psychologist on ooca is always ready to listen.' : 'ถ้ามีเรื่องไหนอยากคุยกับคนจริงๆ นักจิตวิทยาบน ooca พร้อมรับฟังคุณเสมอนะ' },
+  ], chips: [] };
+}
 
 /** Mooca's closing words on the result: what today was, and how the venting went */
 export function closing(a: { word: string; ctxSay: string | null; short: string; vent: 'yes' | 'later' | 'no' | null; heavy: boolean }, lang: Lang): string[] {
@@ -207,7 +252,14 @@ export function onChip(id: ChipId, c: ChatCtx): Turn {
   }
 }
 
-/** a typed message: safety first, then name what it's about, then one gentle question */
+// short "noted" lines for when Mooca has nothing specific to reflect back
+const NOTED: T2[] = [
+  { th: 'จดไว้แล้วนะ', en: 'Noted.' }, { th: 'อืม Mooca เข้าใจแล้ว', en: 'Mm, I understand.' },
+  { th: 'ขอบคุณที่เล่านะ', en: 'Thank you for telling me.' }, { th: 'เก็บไว้ในโหลให้แล้วนะ', en: 'It’s in the jar.' },
+  { th: 'Mooca จดไว้ให้แล้ว', en: 'Got it down.' }, { th: 'จดเพิ่มไว้ในโหลให้แล้วนะ', en: 'Added to the jar.' },
+];
+
+/** a typed message: safety first; otherwise a short reflection (data/mooca.ts) and the next note question */
 export function onText(text: string, c: ChatCtx, n: number): Turn {
   const L = c.lang;
   if (isRisk(text)) {
@@ -218,22 +270,27 @@ export function onText(text: string, c: ChatCtx, n: number): Turn {
       chips: [],
     };
   }
-  // what Mooca heard (the feeling, the topic) and one question about it; see data/mooca.ts
-  const mood = moodOf(c.tone, c.lv);
-  const r = moocaReply(text, { lang: L, mood, word: c.word, n, topicHint: c.ctxId, history: c.history });
-  const msgs: Omit<Msg, 'id'>[] = [{ from: 'mooca', text: r.say }];
-  if (r.ask) msgs.push({ from: 'mooca', text: r.ask });
-  // venting before the summary: after the second message Mooca thanks them and offers the summary
-  // (no new question: they answered Mooca's question, so Mooca acknowledges it, wraps up and heads to the summary)
-  if (c.vent && n === 1) {
-    return {
-      msgs: [...(r.onlyAsk ? [] : [{ from: 'mooca' as const, text: r.say }]), { from: 'mooca', kind: 'wrap', text: L === 'en' ? 'I’ve got it. Let me sum up today for you.' : 'Mooca เข้าใจแล้วนะ เดี๋ยวสรุปวันนี้ให้' }],
-      chips: [],
-    };
+  const h = c.history ?? [];
+  const mood = moodOf(c.tone, c.lv), i = asked(c), total = noteQs(c).length, free = h.some(m => m.kind === 'open');
+  // which question this answers: "how did it feel" and anything added afterwards get the feeling only (a topic
+  // line can read wrong there), and the last question (a plan or something to remember) gets its own answer
+  const answering = free ? -1 : i - 1;
+  const r = moocaReply(text, { lang: L, mood, word: c.word, n, topicHint: c.ctxId, history: h, feelingOnly: free || answering === 1 });
+  // once the hotline has come up, no more questions: Mooca just stays with them (and keeps 1323 close)
+  if (h.some(m => m.kind === 'safety')) return { msgs: [{ from: 'mooca', text: r.say }, ...(r.ask && r.end ? [{ from: 'mooca' as const, text: r.ask }] : [])], chips: [] };
+  // the reflection only: Mooca's own questions come from the note list below
+  const said = h.filter(m => m.from === 'mooca').map(m => m.text).join('\n');
+  const noted = NOTED.map(x => pick(x, L)).filter(x => !said.includes(x));
+  const plan: T2 = mood === 'light' ? { th: 'เก็บไว้ดีๆ นะ วันที่ยากจะได้หยิบมาใช้', en: 'Keep that close. It’ll help on harder days.' } : { th: 'เป็นสิ่งเล็กๆ ที่ดีมากเลย ลองทำดูนะ', en: 'That’s a lovely small thing. Give it a try.' };
+  const quiet = r.onlyAsk || r.end || (free && !r.felt);
+  const ack: Omit<Msg, 'id'> = { from: 'mooca', text: answering === total - 1 && !c.vent ? pick(plan, L) : quiet ? (noted[n % Math.max(1, noted.length)] ?? pick(NOTED[n % NOTED.length], L)) : r.say };
+  if (c.vent) {
+    if (i < VENT_QS) return { msgs: [ack, qMsg(c, i)], chips: [] };
+    return { msgs: [ack, { from: 'mooca', kind: 'wrap', text: L === 'en' ? 'All noted. Let me sum up today for you.' : 'Mooca จดไว้ให้แล้วนะ เดี๋ยวสรุปวันนี้ให้' }], chips: [] };
   }
-  // after a few turns on a heavy day, offer a real person
-  if (n === 2 && c.lv >= 1 && mood === 'heavy') msgs.push({ from: 'mooca', kind: 'ooca', text: L === 'en' ? 'If you’d like to talk this through with a real person, a psychologist on ooca is ready to listen.' : 'ถ้าอยากคุยเรื่องนี้กับคนจริงๆ นักจิตวิทยาบน ooca พร้อมฟังคุณเสมอนะ' });
-  return { msgs, chips: n >= 1 ? ['cope', 'more', 'done'] : [] };
+  if (free) return { msgs: [ack], chips: [] };
+  if (i < total) return { msgs: [ack, qMsg(c, i)], chips: [] };
+  return { msgs: [ack, openMsg(L)], chips: [] };
 }
 
 /* ---------- demo days for the mock sign-in ---------- */

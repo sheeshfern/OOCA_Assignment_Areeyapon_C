@@ -109,7 +109,7 @@ function JarSheet({ e, onClose }: { e: Checkin | null; onClose: () => void }) {
             {e.chat && e.chat.length > 0 && (
               <details className="jar-chat">
                 <summary>{L.chatLog(e.chat.length)}</summary>
-                {e.chat.map((m, i) => <p key={i} className={`jc ${m.from}`}>{m.text}</p>)}
+                {e.chat.map((m, i) => m.img ? <img key={i} className={`jc jc-img ${m.from}`} src={m.img} alt={L.chatPhotoAlt} /> : <p key={i} className={`jc ${m.from}`}>{m.text}</p>)}
               </details>
             )}
           </div>

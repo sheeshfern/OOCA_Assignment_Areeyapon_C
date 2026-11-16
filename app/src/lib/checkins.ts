@@ -18,7 +18,7 @@ export interface Checkin {
   /** how heavy the heart felt, 1–5, at the start and before the card */
   heavy?: { before: number | null; after: number | null };
   /** the chat with Mooca, kept once signed in */
-  chat?: { from: 'mooca' | 'me'; text: string }[];
+  chat?: { from: 'mooca' | 'me'; text: string; img?: string }[];
 }
 
 const KEY = 'ooca-checkins', MAX = 60;
