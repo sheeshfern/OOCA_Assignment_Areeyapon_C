@@ -13,10 +13,10 @@ export function Ctx() {
   return (
     <Screen>
       <TopBar step={3} />
-      <Guide img={moocaFor(s)} q={L.q3} sub={!s.ctx ? L.q3sub : L.q3done(s.ctx === 'unsure')} subKey={!s.ctx ? 'none' : s.ctx === 'unsure' ? 'unsure' : 'picked'} tags={<Tags />} />
+      <Guide img={moocaFor(s)} q={L.q3} sub={!s.ctx ? L.q3sub : s.ctx === 'unsure' ? L.q3done(true) : s.ctx2 ? L.q3done(false) : L.q3more} subKey={!s.ctx ? 'none' : s.ctx === 'unsure' ? 'unsure' : s.ctx2 ? 'two' : 'one'} tags={<Tags />} />
       <div className="opts" role="group" aria-label={L.q3}>
         {CONTEXTS.map(c => (
-          <button key={c.id} className="opt with-ic" data-act="ctx" data-id={c.id} aria-pressed={s.ctx === c.id}
+          <button key={c.id} className="opt with-ic" data-act="ctx" data-id={c.id} aria-pressed={s.ctx === c.id || s.ctx2 === c.id}
             onClick={e => tap(e, { type: 'ctx', id: c.id })}>
             <span className="oi"><img src={ctxArt(c.id, moodTone(s).id)} alt="" /></span><span className="ol">{loc(c, s.lang).label}</span>{ico.check}
           </button>

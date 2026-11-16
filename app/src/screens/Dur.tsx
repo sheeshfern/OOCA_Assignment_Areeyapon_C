@@ -8,11 +8,10 @@ import { CONTEXTS } from '../data/content';
 import { ico } from '../data/icons';
 import { durArt } from '../data/images';
 import { loc, Ph } from '../lib/text';
-import { durList, feelsGood, moocaFor } from '../state';
+import { ctxIds, durList, feelsGood, moocaFor } from '../state';
 
 export function Dur() {
   const { s, L, go, tap } = useApp();
-  const c = CONTEXTS.find(x => x.id === s.ctx);
   const good = feelsGood(s);
   const list = durList(s);
   const steps = list.filter(d => d.id !== 'unsure');
@@ -25,7 +24,7 @@ export function Dur() {
       <TopBar step={4} />
       {/* the longer "good" question takes the tag row's place, so the bubble keeps the shared height */}
       <Guide img={moocaFor(s)} q={good ? L.qGood : L.qHeavy} sub={answered} subKey={s.dur ?? 'none'} cls={good ? 'q-wrap' : ''}
-        tags={good ? undefined : <Tags extra={c && c.id !== 'unsure' ? [loc(c, s.lang).label] : []} />} />
+        tags={good ? undefined : <Tags extra={ctxIds(s).map(id => loc(CONTEXTS.find(x => x.id === id)!, s.lang).label)} />} />
       <DurScene art={durArt(good, s.dur ?? 'unsure')} label={pickedCopy?.label} say={pickedCopy?.say} pick={L.durPick} id={s.dur} />
       <Steps p={Math.max(0, steps.findIndex(d => d.id === s.dur))} label={L.durAria} id={s.dur}>
         {steps.map(d => (
@@ -39,7 +38,7 @@ export function Dur() {
         onClick={e => tap(e, { type: 'dur', id: 'unsure' })}>
         {unsure && loc(unsure, s.lang).label}
       </button>
-      <NextBar act="toResult" label={L.seeCard} disabled={!s.dur} onClick={() => go('result')} />
+      <NextBar act="toResult" label={L.seeCard} disabled={!s.dur} onClick={() => go('vent')} />
     </Screen>
   );
 }

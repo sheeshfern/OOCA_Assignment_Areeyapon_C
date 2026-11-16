@@ -23,7 +23,7 @@ export function syncFloat(root: ParentNode) {
 // choices rise in one after another once Mooca has spoken
 export function stagger(screen: HTMLElement) {
   const els = [
-    ...screen.querySelectorAll<HTMLElement>(':scope > :not(.top,.progress,.guide,.hero,.grow,.tones,.words,.opts,.card.main), .tone, .word, .opt'),
+    ...screen.querySelectorAll<HTMLElement>(':scope > :not(.top,.progress,.guide,.hero,.grow,.tones,.words,.opts,.card.main,dialog), .tone, .word, .opt'),
   ];
   els.forEach((el, i) => { el.classList.add('rise'); el.style.setProperty('--i', String(Math.min(i, 12))); });
 }

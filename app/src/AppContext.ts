@@ -11,6 +11,11 @@ export interface AppApi {
   /** a tapped choice: plays its reaction, then dispatches */
   tap: (e: MouseEvent<HTMLElement>, action: Action) => void;
   openNote: () => void;
+  /** the one-minute exercise on the result card */
+  openEx: () => void;
+  /** the mock Google sign-in sheet */
+  /** `then` is where to go once signed in (the chat waits behind the sign-in) */
+  openLogin: (then?: Screen) => void;
   saveCard: (btn: HTMLButtonElement) => void;
 }
 

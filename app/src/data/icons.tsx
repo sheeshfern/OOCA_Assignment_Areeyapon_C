@@ -10,6 +10,12 @@ export const ico = {
   check: <svg className="ck" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" {...line} strokeWidth={2.5}><path d="M5 12l5 5l10 -10" /></svg>,
   checkW: <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" {...line} stroke="#fff" strokeWidth={2.5}><path d="M5 12l5 5l10 -10" /></svg>,
   arrow: <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" {...line}><path d="M9 6l6 6l-6 6" /></svg>,
+  play: <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 4v16l13 -8z" /></svg>,
+  user: <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>,
+  send: <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12l16-8-6 16-3-7z" /><path d="M11 13l9-9" /></svg>,
+  chat: <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16v11H9l-5 4z" /></svg>,
+  /* the four-colour G for the mock "Sign in with Google" button */
+  google: <svg aria-hidden="true" width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13.6 17.7 9.5 24 9.5z" /><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.5 5.8c4.4-4 6.8-10 6.8-17.2z" /><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.8-6z" /><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.2-13.5-9.9l-7.8 6C6.6 42.6 14.6 48 24 48z" /></svg>,
   pen: <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" {...line}><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></svg>,
   refresh: <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" {...line}><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" /><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" /></svg>,
   cal: <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" {...line}><rect x="4" y="5" width="16" height="16" rx="3" /><path d="M16 3v4M8 3v4M4 11h16" /></svg>,

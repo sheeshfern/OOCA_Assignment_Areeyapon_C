@@ -1,17 +1,23 @@
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
+import { readLog } from '../lib/checkins';
+import { wordsOf } from '../state';
 import { useApp } from '../AppContext';
 import { Dots } from '../components/bits';
 import { LangSwitch } from '../components/LangSwitch';
 import { Screen } from '../components/Screen';
 import { ico } from '../data/icons';
 import { IMG } from '../data/images';
-import { TONES } from '../data/content';
+import { NEUTRAL, TONES } from '../data/content';
 import { startEyes } from '../lib/eyes';
 import { burst, calm } from '../lib/motion';
 import { loc } from '../lib/text';
 
 export function Home() {
-  const { s, L, go } = useApp();
+  const { s, L, go, openLogin } = useApp();
+  // signed in: Mooca remembers the last check-in, and the last 7 days sit on a little shelf
+  const last = s.user ? readLog()?.at(-1) : undefined;
+  const lastWord = last?.words[0] ? loc(TONES.flatMap(wordsOf).find(w => w.w === last.words[0]) ?? NEUTRAL, s.lang).w : null;
+  const hellos = lastWord ? L.helloBack(lastWord) : L.hello;
   // the home bubble keeps chatting: a new line every few seconds, typed out each time
   const [hello, setHello] = useState(0);
   const sayRef = useRef<HTMLDivElement>(null);
@@ -21,7 +27,7 @@ export function Home() {
     let n = 0, t: number;
     const next = () => {
       t = window.setTimeout(() => {
-        n = (n + 1) % L.hello.length;
+        n = (n + 1) % hellos.length;
         sayRef.current?.style.setProperty('--talk', '.7s');
         setHello(n);
         next();
@@ -29,19 +35,24 @@ export function Home() {
     };
     next();
     return () => clearTimeout(t);
-  }, [s.lang, L.hello.length]);
+  }, [s.lang, hellos.length]);
 
   useEffect(() => startEyes(), []);
 
   const start = (e: MouseEvent<HTMLButtonElement>) => {
-    burst(e.currentTarget, e, document.getElementById('app')!, () => go('tone'));
+    burst(e.currentTarget, e, document.getElementById('app')!, () => go('eyes'));
   };
 
   return (
     <Screen className="home">
       <div className="top">
         <img className="brand" src={IMG.logo} width={123} height={24} alt="mindfull" />
-        <LangSwitch />
+        <div className="top-r">
+          <LangSwitch />
+          {s.user
+            ? <button className="avatar" data-act="shelf" aria-label={L.account} onClick={() => go('shelf')}>{s.user.name.slice(0, 1)}</button>
+            : <button className="icon-btn acct" data-act="login" aria-label={L.signIn} onClick={() => openLogin()}>{ico.user}</button>}
+        </div>
       </div>
       <div className="hero">
         {/* the four moods float around Mooca; decorative, the real choice is step 1 */}
@@ -52,12 +63,13 @@ export function Home() {
         <div className="say talks" aria-hidden="true" ref={sayRef}>
           {/* a fresh pair of dots + line for every new greeting */}
           <Dots key={`d${hello}`} />
-          <span key={`t${hello}`}>{L.hello[hello]}</span>
+          <span key={`t${hello}`}>{hellos[hello % hellos.length]}</span>
         </div>
         <span className="mooca"><span className="mo float"><img src={IMG.phone} alt={L.phoneAlt} /><i className="eye l" aria-hidden="true" /><i className="eye r" aria-hidden="true" /></span></span>
         <span className="zone">{ico.shield}{L.zone}</span>
       </div>
-      <p className="badge">{ico.ok}{L.noSignup}</p>
+      {/* signed in, the badge goes (they already have an account); the 7-day jars live on the shelf */}
+      {!s.user && <p className="badge">{ico.ok}{L.noSignup}</p>}
       <h1 tabIndex={-1}>{L.homeTitle}</h1>
       <p className="sub">{L.homeSub}</p>
       <div className="grow" />

@@ -130,3 +130,31 @@ export const DURATIONS_GOOD: Duration[] = [
 ];
 
 export const NEUTRAL: Word = { w: "ยังบอกไม่ถูก", m: "บางความรู้สึกต้องใช้เวลา กว่าจะเรียกชื่อได้", c: "", a: "เขียนอะไรก็ได้ที่อยู่ในใจ ยังไม่ต้องตั้งชื่อ", lv: 1, en: { w: "Hard to name yet", m: "Some feelings take time before you can name them.", a: "Write anything on your mind, no need to name it yet" } };
+
+/* ---------- one minute to feel a little better ---------- */
+// picked by tone: uneasy → slow breathing (long out-breath), heavy → a self-compassion break, good → savouring.
+// breathe runs 6 rounds of in 4 s / out 6 s; the others split 60 s evenly over their lines
+export type ExerciseId = 'breathe' | 'kind' | 'savor';
+interface ExerciseCopy { t: string; sub: string; in?: string; out?: string; steps?: string[] }
+export const EXERCISES: Record<ExerciseId, Record<'th' | 'en', ExerciseCopy>> = {
+  breathe: {
+    th: { t: 'หายใจให้ใจช้าลง', sub: 'หายใจเข้า 4 วินาที ออก 6 วินาที', in: 'หายใจเข้า', out: 'ค่อยๆ หายใจออก' },
+    en: { t: 'Slow your breathing', sub: 'In for 4 seconds, out for 6', in: 'Breathe in', out: 'Slowly breathe out' },
+  },
+  kind: {
+    th: { t: 'ใจดีกับตัวเอง', sub: '4 ประโยคสั้นๆ บอกตัวเอง', steps: ['วางมือไว้ที่อก แล้วหายใจช้าๆ', 'บอกตัวเองในใจว่า ตอนนี้มันหนักจริงๆ', 'ใครๆ ก็เคยรู้สึกแบบนี้ คุณไม่ได้อยู่คนเดียว', 'บอกตัวเองว่า วันนี้ขอใจดีกับตัวเองสักนิด'] },
+    en: { t: 'Be kind to yourself', sub: '4 short lines to tell yourself', steps: ['Put a hand on your chest and breathe slowly', 'Tell yourself: this is really hard right now', 'Everyone feels this way sometimes. You’re not alone', 'Tell yourself: today, I’ll be a little kinder to me'] },
+  },
+  savor: {
+    th: { t: 'เก็บความรู้สึกดีไว้', sub: 'ให้ใจได้อยู่กับมันนานขึ้นอีกนิด', steps: ['นึกถึงสิ่งที่ทำให้รู้สึกดีวันนี้ ให้ชัดที่สุด', 'ร่างกายตรงไหนรู้สึกดีบ้าง ลองสังเกตดู', 'หายใจลึกๆ แล้วจำความรู้สึกนี้ไว้'] },
+    en: { t: 'Hold on to this feeling', sub: 'Let it stay a little longer', steps: ['Picture what made you feel good today, as clearly as you can', 'Notice where in your body it feels good', 'Take a deep breath and keep this feeling with you'] },
+  },
+};
+export const EX_TONE: Record<string, ExerciseId> = { yellow: 'savor', green: 'savor', orange: 'breathe', blue: 'kind' };
+/** [phase, seconds, line] for each step of an exercise */
+export const exSteps = (id: ExerciseId, lang: 'th' | 'en'): [string, number, string][] => {
+  const T = EXERCISES[id][lang];
+  return T.steps
+    ? T.steps.map(t => ['hold', 60 / T.steps!.length, t] as [string, number, string])
+    : Array.from({ length: 6 }).flatMap(() => [['in', 4, T.in!], ['out', 6, T.out!]] as [string, number, string][]);
+};
